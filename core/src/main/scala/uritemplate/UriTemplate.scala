@@ -7,26 +7,38 @@ final case class UriTemplate(value: String) extends AnyVal {
   def expand(vars: (String, String)*): String = {
     lazy val varsMap = vars.toMap
 
-    UriTemplateParser.uriTemplate.parse(value) match {
+    val literalsList: List[Literals] = UriTemplateParser.uriTemplate.parse(value) match {
       case Parsed.Success(components, _) =>
-        components.map {
-          case Literals(literals) => literals
-          case Expression(_, variableList) =>
-            variableList.map {
-              case Varspec(varname, _) => PercentEncoder.encode(varsMap(varname))
-            }.mkString
-        }.mkString
-      case Parsed.Failure(_, _, _) => ???
+        for {
+          component <- components
+          literals <- component match {
+            case literals: Literals => List(literals)
+            case Expression(Reserved, variableList) =>
+              variableList.flatMap(spec => PercentEncoder.nonUnreservedAndReserved.parse(varsMap(spec.varname)).get.value)
+            case Expression(Fragment, variableList) =>
+              Encoded("#") :: variableList.flatMap(spec => PercentEncoder.nonUnreservedAndReserved.parse(varsMap(spec.varname)).get.value)
+            case Expression(_, variableList) =>
+              variableList.flatMap(spec => PercentEncoder.nonUnreserved.parse(varsMap(spec.varname)).get.value)
+          }
+        } yield literals
+      case fail @ Parsed.Failure(_, _, _) => ???
     }
-  }
 
-  private def encode(s: String): String = {
-    PercentEncoder.encode(s)
+    literalsList.map {
+      case Encoded(encoded) => encoded
+      case Unencoded(unencoded) => PercentEncoder.percentEncode(unencoded)
+    }.mkString
   }
 }
 
 private sealed trait Component
-private final case class Literals(value: String) extends Component
+
+private sealed trait Literals extends Component {
+  def value: String
+}
+private final case class Encoded(override val value: String) extends Literals
+private final case class Unencoded(override val value: String) extends Literals
+
 private final case class Expression(operator: Operator, variableList: List[Varspec]) extends Component
 
 private sealed trait Operator
@@ -50,10 +62,10 @@ private case object Explode extends ModifierLevel4
 private object PercentEncoder {
   import UriTemplateParser._
 
-  lazy val encode: String => String = {
-    val parser = P(unreserved.! | AnyChar.!.map(s => "%" + s.head.toHexString)).rep.map(_.mkString)
-    parser.parse(_).get.value
-  }
+  @inline def percentEncode(s: String): String = s.map(c => s"%${c.toHexString}").mkString
+
+  lazy val nonUnreserved: P[List[Literals]] = P(unreserved.!.map(Encoded) | AnyChar.!.map(Unencoded)).rep.map(_.toList)
+  lazy val nonUnreservedAndReserved: P[List[Literals]] = P((unreserved | reserved).!.map(Encoded) | AnyChar.!.map(Unencoded)).rep.map(_.toList)
 }
 
 private object UriTemplateParser {
@@ -77,12 +89,15 @@ private object UriTemplateParser {
   lazy val iprivate: P0 = P(CharIn(
     0xE000.toChar to 0xF8FF.toChar, 0xF0000.toChar to 0xFFFFD.toChar, 0x100000.toChar to 0x10FFFD.toChar))
   // 2. Syntax
-  lazy val uriTemplate: P[List[Component]] = P(expression | literals ~ End).map(comp => List(comp))
+  lazy val uriTemplate: P[List[Component]] = P((expression | literals).rep ~ End).map(_.toList)
   // 2.1 Literals
-  lazy val literals: P[Literals] = P(CharIn(
-    List(0x21.toChar),  0x23.toChar to 0x24, List(0x26.toChar), 0x28.toChar to 0x3B.toChar, List(0x3D.toChar), 0x3F.toChar to 0x5B.toChar,
-    List(0x5D.toChar), List(0x5F.toChar), 0x61.toChar to 0x7A.toChar, List(0x7E.toChar))
-    | ucschar | iprivate | pctEncoded).!.map(Literals.apply)
+  lazy val literals: P[Literals] = P(allowedLiterals.!.map(Encoded) | unallowedLiterals.!.map(Unencoded))
+  lazy val allowedLiterals: P0 = P(reserved | unreserved | pctEncoded)
+  lazy val unallowedLiterals: P0 = P(
+    CharIn(
+      List(0x21.toChar),  0x23.toChar to 0x24, List(0x26.toChar), 0x28.toChar to 0x3B.toChar, List(0x3D.toChar), 0x3F.toChar to 0x5B.toChar,
+      List(0x5D.toChar), List(0x5F.toChar), 0x61.toChar to 0x7A.toChar, List(0x7E.toChar))
+    | ucschar | iprivate | pctEncoded)
   // 2.2. Expressions
   lazy val expression: P[Expression] = P("{" ~ operator.? ~ variableList ~ "}").map {
     case (None, vl) => Expression(Simple, vl)
