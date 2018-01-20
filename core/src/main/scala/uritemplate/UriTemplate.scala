@@ -92,8 +92,8 @@ private object PercentEncoder {
 
   @inline def percentEncode(s: String): String = s.map(c => s"%${c.toHexString}").mkString
 
-  lazy val nonUnreserved: P[List[Literals]] = P(unreserved.!.map(Encoded) | AnyChar.!.map(Unencoded)).rep.map(_.toList)
-  lazy val nonUnreservedAndReserved: P[List[Literals]] = P((unreserved | reserved).!.map(Encoded) | AnyChar.!.map(Unencoded)).rep.map(_.toList)
+  lazy val nonUnreserved: P[List[Literals]] = P(unreserved.rep(min = 1).!.map(Encoded) | AnyChar.!.map(Unencoded)).rep.map(_.toList)
+  lazy val nonUnreservedAndReserved: P[List[Literals]] = P((unreserved | reserved).rep(min = 1).!.map(Encoded) | AnyChar.!.map(Unencoded)).rep.map(_.toList)
 }
 
 private object UriTemplateParser {
@@ -119,7 +119,7 @@ private object UriTemplateParser {
   // 2. Syntax
   lazy val uriTemplate: P[List[Component]] = P((expression | literals).rep ~ End).map(_.toList)
   // 2.1 Literals
-  lazy val literals: P[Literals] = P(allowedLiterals.!.map(Encoded) | unallowedLiterals.!.map(Unencoded))
+  lazy val literals: P[Literals] = P(allowedLiterals.rep(min = 1).!.map(Encoded) | unallowedLiterals.rep(min = 1).!.map(Unencoded))
   lazy val allowedLiterals: P0 = P(reserved | unreserved | pctEncoded)
   lazy val unallowedLiterals: P0 = P(
     CharIn(
@@ -137,7 +137,7 @@ private object UriTemplateParser {
     P(".".!.map(_ => NameLabel) | "/".!.map(_ => PathSegment) | ";".!.map(_ => PathParameter) | "?".!.map(_ => Query) | "&".!.map(_ => QueryContinuation))
   lazy val opReserve: P[Operator] = P("=" | "," | "!" | "@" | "|").map(_ => Reserved)
   // 2.3. Variables
-  lazy val variableList: P[List[Varspec]] = P(varspec ~ ("," ~ varspec).rep).map { case (x, xs) => x :: xs.toList }
+  lazy val variableList: P[List[Varspec]] = P(varspec.rep(min = 1, sep = ",")).map(_.toList)
   lazy val varspec: P[Varspec] = P(varname ~ modifierLevel4.?).map {
     case (n, Some(m)) => Varspec(n, m)
     case (n, None) => Varspec(n, EmptyModifier)
