@@ -1,11 +1,22 @@
 package uritemplate
 
 import fastparse.all._
+import scala.annotation.tailrec
 
 final case class UriTemplate(value: String) extends AnyVal {
 
   def expand(vars: (String, String)*): String = {
     lazy val varsMap = vars.toMap
+
+    def intersperse[A](list: List[A], a: A): List[A] = {
+      @tailrec
+      def intersperse0(acc: List[A], rest: List[A]): List[A] = rest match {
+        case Nil => acc
+        case x :: Nil => x :: acc
+        case x :: xs => intersperse0(a :: x :: acc, xs)
+      }
+      intersperse0(Nil, list).reverse
+    }
 
     val literalsList: List[Literals] = UriTemplateParser.uriTemplate.parse(value) match {
       case Parsed.Success(components, _) =>
@@ -13,12 +24,29 @@ final case class UriTemplate(value: String) extends AnyVal {
           component <- components
           literals <- component match {
             case literals: Literals => List(literals)
-            case Expression(Reserved, variableList) =>
-              variableList.flatMap(spec => PercentEncoder.nonUnreservedAndReserved.parse(varsMap(spec.varname)).get.value)
-            case Expression(Fragment, variableList) =>
-              Encoded("#") :: variableList.flatMap(spec => PercentEncoder.nonUnreservedAndReserved.parse(varsMap(spec.varname)).get.value)
-            case Expression(_, variableList) =>
-              variableList.flatMap(spec => PercentEncoder.nonUnreserved.parse(varsMap(spec.varname)).get.value)
+            case Expression(operator, variableList) =>
+              val (prefix, encoder, sep, named, empty) = operator match {
+                case Simple => (List.empty[Literals], PercentEncoder.nonUnreserved, ",", false, true)
+                case Reserved => (List.empty[Literals], PercentEncoder.nonUnreservedAndReserved, ",", false, true)
+                case Fragment => (List(Encoded("#")), PercentEncoder.nonUnreservedAndReserved, ",", false, true)
+                case NameLabel => (List(Encoded(".")), PercentEncoder.nonUnreserved, ".", false, true)
+                case PathSegment => (List(Encoded("/")), PercentEncoder.nonUnreserved, "/", false, true)
+                case PathParameter => (List(Encoded(";")), PercentEncoder.nonUnreserved, ";", true, false)
+                case Query => (List(Encoded("?")), PercentEncoder.nonUnreserved, "&", true, true)
+                case QueryContinuation => (List(Encoded("&")), PercentEncoder.nonUnreserved, "&", true, true)
+              }
+              prefix ::: intersperse(variableList.map { spec =>
+                val resolvedVar = varsMap(spec.varname)
+                if (named) {
+                  if (!empty && resolvedVar.isEmpty) {
+                    List(Encoded(spec.varname))
+                  } else {
+                    Encoded(spec.varname + "=") :: encoder.parse(resolvedVar).get.value
+                  }
+                } else {
+                  encoder.parse(resolvedVar).get.value
+                }
+              }, List(Encoded(sep))).flatten
           }
         } yield literals
       case fail @ Parsed.Failure(_, _, _) => ???
