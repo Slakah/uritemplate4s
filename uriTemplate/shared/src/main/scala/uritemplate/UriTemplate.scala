@@ -82,7 +82,7 @@ final case class UriTemplate(value: String) extends AnyVal {
               }.intersperse(List(Encoded(operator.sep))).flatten
           }
         } yield literals
-      case fail @ Parsed.Failure(_, _, _) => ???
+      case _ @ Parsed.Failure(_, _, _) => ???
     }
 
     literalsList.map {
@@ -97,7 +97,6 @@ private final case class StringValue(value: String) extends Value
 private final case class ListValue(value: Seq[String]) extends Value
 private final case class AssociativeArray(value: Seq[(String, String)]) extends Value
 object Value {
-  import scala.languageFeature.implicitConversions
   implicit def string2stringValue(s: String): Value = StringValue(s)
   implicit def seqString2listValue(seq: Seq[String]): Value = ListValue(seq)
   implicit def seqTuple2associativeValue(tuples: Seq[(String, String)]): Value = AssociativeArray(tuples)
@@ -139,7 +138,7 @@ private case object Explode extends ModifierLevel4
 private object PercentEncoder {
   import UriTemplateParser._
 
-  @inline def percentEncode(s: String): String = s.map(c => s"%${c.toHexString.toUpperCase}").mkString
+  @inline def percentEncode(s: String): String = s.map(c => s"%${c.toInt.toHexString.toUpperCase}").mkString
 
   lazy val nonUnreserved: P[List[Literals]] = P(unreserved.rep(min = 1).!.map(Encoded) | AnyChar.!.map(Unencoded)).rep.map(_.toList)
   lazy val nonUnreservedAndReserved: P[List[Literals]] = P((unreserved | reserved).rep(min = 1).!.map(Encoded) | AnyChar.!.map(Unencoded)).rep.map(_.toList)

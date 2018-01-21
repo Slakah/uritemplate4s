@@ -6,10 +6,10 @@ object UriTemplateTests extends TestSuite {
 
   private def test(
                   vars: Map[String, Value])(
-                  templatetWithExp: (String, String)*
+                  testCases: (String, String)*
                   ): Unit = {
     val varList = vars.toList
-    templatetWithExp.foreach { case (template, exp) =>
+    testCases.foreach { case (template, exp) =>
       val actual = UriTemplate(template).expand(varList: _*)
       assert(exp == actual)
     }
