@@ -1,5 +1,5 @@
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.5.7")
 addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0")
-addSbtPlugin("org.portable-scala" % "sbt-crossproject" % "0.3.0")
-addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "0.3.0")
+addSbtPlugin("org.portable-scala" % "sbt-crossproject" % "0.3.1")
+addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "0.3.1")
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.21")

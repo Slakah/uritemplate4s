@@ -7,15 +7,26 @@ lazy val commonSettings = Seq(
   scalacOptions ++= scalacOpts
 )
 
+lazy val catsVersion = "1.0.1"
+lazy val circeVersion = "0.9.0"
+lazy val fastparseVersion = "1.0.0"
+lazy val utestVersion = "0.6.0"
+
 lazy val uriTemplate = crossProject(JSPlatform, JVMPlatform)
   .settings(
     commonSettings,
     name := "uri-template",
     testFrameworks += new TestFramework("utest.runner.Framework"),
       libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "fastparse" % "1.0.0"
+      "com.lihaoyi" %%% "fastparse" % fastparseVersion
     ) ++ Seq(
-      "com.lihaoyi" %%% "utest" % "0.6.0"
+      "org.typelevel" %%% "cats-core" % catsVersion,
+      "org.typelevel" %%% "cats-kernel" % catsVersion,
+      "org.typelevel" %%% "cats-macros" % catsVersion,
+      "com.lihaoyi" %%% "utest" % utestVersion,
+      "io.circe" %%% "circe-core" % circeVersion,
+      "io.circe" %%% "circe-generic" % circeVersion,
+      "io.circe" %%% "circe-parser" % circeVersion
     ).map(_ % "test")
   )
 
@@ -33,7 +44,7 @@ lazy val scalacOpts = Seq(
   "-language:implicitConversions",     // Allow definition of implicit functions called views
   "-unchecked",                        // Enable additional warnings where generated code depends on assumptions.
   "-Xcheckinit",                       // Wrap field accessors to throw an exception on uninitialized access.
-  "-Xfatal-warnings",                  // Fail the compilation if there are any warnings.
+//  "-Xfatal-warnings",                  // Fail the compilation if there are any warnings.
   "-Xfuture",                          // Turn on future language features.
   "-Xlint:adapted-args",               // Warn if an argument list is modified to match the receiver.
   "-Xlint:by-name-right-associative",  // By-name parameter of right associative operator.
