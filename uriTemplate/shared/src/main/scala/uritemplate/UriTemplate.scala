@@ -13,73 +13,28 @@ final case class UriTemplate(value: String) extends AnyVal {
         for {
           component <- components
           literals <- component match {
-            case literals: Literals => List(literals)
+            case literals: Literals =>
+              List(literals)
             case Expression(operator, variableList) =>
-
-              val encoder = operator.allow match {
-                case Allow.U => PercentEncoder.nonUnreserved
-                case Allow.`U+R` => PercentEncoder.nonUnreservedAndReserved
-              }
-              Encoded(operator.first) :: variableList.map { spec =>
-                varsMap(spec.varname) match {
-                  case StringValue(s) =>
-                    val prefixS = spec.modifier match {
-                      case Prefix(maxLength) => s.take(maxLength)
-                      case _ => s
-                    }
-                    if (operator.named) {
-                      val namedSep = if (s.isEmpty) operator.ifemp else "="
-                      Encoded(spec.varname) :: Encoded(namedSep) :: encoder.parse(prefixS).get.value
-                    } else {
-                      encoder.parse(prefixS).get.value
-                    }
-                  case ListValue(l) =>
-                    spec.modifier match {
-                      case (EmptyModifier | Prefix(_)) =>
-                        val literalValues = l.toList.map(encoder.parse(_).get.value).intersperse(List(Encoded(","))).flatten
-                        if (operator.named) {
-                          val namedSep = if (l.isEmpty) operator.ifemp else "="
-                          Encoded(spec.varname) :: Encoded(namedSep) :: literalValues
-                        } else {
-                          literalValues
-                        }
-                      case Explode =>
-                        val lValues = l.toList.map(encoder.parse(_).get.value)
-                        if (operator.named) {
-                          lValues.map { lValue =>
-                            val namedSep = if (lValue.isEmpty) operator.ifemp else "="
-                            Encoded(spec.varname) :: Encoded(namedSep) :: lValue
-                          }.intersperse(List(Encoded(operator.sep))).flatten
-                        } else {
-                          lValues.intersperse(List(Encoded(operator.sep))).flatten
-                        }
-                    }
-                  case AssociativeArray(tuples) =>
-                    spec.modifier match {
-                      case (EmptyModifier | Prefix(_)) =>
-                        val nameValues = tuples.toList.flatMap { case (n, v) => List(n, v) }
-                        val literalValues = nameValues.map(encoder.parse(_).get.value).intersperse(List(Encoded(","))).flatten
-                        if (operator.named) {
-                          val namedSep = if (tuples.isEmpty) operator.ifemp else "="
-                          Encoded(spec.varname) :: Encoded(namedSep) :: literalValues
-                        } else {
-                          literalValues
-                        }
-                      case Explode =>
-                        val nameValues = tuples.toList.map { case (n, v) => n -> encoder.parse(v).get.value }
-                        if (operator.named) {
-                          nameValues.map { case (n, v) =>
-                            val namedSep = if (v.isEmpty) operator.ifemp else "="
-                            Encoded(n) :: Encoded(namedSep) :: v
-                          }.intersperse(List(Encoded(operator.sep))).flatten
-                        } else {
-                          nameValues.map { case (n, v) =>
-                            encoder.parse(n).get.value ::: Encoded("=") :: v
-                          }.intersperse(List(Encoded(operator.sep))).flatten
-                        }
-                    }
+              val exploded = variableList.flatMap { spec =>
+                varsMap.get(spec.varname) match {
+                  case None => None
+                  case Some(StringValue(s)) =>
+                    Some(explodeStringValue(s, operator, spec))
+                  case Some(ListValue(Nil)) =>
+                    None
+                  case Some(ListValue(l)) =>
+                    Some(explodeListValue(l, operator, spec))
+                  case Some(AssociativeArray(Nil)) =>
+                    None
+                  case Some(AssociativeArray(tuples)) =>
+                    Some(explodeAssociativeArray(tuples, operator, spec))
                 }
               }.intersperse(List(Encoded(operator.sep))).flatten
+              exploded match {
+                case Nil => List.empty
+                case xs => Encoded(operator.first) :: xs
+              }
           }
         } yield literals
       case _ @ Parsed.Failure(_, _, _) => ???
@@ -89,6 +44,80 @@ final case class UriTemplate(value: String) extends AnyVal {
       case Encoded(encoded) => encoded
       case Unencoded(unencoded) => PercentEncoder.percentEncode(unencoded)
     }.mkString
+  }
+
+  private def explodeStringValue(s: String, operator: Operator, spec: Varspec): List[Literals] = {
+    val prefixS = spec.modifier match {
+      case Prefix(maxLength) => s.take(maxLength)
+      case _ => s
+    }
+    if (operator.named) {
+      val namedSep = if (s.isEmpty) operator.ifemp else "="
+      Encoded(spec.varname) :: Encoded(namedSep) :: encode(prefixS, operator.allow)
+    } else {
+      encode(prefixS, operator.allow)
+    }
+  }
+
+  private def explodeListValue(l: Seq[String], operator: Operator, spec: Varspec): List[Literals] = {
+    spec.modifier match {
+      case (EmptyModifier | Prefix(_)) =>
+        val literalValues = l.toList.map(encode(_, operator.allow)).intersperse(List(Encoded(","))).flatten
+        if (operator.named) {
+          val namedSep = if (l.isEmpty) operator.ifemp else "="
+          Encoded(spec.varname) :: Encoded(namedSep) :: literalValues
+        } else {
+          literalValues
+        }
+      case Explode =>
+        val lValues = l.toList.map(encode(_, operator.allow))
+        if (operator.named) {
+          lValues.map { lValue =>
+            val namedSep = if (lValue.isEmpty) operator.ifemp else "="
+            Encoded(spec.varname) :: Encoded(namedSep) :: lValue
+          }.intersperse(List(Encoded(operator.sep))).flatten
+        } else {
+          lValues.intersperse(List(Encoded(operator.sep))).flatten
+        }
+    }
+  }
+
+  private def explodeAssociativeArray(tuples: Seq[(String, String)], operator: Operator, spec: Varspec): List[Literals] = {
+    spec.modifier match {
+      case (EmptyModifier | Prefix(_)) =>
+        val nameValues = tuples.toList.flatMap { case (n, v) => List(n, v) }
+        val literalValues = nameValues.map(encode(_, operator.allow)).intersperse(List(Encoded(","))).flatten
+        if (operator.named) {
+          val namedSep = if (tuples.isEmpty) operator.ifemp else "="
+          Encoded(spec.varname) :: Encoded(namedSep) :: literalValues
+        } else {
+          literalValues
+        }
+      case Explode =>
+        val nameValues = tuples.toList.map { case (n, v) => n -> encode(v, operator.allow) }
+        if (operator.named) {
+          nameValues.map { case (n, v) =>
+            val namedSep = if (v.isEmpty) operator.ifemp else "="
+            encode(n, operator.allow) ::: Encoded(namedSep) :: v
+          }.intersperse(List(Encoded(operator.sep))).flatten
+        } else {
+          nameValues.map { case (n, v) =>
+            encode(n, operator.allow) ::: Encoded("=") :: v
+          }.intersperse(List(Encoded(operator.sep))).flatten
+        }
+    }
+  }
+
+
+  private def encode(
+    s: String,
+    allow: Allow
+  ): List[Literals] = {
+    val encoder = allow match {
+      case Allow.U => PercentEncoder.nonUnreserved
+      case Allow.`U+R` => PercentEncoder.nonUnreservedAndReserved
+    }
+    encoder.parse(s).get.value
   }
 }
 
@@ -138,7 +167,10 @@ private case object Explode extends ModifierLevel4
 private object PercentEncoder {
   import UriTemplateParser._
 
-  @inline def percentEncode(s: String): String = s.map(c => s"%${c.toInt.toHexString.toUpperCase}").mkString
+  @inline def percentEncode(s: String): String =
+    s.getBytes("UTF-8").flatMap(byte => encodeChar(byte.toChar)).mkString
+
+  private def encodeChar(ch: Char): String = s"%${"%04x".format(ch.toInt).substring(2).toUpperCase}"
 
   lazy val nonUnreserved: P[List[Literals]] = P(unreserved.rep(min = 1).!.map(Encoded) | AnyChar.!.map(Unencoded)).rep.map(_.toList)
   lazy val nonUnreservedAndReserved: P[List[Literals]] = P((unreserved | reserved).rep(min = 1).!.map(Encoded) | AnyChar.!.map(Unencoded)).rep.map(_.toList)
@@ -191,7 +223,7 @@ private object UriTemplateParser {
     case (n, None) => Varspec(n, EmptyModifier)
   }
   lazy val varname: P[String] = P(varchar ~ (".".? ~ varchar).rep).!
-  lazy val varchar: P0 = P(alpha | digit | "_")
+  lazy val varchar: P0 = P(alpha | digit | "_" | pctEncoded)
   // 2.4. Value Modifiers
   lazy val modifierLevel4: P[ModifierLevel4] = prefix | explode
   lazy val prefix: P[ModifierLevel4] = P(":" ~ digit.rep(min = 1, max = 4).!).map(raw => Prefix(raw.toInt))
