@@ -3,8 +3,8 @@ package uritemplate
 import scala.io.Source
 import scala.util.{Failure, Try}
 
-import cats.instances.list._
 import cats.instances.either._
+import cats.instances.list._
 import cats.syntax.either._
 import cats.syntax.traverse._
 import io.circe._
@@ -22,14 +22,25 @@ object ExternalTests extends TestSuite {
   final case class Test(
     name: String,
     level: Option[Int],
-    variables: Map[String, Value],
+    variables: Variables,
     testcases: Seq[(String, ExpectedResult)])
 
-  implicit lazy val decodeValue: Decoder[Value] = (c: HCursor) =>
-    c.as[String].map(StringValue)
-    .orElse(c.as[JsonNumber].map(n => StringValue(n.toString)))
-    .orElse(c.as[Vector[String]].map(ListValue))
-    .orElse(c.as[Map[String, String]].map(m => AssociativeArray(m.toVector)))
+  final case class Variables(value: Map[String, Value]) extends AnyVal
+
+  implicit lazy val decodeValue: Decoder[Value] =
+    Decoder[String].map[Value](StringValue) or
+    Decoder[JsonNumber].map[Value](n => StringValue(n.toString)) or
+    Decoder[Vector[String]].map[Value](ListValue) or
+    Decoder[Map[String, String]].map[Value](m => AssociativeArray(m.toVector))
+
+  implicit lazy val decodeVariables: Decoder[Variables] = (c: HCursor) => {
+    for {
+      m <- c.as[Map[String, Json]]
+      vars <- m.toList
+        .filter(!_._2.isNull)
+        .traverse { case (key, value) => value.as[Value].map(key -> _) }
+    } yield Variables(vars.toMap)
+  }
 
   implicit lazy val decodeExpectedResult: Decoder[ExpectedResult] = (c: HCursor) =>
     c.as[String].map(Expected)
@@ -38,9 +49,8 @@ object ExternalTests extends TestSuite {
 
   def decodeTest(name: String): Decoder[Test] =
     Decoder.forProduct3("level", "variables", "testcases") {
-      Test(name, _: Option[Int], _: Map[String, Value], _: Seq[(String, ExpectedResult)])
+      Test(name, _: Option[Int], _: Variables, _: Seq[(String, ExpectedResult)])
     }
-
 
   lazy val decodeTests: Decoder[Seq[Test]] = (c: HCursor) => for {
     name2obj <- c.as[JsonObject].map(_.toList)
@@ -56,7 +66,7 @@ object ExternalTests extends TestSuite {
       _ = println(name)
       (template, expectedResult) <- testcases
     } yield {
-      val resultTry = Try(UriTemplate(template).expand(variables.toVector: _*))
+      val resultTry = Try(UriTemplate(template).expand(variables.value.toVector: _*))
       expectedResult match {
         case Expected(expectedValue) =>
           val result = resultTry.get
@@ -83,6 +93,6 @@ object ExternalTests extends TestSuite {
     "/extended-tests.json" - test()
 //    "/negative-tests.json" - test()
     "/spec-examples.json" - test()
-//    "/spec-examples-by-section.json" - test()
+    "/spec-examples-by-section.json" - test()
   }
 }

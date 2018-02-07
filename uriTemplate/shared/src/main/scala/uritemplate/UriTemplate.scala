@@ -13,14 +13,13 @@ final case class UriTemplate(value: String) extends AnyVal {
         for {
           component <- components
           literals <- component match {
-            case literals: Literals =>
-              List(literals)
+            case literals: Literals => List(literals)
             case Expression(operator, variableList) =>
               val exploded = variableList.flatMap { spec =>
                 varsMap.get(spec.varname) match {
                   case None => None
-                  case Some(StringValue(s)) =>
-                    Some(explodeStringValue(s, operator, spec))
+                  case Some(StringValue(s)) => // TODO: handle empty variables properly
+                    Some(Encoded("") :: explodeStringValue(s, operator, spec))
                   case Some(ListValue(Nil)) =>
                     None
                   case Some(ListValue(l)) =>
@@ -33,7 +32,7 @@ final case class UriTemplate(value: String) extends AnyVal {
               }.intersperse(List(Encoded(operator.sep))).flatten
               exploded match {
                 case Nil => List.empty
-                case xs => Encoded(operator.first) :: xs
+                case xs => Encoded(operator.first) :: xs // TODO: handle empty variables properly
               }
           }
         } yield literals
