@@ -11,7 +11,7 @@ object UriTemplateTests extends TestSuite {
     val varList = vars.toList
     testCases.foreach { case (template, exp) =>
       val actual = UriTemplate(template).expand(varList: _*)
-      assert(exp == actual)
+      assert(Right(exp) == actual)
     }
   }
 

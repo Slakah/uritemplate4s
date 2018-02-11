@@ -1,7 +1,6 @@
 package uritemplate
 
 import scala.io.Source
-import scala.util.{Failure, Try}
 
 import cats.instances.either._
 import cats.instances.list._
@@ -63,19 +62,16 @@ object ExternalTests extends TestSuite {
     val tests = parseTests(path.value.mkString)
     for {
       Test(name, _, variables, testcases) <- tests
-      _ = println(name)
       (template, expectedResult) <- testcases
     } yield {
-      val resultTry = Try(UriTemplate(template).expand(variables.value.toVector: _*))
+      def result = UriTemplate(template).expand(variables.value.toVector: _*)
       expectedResult match {
         case Expected(expectedValue) =>
-          val result = resultTry.get
-          assert(result == expectedValue)
+          assert(result == Right(expectedValue))
         case MultiExpected(possibleValues) =>
-          val result = resultTry.get
-          assert(possibleValues.contains(result))
+          assert(possibleValues.exists(result.contains))
         case FailExpected =>
-          assertMatch(resultTry) { case Failure(_) => }
+          assertMatch(result) { case Left(_) => }
       }
     }
   }
@@ -91,7 +87,7 @@ object ExternalTests extends TestSuite {
 
   override def tests = Tests {
     "/extended-tests.json" - test()
-//    "/negative-tests.json" - test()
+    "/negative-tests.json" - test()
     "/spec-examples.json" - test()
     "/spec-examples-by-section.json" - test()
   }

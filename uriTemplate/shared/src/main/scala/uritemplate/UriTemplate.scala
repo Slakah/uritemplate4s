@@ -5,44 +5,44 @@ import ListSyntax._
 
 final case class UriTemplate(value: String) extends AnyVal {
 
-  def expand(vars: (String, Value)*): String = {
+  def expand(vars: (String, Value)*): Either[Failure, String] = {
     lazy val varsMap = vars.toMap
 
-    val literalsList: List[Literals] = UriTemplateParser.uriTemplate.parse(value) match {
+    UriTemplateParser.uriTemplate.parse(value) match {
       case Parsed.Success(components, _) =>
-        for {
+        val literalsList: List[Literals] = for {
           component <- components
           literals <- component match {
             case literals: Literals => List(literals)
             case Expression(operator, variableList) =>
-              val exploded = variableList.flatMap { spec =>
+              val spec2value: List[(Varspec, Value)] = variableList.flatMap { spec =>
                 varsMap.get(spec.varname) match {
                   case None => None
-                  case Some(StringValue(s)) => // TODO: handle empty variables properly
-                    Some(Encoded("") :: explodeStringValue(s, operator, spec))
-                  case Some(ListValue(Nil)) =>
-                    None
-                  case Some(ListValue(l)) =>
-                    Some(explodeListValue(l, operator, spec))
-                  case Some(AssociativeArray(Nil)) =>
-                    None
-                  case Some(AssociativeArray(tuples)) =>
-                    Some(explodeAssociativeArray(tuples, operator, spec))
+                  case Some(ListValue(Nil)) => None
+                  case Some(AssociativeArray(Nil)) => None
+                  case Some(v) => Some(spec -> v)
                 }
-              }.intersperse(List(Encoded(operator.sep))).flatten
+              }
+              val exploded: List[List[Literals]] = spec2value.map { case (spec, v) =>
+                v match {
+                  case StringValue(s) => explodeStringValue(s, operator, spec)
+                  case ListValue(l) => explodeListValue(l, operator, spec)
+                  case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
+                }
+              }
               exploded match {
                 case Nil => List.empty
-                case xs => Encoded(operator.first) :: xs // TODO: handle empty variables properly
+                case xs => Encoded(operator.first) :: xs.intersperse(List(Encoded(operator.sep))).flatten
               }
           }
         } yield literals
-      case _ @ Parsed.Failure(_, _, _) => ???
-    }
 
-    literalsList.map {
-      case Encoded(encoded) => encoded
-      case Unencoded(unencoded) => PercentEncoder.percentEncode(unencoded)
-    }.mkString
+        Right(literalsList.map {
+          case Encoded(encoded) => encoded
+          case Unencoded(unencoded) => PercentEncoder.percentEncode(unencoded)
+        }.mkString)
+      case err: Parsed.Failure => Left(Failure(err.msg))
+    }
   }
 
   private def explodeStringValue(s: String, operator: Operator, spec: Varspec): List[Literals] = {
@@ -58,7 +58,11 @@ final case class UriTemplate(value: String) extends AnyVal {
     }
   }
 
-  private def explodeListValue(l: Seq[String], operator: Operator, spec: Varspec): List[Literals] = {
+  private def explodeListValue(
+    l: Seq[String],
+    operator: Operator,
+    spec: Varspec
+  ): List[Literals] = {
     spec.modifier match {
       case (EmptyModifier | Prefix(_)) =>
         val literalValues = l.toList.map(encode(_, operator.allow)).intersperse(List(Encoded(","))).flatten
@@ -81,7 +85,11 @@ final case class UriTemplate(value: String) extends AnyVal {
     }
   }
 
-  private def explodeAssociativeArray(tuples: Seq[(String, String)], operator: Operator, spec: Varspec): List[Literals] = {
+  private def explodeAssociativeArray(
+    tuples: Seq[(String, String)],
+    operator: Operator,
+    spec: Varspec
+  ): List[Literals] = {
     spec.modifier match {
       case (EmptyModifier | Prefix(_)) =>
         val nameValues = tuples.toList.flatMap { case (n, v) => List(n, v) }
@@ -179,7 +187,7 @@ private object UriTemplateParser {
   // 1.5. Notational Conventions
   lazy val alpha: P0 = P(CharIn('a' to 'z', 'A' to 'Z'))
   lazy val digit: P0 = P(CharIn('0' to '9'))
-  lazy val hexdig: P0 = P(CharIn('0'to'9', 'a'to'f', 'A'to'F'))
+  lazy val hexdig: P0 = P(CharIn('0' to '9', 'a' to 'f', 'A' to 'F'))
   lazy val pctEncoded: P0 = P("%" ~ hexdig ~ hexdig)
   lazy val unreserved: P0 = P(alpha | digit | "-" | "." | "_" | "~")
   lazy val reserved: P0 =  P(genDelims | subDelims)
@@ -198,7 +206,7 @@ private object UriTemplateParser {
   // 2. Syntax
   lazy val uriTemplate: P[List[Component]] = P((expression | literals).rep ~ End).map(_.toList)
   // 2.1 Literals
-  lazy val literals: P[Literals] = P(allowedLiterals.rep(min = 1).!.map(Encoded) | unallowedLiterals.rep(min = 1).!.map(Unencoded))
+  lazy val literals: P[Literals] = P(allowedLiterals.rep(min = 1).!.map(Encoded) | (!"}" ~ unallowedLiterals).rep(min = 1).!.map(Unencoded))
   lazy val allowedLiterals: P0 = P(reserved | unreserved | pctEncoded)
   lazy val unallowedLiterals: P0 = P(
     CharIn(
@@ -206,15 +214,15 @@ private object UriTemplateParser {
       List(0x5D.toChar), List(0x5F.toChar), 0x61.toChar to 0x7A.toChar, List(0x7E.toChar))
     | ucschar | iprivate | pctEncoded)
   // 2.2. Expressions
-  lazy val expression: P[Expression] = P("{" ~ operator.? ~ variableList ~ "}").map {
+  lazy val expression: P[Expression] = P("{" ~/ operator.? ~ variableList ~ "}").map {
     case (None, vl) => Expression(Simple, vl)
     case (Some(op), vl) => Expression(op, vl)
   }
-  lazy val operator: P[Operator] = opLevel2 | opLevel3 | opReserve
+  lazy val operator: P[Operator] = opLevel2 | opLevel3 // | opReserve
   lazy val opLevel2: P[Operator] = P("+".!.map(_ => Reserved) | "#".!.map(_ => Fragment))
   lazy val opLevel3: P[Operator] =
     P(".".!.map(_ => NameLabel) | "/".!.map(_ => PathSegment) | ";".!.map(_ => PathParameter) | "?".!.map(_ => Query) | "&".!.map(_ => QueryContinuation))
-  lazy val opReserve: P[Operator] = P("=" | "," | "!" | "@" | "|").map(_ => Reserved)
+  lazy val opReserve: P[Operator] = P(CharIn("=,!@|")).map(_ => Reserved)
   // 2.3. Variables
   lazy val variableList: P[List[Varspec]] = P(varspec.rep(min = 1, sep = ",")).map(_.toList)
   lazy val varspec: P[Varspec] = P(varname ~ modifierLevel4.?).map {
