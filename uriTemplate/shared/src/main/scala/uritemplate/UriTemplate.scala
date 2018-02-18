@@ -10,10 +10,10 @@ final case class UriTemplate(value: String) extends AnyVal {
 
     UriTemplateParser.uriTemplate.parse(value) match {
       case Parsed.Success(components, _) =>
-        val literalsList: List[Literals] = for {
+        val errorOrLiteralsList: List[Either[Failure, Literals]] = for {
           component <- components
           literals <- component match {
-            case literals: Literals => List(literals)
+            case literals: Literals => List(literals).map(Right.apply)
             case Expression(operator, variableList) =>
               val spec2value: List[(Varspec, Value)] = variableList.flatMap { spec =>
                 varsMap.get(spec.varname) match {
@@ -23,24 +23,44 @@ final case class UriTemplate(value: String) extends AnyVal {
                   case Some(v) => Some(spec -> v)
                 }
               }
-              val exploded: List[List[Literals]] = spec2value.map { case (spec, v) =>
-                v match {
-                  case StringValue(s) => explodeStringValue(s, operator, spec)
-                  case ListValue(l) => explodeListValue(l, operator, spec)
-                  case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
-                }
+              val errorList = spec2value.foldLeft(List.empty[Failure]) {
+                case (errs, (Varspec(name, Prefix(_)), ListValue(_) | AssociativeArray(_))) =>
+                  Failure(s"BLEH $name") :: errs
+                case (errs, _) =>
+                  errs
               }
-              exploded match {
-                case Nil => List.empty
-                case xs => Encoded(operator.first) :: xs.intersperse(List(Encoded(operator.sep))).flatten
+              errorList match {
+                case Nil =>
+                  val exploded: List[List[Literals]] = spec2value.map { case (spec, v) =>
+                    v match {
+                      case StringValue(s) => explodeStringValue(s, operator, spec)
+                      case ListValue(l) => explodeListValue(l, operator, spec)
+                      case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
+                    }
+                  }
+                  (exploded match {
+                    case Nil => List.empty
+                    case xs => Encoded(operator.first) :: xs.intersperse(List(Encoded(operator.sep))).flatten
+                  }).map(Right.apply)
+                case errors => errors.map(Left.apply)
               }
           }
         } yield literals
 
-        Right(literalsList.map {
-          case Encoded(encoded) => encoded
-          case Unencoded(unencoded) => PercentEncoder.percentEncode(unencoded)
-        }.mkString)
+        val (errorList, literalsList) = errorOrLiteralsList.reverse.foldLeft[(List[Failure], List[Literals])](Nil -> Nil) {
+          case ((errs, literals), Left(err)) => (err :: errs) -> literals
+          case ((errs, literals), Right(lits)) => errs -> (lits :: literals)
+        }
+
+        if (errorList.isEmpty) {
+          val result = literalsList.map {
+            case Encoded(encoded) => encoded
+            case Unencoded(unencoded) => PercentEncoder.percentEncode(unencoded)
+          }.mkString
+          Right(result)
+        } else {
+          Left(Failure(errorList.mkString))
+        }
       case err: Parsed.Failure => Left(Failure(err.msg))
     }
   }
