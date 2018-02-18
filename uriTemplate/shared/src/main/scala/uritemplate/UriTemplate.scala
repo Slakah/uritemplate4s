@@ -5,12 +5,12 @@ import ListSyntax._
 
 final case class UriTemplate(value: String) extends AnyVal {
 
-  def expand(vars: (String, Value)*): Either[Failure, String] = {
+  def expand(vars: (String, Value)*): Either[Error, String] = {
     lazy val varsMap = vars.toMap
 
     UriTemplateParser.uriTemplate.parse(value) match {
       case Parsed.Success(components, _) =>
-        val errorOrLiteralsList: List[Either[Failure, Literals]] = for {
+        val errorOrLiteralsList: List[Either[Error, Literals]] = for {
           component <- components
           literals <- component match {
             case literals: Literals => List(literals).map(Right.apply)
@@ -23,9 +23,11 @@ final case class UriTemplate(value: String) extends AnyVal {
                   case Some(v) => Some(spec -> v)
                 }
               }
-              val errorList = spec2value.foldLeft(List.empty[Failure]) {
-                case (errs, (Varspec(name, Prefix(_)), ListValue(_) | AssociativeArray(_))) =>
-                  Failure(s"BLEH $name") :: errs
+              val errorList = spec2value.foldLeft(List.empty[Error]) {
+                case (errs, (Varspec(name, Prefix(_)), ListValue(l))) =>
+                  Error.InvalidCombination(s"$name has the  unsupported prefix modifier for a list value of ${l.toString}") :: errs
+                case (errs, (Varspec(name, Prefix(_)), AssociativeArray(arr))) =>
+                  Error.InvalidCombination(s"$name has the  unsupported prefix modifier for a associative array value of ${arr.toString}") :: errs
                 case (errs, _) =>
                   errs
               }
@@ -47,7 +49,7 @@ final case class UriTemplate(value: String) extends AnyVal {
           }
         } yield literals
 
-        val (errorList, literalsList) = errorOrLiteralsList.reverse.foldLeft[(List[Failure], List[Literals])](Nil -> Nil) {
+        val (errorList, literalsList) = errorOrLiteralsList.reverse.foldLeft[(List[Error], List[Literals])](Nil -> Nil) {
           case ((errs, literals), Left(err)) => (err :: errs) -> literals
           case ((errs, literals), Right(lits)) => errs -> (lits :: literals)
         }
@@ -59,9 +61,9 @@ final case class UriTemplate(value: String) extends AnyVal {
           }.mkString
           Right(result)
         } else {
-          Left(Failure(errorList.mkString))
+          Left(Error.InvalidCombination(errorList.mkString(", ")))
         }
-      case err: Parsed.Failure => Left(Failure(err.msg))
+      case err: Parsed.Failure => Left(Error.MalformedUriTemplate(err.msg))
     }
   }
 
