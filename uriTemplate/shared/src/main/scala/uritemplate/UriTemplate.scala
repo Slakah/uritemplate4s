@@ -1,69 +1,70 @@
 package uritemplate
 
 import fastparse.all._
+import uritemplate.Error.MalformedUriTemplate
 import ListSyntax._
 
-final case class UriTemplate(value: String) extends AnyVal {
 
+trait UriTemplate {
+  def expand(vars: (String, Value)*): Either[Error, String]
+}
+
+private final class ComponentsUriTemplate(components: List[Component]) extends UriTemplate {
   def expand(vars: (String, Value)*): Either[Error, String] = {
     lazy val varsMap = vars.toMap
 
-    UriTemplateParser.uriTemplate.parse(value) match {
-      case Parsed.Success(components, _) =>
-        val errorOrLiteralsList: List[Either[Error, Literals]] = for {
-          component <- components
-          literals <- component match {
-            case literals: Literals => List(literals).map(Right.apply)
-            case Expression(operator, variableList) =>
-              val spec2value: List[(Varspec, Value)] = variableList.flatMap { spec =>
-                varsMap.get(spec.varname) match {
-                  case None => None
-                  case Some(ListValue(Nil)) => None
-                  case Some(AssociativeArray(Nil)) => None
-                  case Some(v) => Some(spec -> v)
+    val errorOrLiteralsList: List[Either[Error, Literals]] = for {
+      component <- components
+      literals <- component match {
+        case literals: Literals => List(literals).map(Right.apply)
+        case Expression(operator, variableList) =>
+          val spec2value: List[(Varspec, Value)] = variableList.flatMap { spec =>
+            varsMap.get(spec.varname) match {
+              case None => None
+              case Some(ListValue(Nil)) => None
+              case Some(AssociativeArray(Nil)) => None
+              case Some(v) => Some(spec -> v)
+            }
+          }
+          val errorList = spec2value.foldLeft(List.empty[Error]) {
+            case (errs, (Varspec(name, Prefix(_)), ListValue(l))) =>
+              Error.InvalidCombination(s"$name has the  unsupported prefix modifier for a list value of ${l.toString}") :: errs
+            case (errs, (Varspec(name, Prefix(_)), AssociativeArray(arr))) =>
+              Error.InvalidCombination(s"$name has the  unsupported prefix modifier for a associative array value of ${arr.toString}") :: errs
+            case (errs, _) =>
+              errs
+          }
+          errorList match {
+            case Nil =>
+              val exploded: List[List[Literals]] = spec2value.map { case (spec, v) =>
+                v match {
+                  case StringValue(s) => explodeStringValue(s, operator, spec)
+                  case ListValue(l) => explodeListValue(l, operator, spec)
+                  case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
                 }
               }
-              val errorList = spec2value.foldLeft(List.empty[Error]) {
-                case (errs, (Varspec(name, Prefix(_)), ListValue(l))) =>
-                  Error.InvalidCombination(s"$name has the  unsupported prefix modifier for a list value of ${l.toString}") :: errs
-                case (errs, (Varspec(name, Prefix(_)), AssociativeArray(arr))) =>
-                  Error.InvalidCombination(s"$name has the  unsupported prefix modifier for a associative array value of ${arr.toString}") :: errs
-                case (errs, _) =>
-                  errs
-              }
-              errorList match {
-                case Nil =>
-                  val exploded: List[List[Literals]] = spec2value.map { case (spec, v) =>
-                    v match {
-                      case StringValue(s) => explodeStringValue(s, operator, spec)
-                      case ListValue(l) => explodeListValue(l, operator, spec)
-                      case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
-                    }
-                  }
-                  (exploded match {
-                    case Nil => List.empty
-                    case xs => Encoded(operator.first) :: xs.intersperse(List(Encoded(operator.sep))).flatten
-                  }).map(Right.apply)
-                case errors => errors.map(Left.apply)
-              }
+              (exploded match {
+                case Nil => List.empty
+                case xs => Encoded(operator.first) :: xs.intersperse(List(Encoded(operator.sep))).flatten
+              }).map(Right.apply)
+            case errors => errors.map(Left.apply)
           }
-        } yield literals
+      }
+    } yield literals
 
-        val (errorList, literalsList) = errorOrLiteralsList.reverse.foldLeft[(List[Error], List[Literals])](Nil -> Nil) {
-          case ((errs, literals), Left(err)) => (err :: errs) -> literals
-          case ((errs, literals), Right(lits)) => errs -> (lits :: literals)
-        }
+    val (errorList, literalsList) = errorOrLiteralsList.reverse.foldLeft[(List[Error], List[Literals])](Nil -> Nil) {
+      case ((errs, literals), Left(err)) => (err :: errs) -> literals
+      case ((errs, literals), Right(lits)) => errs -> (lits :: literals)
+    }
 
-        if (errorList.isEmpty) {
-          val result = literalsList.map {
-            case Encoded(encoded) => encoded
-            case Unencoded(unencoded) => PercentEncoder.percentEncode(unencoded)
-          }.mkString
-          Right(result)
-        } else {
-          Left(Error.InvalidCombination(errorList.mkString(", ")))
-        }
-      case err: Parsed.Failure => Left(Error.MalformedUriTemplate(err.msg))
+    if (errorList.isEmpty) {
+      val result = literalsList.map {
+        case Encoded(encoded) => encoded
+        case Unencoded(unencoded) => PercentEncoder.percentEncode(unencoded)
+      }.mkString
+      Right(result)
+    } else {
+      Left(Error.InvalidCombination(errorList.mkString(", ")))
     }
   }
 
@@ -147,6 +148,17 @@ final case class UriTemplate(value: String) extends AnyVal {
       case Allow.`U+R` => PercentEncoder.nonUnreservedAndReserved
     }
     encoder.parse(s).get.value
+  }
+}
+
+object UriTemplate {
+
+  def parse(template: String): Either[MalformedUriTemplate, UriTemplate] = {
+
+    UriTemplateParser.uriTemplate.parse(template) match {
+      case Parsed.Success(components, _) => Right(new ComponentsUriTemplate(components))
+      case err: Parsed.Failure => Left(Error.MalformedUriTemplate(err.msg))
+    }
   }
 }
 
