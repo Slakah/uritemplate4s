@@ -10,7 +10,7 @@ object UriTemplateTests extends TestSuite {
                   ): Unit = {
     val varList = vars.toList
     testCases.foreach { case (template, exp) =>
-      val actual = UriTemplate(template).expand(varList: _*)
+      val actual = UriTemplate.parse(template).flatMap(_.expand(varList: _*))
       assert(Right(exp) == actual)
     }
   }
