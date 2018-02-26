@@ -218,8 +218,10 @@ private object PercentEncoder {
 
   private def encodeChar(ch: Char): String = s"%${"%04x".format(ch.toInt).substring(2).toUpperCase}"
 
-  lazy val nonUnreserved: P[List[Literals]] = P(unreserved.rep(min = 1).!.map(Encoded) | AnyChar.!.map(Unencoded)).rep.map(_.toList)
-  lazy val nonUnreservedAndReserved: P[List[Literals]] = P((unreserved | reserved).rep(min = 1).!.map(Encoded) | AnyChar.!.map(Unencoded)).rep.map(_.toList)
+  lazy val nonUnreserved: P[List[Literals]] =
+    P(unreserved.rep(min = 1).!.map(Encoded) | (!unreserved ~ AnyChar).rep(min = 1).!.map(Unencoded)).rep.map(_.toList)
+  lazy val nonUnreservedAndReserved: P[List[Literals]] =
+    P((unreserved | reserved).rep(min = 1).!.map(Encoded) | (!(unreserved | reserved) ~ AnyChar).rep(min = 1).!.map(Unencoded)).rep.map(_.toList)
 }
 
 private object UriTemplateParser {
