@@ -79,8 +79,7 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
       case _ => s
     }
     if (operator.named) {
-      val namedSep = if (s.isEmpty) operator.ifemp else "="
-      Encoded(spec.varname) :: Encoded(namedSep) :: encode(prefixS, operator.allow)
+      namedValue(operator, spec, s.isEmpty, encode(prefixS, operator.allow))
     } else {
       encode(prefixS, operator.allow)
     }
@@ -94,22 +93,24 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
     spec.modifier match {
       case (EmptyModifier | Prefix(_)) =>
         val literalValues = l.toList.map(encode(_, operator.allow)).intersperse(List(Encoded(","))).flatten
+
         if (operator.named) {
-          val namedSep = if (l.isEmpty) operator.ifemp else "="
-          Encoded(spec.varname) :: Encoded(namedSep) :: literalValues
+          namedValue(operator, spec, l.isEmpty, literalValues)
         } else {
           literalValues
         }
       case Explode =>
         val lValues = l.toList.map(encode(_, operator.allow))
-        if (operator.named) {
-          lValues.map { lValue =>
-            val namedSep = if (lValue.isEmpty) operator.ifemp else "="
-            Encoded(spec.varname) :: Encoded(namedSep) :: lValue
-          }.intersperse(List(Encoded(operator.sep))).flatten
-        } else {
-          lValues.intersperse(List(Encoded(operator.sep))).flatten
-        }
+
+        lValues
+          .map { lValue =>
+            if (operator.named) {
+              namedValue(operator, spec, lValue.isEmpty, lValue)
+            } else {
+              lValue
+            }
+          }
+          .intersperse(List(Encoded(operator.sep))).flatten
     }
   }
 
@@ -122,27 +123,36 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
       case (EmptyModifier | Prefix(_)) =>
         val nameValues = tuples.toList.flatMap { case (n, v) => List(n, v) }
         val literalValues = nameValues.map(encode(_, operator.allow)).intersperse(List(Encoded(","))).flatten
+
         if (operator.named) {
-          val namedSep = if (tuples.isEmpty) operator.ifemp else "="
-          Encoded(spec.varname) :: Encoded(namedSep) :: literalValues
+          namedValue(operator, spec, tuples.isEmpty, literalValues)
         } else {
           literalValues
         }
       case Explode =>
         val nameValues = tuples.toList.map { case (n, v) => n -> encode(v, operator.allow) }
-        if (operator.named) {
-          nameValues.map { case (n, v) =>
-            val namedSep = if (v.isEmpty) operator.ifemp else "="
-            encode(n, operator.allow) ::: Encoded(namedSep) :: v
-          }.intersperse(List(Encoded(operator.sep))).flatten
-        } else {
-          nameValues.map { case (n, v) =>
-            encode(n, operator.allow) ::: Encoded("=") :: v
-          }.intersperse(List(Encoded(operator.sep))).flatten
-        }
+        nameValues
+          .map { case (n, v) =>
+            val varnameLiterals = encode(n, operator.allow)
+            if (operator.named) {
+              namedValue(operator, varnameLiterals, v.isEmpty, v)
+            } else {
+              varnameLiterals ::: Encoded("=") :: v
+            }
+          }
+          .intersperse(List(Encoded(operator.sep))).flatten
     }
   }
 
+  @inline private def namedValue(operator: Operator, spec: Varspec, isEmpty: Boolean, values: List[Literals]) = {
+    val namedSep = if (isEmpty) operator.ifemp else "="
+    Encoded(spec.varname) :: Encoded(namedSep) :: values
+  }
+
+  @inline private def namedValue(operator: Operator, varnameLiterals: List[Literals], isEmpty: Boolean, values: List[Literals]) = {
+    val namedSep = if (isEmpty) operator.ifemp else "="
+    varnameLiterals ::: Encoded(namedSep) :: values
+  }
 
   private def encode(
     s: String,
