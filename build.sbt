@@ -1,7 +1,10 @@
+import microsites._
 import sbtcrossproject.{crossProject, CrossType}
 
 lazy val commonSettings = Seq(
   organization := "com.gubbns",
+  homepage := Some(url(s"https://slakah.github.io/${name.value}/")),
+  licenses += "MIT" -> url("http://opensource.org/licenses/MIT"),
   version := "0.1.0-SNAPSHOT",
   scalaVersion := "2.12.4",
   scalacOptions ++= scalacOpts
@@ -12,8 +15,16 @@ lazy val circeVersion = "0.9.0"
 lazy val fastparseVersion = "1.0.0"
 lazy val utestVersion = "0.6.0"
 
-lazy val uriTemplate = crossProject(JSPlatform, JVMPlatform)
+lazy val docs = project
   .enablePlugins(MicrositesPlugin)
+  .settings(moduleName := "uri-template-docs")
+  .settings(
+    commonSettings,
+    noPublishSettings,
+    docsSettings
+  )
+
+lazy val uriTemplate = crossProject(JSPlatform, JVMPlatform)
   .settings(
     commonSettings,
     name := "uri-template",
@@ -80,4 +91,32 @@ lazy val scalacOpts = Seq(
   "-Ywarn-unused:patvars",             // Warn if a variable bound in a pattern is unused.
   "-Ywarn-unused:privates",            // Warn if a private member is unused.
   "-Ywarn-value-discard"               // Warn when non-Unit expression results are unused.
+)
+
+lazy val docsSettings = Seq(
+  micrositeName := "uri-template",
+  micrositeDescription := "URI template implementation for Scala",
+  micrositeBaseUrl := "/uri-template",
+  micrositeDocumentationUrl := "/uri-template",
+  micrositeGithubOwner := "slakah",
+  micrositeGithubRepo := "uri-template",
+  micrositeExtraMdFiles := Map(
+    file("README.md") -> ExtraMdFileConfig(
+      "index.md",
+      "home",
+      Map("title" -> "Home", "section" -> "home", "position" -> "0")
+    ),
+    file("LICENSE")-> ExtraMdFileConfig(
+      "license.md",
+      "page",
+      Map("title" -> "License",   "section" -> "License",   "position" -> "101")
+    )
+  ),
+  micrositeGitterChannel := false // enable when configured
+)
+
+lazy val noPublishSettings = Seq(
+  publish := {},
+  publishLocal := {},
+  publishArtifact := false
 )
