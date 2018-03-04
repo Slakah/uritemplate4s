@@ -13,6 +13,7 @@ lazy val fastparseVersion = "1.0.0"
 lazy val utestVersion = "0.6.0"
 
 lazy val uriTemplate = crossProject(JSPlatform, JVMPlatform)
+  .enablePlugins(MicrositesPlugin)
   .settings(
     commonSettings,
     name := "uri-template",
