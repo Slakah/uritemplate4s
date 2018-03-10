@@ -7,4 +7,5 @@ position: 2
 
 # Playground
 
-Howdy!
+<div id="uritemplate-playground" />
+<script>URITEMPLATE_PLAYGROUND=true</script>
