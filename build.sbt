@@ -13,15 +13,21 @@ lazy val commonSettings = Seq(
 lazy val catsVersion = "1.0.1"
 lazy val circeVersion = "0.9.0"
 lazy val fastparseVersion = "1.0.0"
+lazy val scalajsDomVersion = "0.9.2"
 lazy val utestVersion = "0.6.0"
 
 lazy val docs = project
   .enablePlugins(MicrositesPlugin)
+  .enablePlugins(ScalaJSPlugin)
+  .dependsOn(uriTemplateJS)
   .settings(moduleName := "uri-template-docs")
   .settings(
     commonSettings,
     noPublishSettings,
-    docsSettings
+    docsSettings,
+    libraryDependencies ++= Seq(
+      "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion
+    )
   )
 
 lazy val uriTemplate = crossProject(JSPlatform, JVMPlatform)
@@ -29,7 +35,7 @@ lazy val uriTemplate = crossProject(JSPlatform, JVMPlatform)
     commonSettings,
     name := "uri-template",
     testFrameworks += new TestFramework("utest.runner.Framework"),
-      libraryDependencies ++= Seq(
+    libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "fastparse" % fastparseVersion
     ) ++ Seq(
       "org.typelevel" %%% "cats-core" % catsVersion,
@@ -93,6 +99,8 @@ lazy val scalacOpts = Seq(
   "-Ywarn-value-discard"               // Warn when non-Unit expression results are unused.
 )
 
+lazy val micrositeJs = taskKey[Unit]("Build js, and adds it to a managed js dir")
+
 lazy val docsSettings = Seq(
   micrositeName := "uri-template",
   micrositeDescription := "URI template implementation for Scala",
@@ -112,7 +120,21 @@ lazy val docsSettings = Seq(
       Map("title" -> "License",   "section" -> "License",   "position" -> "101")
     )
   ),
-  micrositeGitterChannel := false // enable when configured
+  micrositeGitterChannel := false, // enable when configured
+  micrositeJsDirectory := (managedResourceDirectories in Compile).value.head / "microsite" / "js",
+  micrositeJs := {
+    val jsFile = (fastOptJS in Compile).value.data
+    val managedJsDir = (resourceDirectory in Compile).value / "microsite" / "js"
+    val targetDir = micrositeJsDirectory.value
+    IO.copyFile(jsFile, targetDir / jsFile.name)
+    IO.copyDirectory(managedJsDir, targetDir)
+  },
+  (mainClass in Compile) := Some("uritemplate.demo.DemoMain"),
+  scalaJSUseMainModuleInitializer := true,
+  makeMicrosite := {
+    { val _ = micrositeJs.value }
+    { val _ = makeMicrosite.value }
+  }
 )
 
 lazy val noPublishSettings = Seq(
