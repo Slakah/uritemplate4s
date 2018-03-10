@@ -32,7 +32,7 @@ object ExternalTests extends TestSuite {
     Decoder[Vector[String]].map[Value](ListValue) or
     Decoder[Map[String, String]].map[Value](m => AssociativeArray(m.toVector))
 
-  implicit lazy val decodeVariables: Decoder[Variables] = (c: HCursor) => {
+  implicit lazy val decodeVariables: Decoder[Variables] = Decoder.instance { c =>
     for {
       m <- c.as[Map[String, Json]]
       vars <- m.toList
