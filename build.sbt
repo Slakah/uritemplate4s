@@ -102,7 +102,7 @@ lazy val scalacOpts = Seq(
   "-Ywarn-value-discard"               // Warn when non-Unit expression results are unused.
 )
 
-lazy val micrositeJs = taskKey[Unit]("Build js, and adds it to a managed js dir")
+lazy val micrositeFastOptJS = taskKey[Unit]("Build js, and adds it to a managed js dir")
 
 lazy val docsSettings = Seq(
   micrositeName := "uri-template",
@@ -125,7 +125,7 @@ lazy val docsSettings = Seq(
   ),
   micrositeGitterChannel := false, // enable when configured
   micrositeJsDirectory := (managedResourceDirectories in Compile).value.head / "microsite" / "js",
-  micrositeJs := {
+  micrositeFastOptJS := {
     val jsFile = (fastOptJS in Compile).value.data
     val managedJsDir = (resourceDirectory in Compile).value / "microsite" / "js"
     val targetDir = micrositeJsDirectory.value
@@ -134,10 +134,14 @@ lazy val docsSettings = Seq(
   },
   (mainClass in Compile) := Some("uritemplate.demo.Playground"),
   scalaJSUseMainModuleInitializer := true,
-  makeMicrosite := {
-    { val _ = micrositeJs.value }
-    { val _ = makeMicrosite.value }
-  }
+  makeMicrosite := Def.sequential(
+    micrositeFastOptJS,
+    microsite,
+    tut,
+    micrositeTutExtraMdFiles,
+    makeSite,
+    micrositeConfig
+  ).value
 )
 
 lazy val noPublishSettings = Seq(
