@@ -132,7 +132,7 @@ lazy val docsSettings = Seq(
     IO.copyFile(jsFile, targetDir / jsFile.name)
     IO.copyDirectory(managedJsDir, targetDir)
   },
-  (mainClass in Compile) := Some("uritemplate.demo.DemoMain"),
+  (mainClass in Compile) := Some("uritemplate.demo.Playground"),
   scalaJSUseMainModuleInitializer := true,
   makeMicrosite := {
     { val _ = micrositeJs.value }

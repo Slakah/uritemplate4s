@@ -31,7 +31,6 @@ object Playground {
       .getOrElse(false)
 
     if (enabled) {
-      dom.console.info("4")
       renderPlayground()
       registerUpdate()
     }
@@ -47,16 +46,26 @@ object Playground {
     )
     document.getElementById("uritemplate-playground").innerHTML =
       s"""
-        <input class="uritemplate-input" value="$initialInput"></input>
-        <textarea class="uritemplate-vars">${initialVars.asJson.spaces2}</textarea>
-        <div class="uritemplate-output"></div>
-      """.stripMargin
+        <div class="form-group">
+          <label for="uritemplate-input">URI Template</label>
+          <input class="form-control" id="uritemplate-input" value="$initialInput">
+          </input>
+        </div>
+        <div class="form-group">
+          <label for="uritemplate-values">Values</label>
+          <textarea class="form-control" id="uritemplate-values" rows="10">${initialVars.asJson.spaces2}</textarea>
+        </div>
+        <div class="form-group">
+          <label for="uritemplate-output">URI Output</label>
+          <pre id="uritemplate-output"></pre>
+        </div>
+      """
   }
 
   private def registerUpdate(): Unit = {
-    val input = document.getElementsByClassName("uritemplate-input")(0).asInstanceOf[html.Input]
-    val varsInput = document.getElementsByClassName("uritemplate-vars")(0).asInstanceOf[html.Input]
-    val output = document.getElementsByClassName("uritemplate-output")(0).asInstanceOf[html.Div]
+    val input = document.getElementById("uritemplate-input").asInstanceOf[html.Input]
+    val varsInput = document.getElementById("uritemplate-values").asInstanceOf[html.Input]
+    val output = document.getElementById("uritemplate-output").asInstanceOf[html.Html]
 
     def parseValues() = for {
       js <- parser.parse(varsInput.value)
