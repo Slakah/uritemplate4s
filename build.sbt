@@ -13,6 +13,7 @@ lazy val commonSettings = Seq(
 lazy val catsVersion = "1.0.1"
 lazy val circeVersion = "0.9.1"
 lazy val fastparseVersion = "1.0.0"
+lazy val monixVersion = "3.0.0-M3"
 lazy val scalajsDomVersion = "0.9.2"
 lazy val utestVersion = "0.6.0"
 
@@ -29,6 +30,8 @@ lazy val docs = project
       "io.circe" %%% "circe-core" % circeVersion,
       "io.circe" %%% "circe-generic" % circeVersion,
       "io.circe" %%% "circe-parser" % circeVersion,
+      "io.monix" %%% "monix-execution" % monixVersion,
+      "io.monix" %%% "monix-reactive" % monixVersion,
       "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion
     )
   )
