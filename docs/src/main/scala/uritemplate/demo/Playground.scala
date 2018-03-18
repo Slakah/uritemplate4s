@@ -1,16 +1,22 @@
 package uritemplate.demo
 
-import scala.util.Try
 import scala.scalajs.js
+import scala.util.Try
 
 import io.circe._
 import io.circe.syntax._
+import monix.execution.Cancelable
+import monix.execution.cancelables.SingleAssignCancelable
+import monix.reactive.OverflowStrategy.Unbounded
+import monix.reactive._
 import org.scalajs.dom
-import org.scalajs.dom.html
 import org.scalajs.dom.window.document
+import org.scalajs.dom.{Event, html}
 import uritemplate._
 
 object Playground {
+
+  import monix.execution.Scheduler.Implicits.global
 
   private implicit lazy val decodeValue: Decoder[Value] =
     Decoder[String].map[Value](StringValue) or
@@ -62,13 +68,27 @@ object Playground {
       """
   }
 
+  def inputChange(target: html.Input, event: String): Observable[String] =
+    Observable.create(Unbounded) { subscriber =>
+      val c = SingleAssignCancelable()
+      // Forced conversion, otherwise canceling will not work!
+      def f() = {
+        subscriber.onNext(target.value).syncOnStopOrFailure(_ => c.cancel())
+      }
+      val listener = (_: Event) => f()
+      target.addEventListener(event, listener)
+      f()
+      c := Cancelable(() => target.removeEventListener(event, listener))
+    }
+
+
   private def registerUpdate(): Unit = {
     val input = document.getElementById("uritemplate-input").asInstanceOf[html.Input]
-    val varsInput = document.getElementById("uritemplate-values").asInstanceOf[html.Input]
+    val valuesInput = document.getElementById("uritemplate-values").asInstanceOf[html.Input]
     val output = document.getElementById("uritemplate-output").asInstanceOf[html.Html]
 
     def parseValues() = for {
-      js <- parser.parse(varsInput.value)
+      js <- parser.parse(valuesInput.value)
       values <- js.as[Map[String, Value]]
     } yield values.toList
 
@@ -86,8 +106,17 @@ object Playground {
       output.innerHTML = result
     }
 
-    input.oninput = _ => expandTemplate()
-    varsInput.oninput = _ => expandTemplate()
+    val inputSource = inputChange(input, "input")
+      .map(_ => input.value)
+    val valuesSource = inputChange(valuesInput, "input")
+      .map(_ => valuesInput.value)
+
+    inputSource.combineLatest(valuesSource)
+      .foreach { s =>
+        println(s)
+        expandTemplate()
+      }
+
     expandTemplate()
   }
 }
