@@ -1,7 +1,7 @@
 package uritemplate.demo
 
 import scala.scalajs.js
-import scala.util.Try
+import scala.util.control.NonFatal
 
 import io.circe._
 import io.circe.syntax._
@@ -9,9 +9,9 @@ import monix.execution.Cancelable
 import monix.execution.cancelables.SingleAssignCancelable
 import monix.reactive.OverflowStrategy.Unbounded
 import monix.reactive._
-import org.scalajs.dom
 import org.scalajs.dom.window.document
 import org.scalajs.dom.{Event, html}
+import uritemplate.Error.MalformedUriTemplate
 import uritemplate._
 
 object Playground {
@@ -87,37 +87,37 @@ object Playground {
     val valuesInput = document.getElementById("uritemplate-values").asInstanceOf[html.Input]
     val output = document.getElementById("uritemplate-output").asInstanceOf[html.Html]
 
-    def parseValues() = for {
-      js <- parser.parse(valuesInput.value)
+    def parseValues(s: String) = for {
+      js <- parser.parse(s)
       values <- js.as[Map[String, Value]]
     } yield values.toList
 
-    def expandTemplate(): Unit = {
-      dom.console.info("on change " + input.value)
-      val result = Try(UriTemplate.parse(input.value) match {
-        case Left(err) => err.toString
-        case Right(template) =>
-          val valuesResult = parseValues()
-          valuesResult.left.foreach(throw _)
-          template.expand(valuesResult.right.get: _*)
-            .fold(_.toString, identity)
-      }).fold(_.toString, identity)
 
-      output.innerHTML = result
-    }
-
-    val inputSource = inputChange(input, "input")
-      .map(_ => input.value)
-    val valuesSource = inputChange(valuesInput, "input")
-      .map(_ => valuesInput.value)
-
-    inputSource.combineLatest(valuesSource)
-      .foreach { s =>
-        println(s)
-        expandTemplate()
+    val templateSource = inputChange(input, "input")
+      .map { s =>
+        try {
+          UriTemplate.parse(s)
+        } catch {
+          case NonFatal(ex) => Left(MalformedUriTemplate(ex.getMessage))
+        }
       }
 
-    expandTemplate()
+    val valuesSource = inputChange(valuesInput, "input")
+      .map(parseValues)
+
+    templateSource.combineLatest(valuesSource)
+      .map { case (templateE, valuesE) =>
+        val result = for {
+          template <- templateE.left.map(_.message)
+          values <- valuesE.left.map(_.getMessage)
+          result <- template.expand(values: _*).left.map(_.message)
+        } yield result
+        result.merge
+      }
+      .foreach { result =>
+        output.innerHTML = result
+        ()
+      }
   }
 }
 
