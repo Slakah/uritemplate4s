@@ -3,6 +3,7 @@ package uritemplate.demo
 import scala.scalajs.js
 import scala.util.control.NonFatal
 
+import cats.syntax.either._
 import io.circe._
 import io.circe.syntax._
 import monix.execution.Cancelable
@@ -105,12 +106,12 @@ object Playground {
     val valuesSource = inputChange(valuesInput, "input")
       .map(parseValues)
 
-    templateSource.combineLatest(valuesSource)
+    val _ = templateSource.combineLatest(valuesSource)
       .map { case (templateE, valuesE) =>
         val result = for {
-          template <- templateE.left.map(_.message)
-          values <- valuesE.left.map(_.getMessage)
-          result <- template.expand(values: _*).left.map(_.message)
+          template <- templateE.leftMap(_.message)
+          values <- valuesE.leftMap(_.getMessage)
+          result <- template.expand(values: _*).leftMap(_.message)
         } yield result
         result.merge
       }

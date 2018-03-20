@@ -27,6 +27,9 @@ lazy val docs = project
     noPublishSettings,
     docsSettings,
     libraryDependencies ++= Seq(
+      "org.typelevel" %%% "cats-core" % catsVersion,
+      "org.typelevel" %%% "cats-kernel" % catsVersion,
+      "org.typelevel" %%% "cats-macros" % catsVersion,
       "io.circe" %%% "circe-core" % circeVersion,
       "io.circe" %%% "circe-generic" % circeVersion,
       "io.circe" %%% "circe-parser" % circeVersion,
