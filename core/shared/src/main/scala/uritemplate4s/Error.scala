@@ -1,4 +1,4 @@
-package uritemplate
+package uritemplate4s
 
 sealed trait Error {
   def message: String
