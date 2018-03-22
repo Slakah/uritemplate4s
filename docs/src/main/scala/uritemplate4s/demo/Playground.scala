@@ -1,4 +1,4 @@
-package uritemplate.demo
+package uritemplate4s.demo
 
 import scala.scalajs.js
 import scala.util.control.NonFatal
@@ -12,8 +12,8 @@ import monix.reactive.OverflowStrategy.Unbounded
 import monix.reactive._
 import org.scalajs.dom.window.document
 import org.scalajs.dom.{Event, html}
-import uritemplate.Error.MalformedUriTemplate
-import uritemplate._
+import uritemplate4s.Error.MalformedUriTemplate
+import uritemplate4s._
 
 object Playground {
 

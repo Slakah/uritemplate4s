@@ -1,7 +1,7 @@
-package uritemplate
+package uritemplate4s
 
 import fastparse.all._
-import uritemplate.Error.MalformedUriTemplate
+import uritemplate4s.Error.MalformedUriTemplate
 import ListSyntax._
 
 

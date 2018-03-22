@@ -20,8 +20,8 @@ lazy val utestVersion = "0.6.0"
 lazy val docs = project
   .enablePlugins(MicrositesPlugin)
   .enablePlugins(ScalaJSPlugin)
-  .dependsOn(uriTemplateJS)
-  .settings(moduleName := "uri-template-docs")
+  .dependsOn(coreJS)
+  .settings(moduleName := "uritemplate4s-docs")
   .settings(
     commonSettings,
     noPublishSettings,
@@ -39,10 +39,11 @@ lazy val docs = project
     )
   )
 
-lazy val uriTemplate = crossProject(JSPlatform, JVMPlatform)
+lazy val core = crossProject(JSPlatform, JVMPlatform)
+  .in(file("core"))
   .settings(
     commonSettings,
-    name := "uri-template",
+    name := "uritemplate4s",
     testFrameworks += new TestFramework("utest.runner.Framework"),
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "fastparse" % fastparseVersion
@@ -57,8 +58,8 @@ lazy val uriTemplate = crossProject(JSPlatform, JVMPlatform)
     ).map(_ % "test")
   )
 
-lazy val uriTemplateJS = uriTemplate.js
-lazy val uriTemplateJVM = uriTemplate.jvm
+lazy val coreJS = core.js
+lazy val coreJVM = core.jvm
 
 lazy val scalacOpts = Seq(
   "-deprecation",                      // Emit warning and location for usages of deprecated APIs.
@@ -111,19 +112,19 @@ lazy val scalacOpts = Seq(
 lazy val micrositeFastOptJS = taskKey[Unit]("Build js, and adds it to a managed js dir")
 
 lazy val docsSettings = Seq(
-  micrositeName := "uri-template",
+  micrositeName := "uritemplate4s",
   micrositeDescription := "URI template implementation for Scala",
-  micrositeBaseUrl := "/uri-template",
-  micrositeDocumentationUrl := "/uri-template",
+  micrositeBaseUrl := "/uritemplate4s",
+  micrositeDocumentationUrl := "/uritemplate4s",
   micrositeGithubOwner := "slakah",
-  micrositeGithubRepo := "uri-template",
+  micrositeGithubRepo := "uritemplate4s",
   micrositeExtraMdFiles := Map(
     file("README.md") -> ExtraMdFileConfig(
       "index.md",
       "home",
       Map("title" -> "Home", "section" -> "home", "position" -> "0")
     ),
-    file("LICENSE")-> ExtraMdFileConfig(
+    file("LICENSE") -> ExtraMdFileConfig(
       "license.md",
       "page",
       Map("title" -> "License",   "section" -> "License",   "position" -> "101")
@@ -131,14 +132,19 @@ lazy val docsSettings = Seq(
   ),
   micrositeGitterChannel := false, // enable when configured
   micrositeJsDirectory := (managedResourceDirectories in Compile).value.head / "microsite" / "js",
+  (includeFilter in makeSite) := (includeFilter in makeSite).value || "*.js.map",
   micrositeFastOptJS := {
     val jsFile = (fastOptJS in Compile).value.data
+    val jsMapFileOpt = (fastOptJS in Compile).value.get(scalaJSSourceMap)
     val managedJsDir = (resourceDirectory in Compile).value / "microsite" / "js"
     val targetDir = micrositeJsDirectory.value
     IO.copyFile(jsFile, targetDir / jsFile.name)
+    jsMapFileOpt.foreach { jsMapFile =>
+      IO.copyFile(jsMapFile, targetDir / jsMapFile.name)
+    }
     IO.copyDirectory(managedJsDir, targetDir)
   },
-  (mainClass in Compile) := Some("uritemplate.demo.Playground"),
+  (mainClass in Compile) := Some("uritemplate4s.demo.Playground"),
   scalaJSUseMainModuleInitializer := true,
   makeMicrosite := Def.sequential(
     micrositeFastOptJS,
