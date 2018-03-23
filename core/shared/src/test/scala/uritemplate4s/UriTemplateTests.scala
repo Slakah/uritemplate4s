@@ -1,4 +1,4 @@
-package uritemplate
+package uritemplate4s
 
 import utest._
 

@@ -1,15 +1,15 @@
-package uritemplate
+package uritemplate4s
 
 import scala.annotation.tailrec
 
-private[uritemplate] trait ListSyntax {
+private[uritemplate4s] trait ListSyntax {
 
   implicit def uriTemplateListSyntax[A](l: List[A]): ListOps[A] = new ListOps(l)
 }
 
-private[uritemplate] object ListSyntax extends ListSyntax
+private[uritemplate4s] object ListSyntax extends ListSyntax
 
-private[uritemplate] class ListOps[A](private val l: List[A]) extends AnyVal {
+private[uritemplate4s] class ListOps[A](private val l: List[A]) extends AnyVal {
 
   def intersperse(a: A): List[A] = {
     @tailrec
