@@ -27,6 +27,7 @@ jobs:
           paths:
             - ~/.ivy2/cache
             - ~/.sbt
+            - ~/.coursier/cache
           key: v1-dependencies--{{ checksum "build.sbt" }}
       - run:
           name: test
