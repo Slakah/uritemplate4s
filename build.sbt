@@ -7,7 +7,9 @@ lazy val commonSettings = Seq(
   licenses += "MIT" -> url("http://opensource.org/licenses/MIT"),
   version := "0.1.0-SNAPSHOT",
   scalaVersion := "2.12.4",
-  scalacOptions ++= scalacOpts
+  scalacOptions ++=
+    scalacOpts :+ "-Yrangepos", // needed for scalafix
+  addCompilerPlugin("org.scalameta" % "semanticdb-scalac" % "3.7.4"  cross CrossVersion.full)
 )
 
 lazy val catsVersion = "1.0.1"
