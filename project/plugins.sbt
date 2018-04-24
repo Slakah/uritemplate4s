@@ -1,5 +1,5 @@
 addSbtPlugin("com.47deg"  % "sbt-microsites" % "0.7.16")
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.6.0-M1")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.6.0-M5")
 addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.2")
 addSbtPlugin("org.portable-scala" % "sbt-crossproject" % "0.3.1")
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "0.3.1")
