@@ -9,6 +9,12 @@ jobs:
       TERM: dumb
     steps:
       - checkout
+      - run:
+          name: node download
+          command: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+      - run:
+          name: node install
+          command: sudo apt-get install -y nodejs
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "build.sbt" }}
