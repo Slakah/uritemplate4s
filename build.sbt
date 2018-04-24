@@ -9,7 +9,7 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.12.4",
   scalacOptions ++=
     scalacOpts :+ "-Yrangepos", // needed for scalafix
-  addCompilerPlugin("org.scalameta" % "semanticdb-scalac" % "3.7.4"  cross CrossVersion.full)
+  addCompilerPlugin("org.scalameta" % "semanticdb-scalac" % "3.7.4" cross CrossVersion.full)
 )
 
 lazy val catsVersion = "1.0.1"
