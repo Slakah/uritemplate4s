@@ -2,19 +2,13 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:8-jdk-node
     working_directory: ~/repo
     environment:
       JVM_OPTS: -Xmx3200m
       TERM: dumb
     steps:
       - checkout
-      - run:
-          name: node download
-          command: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-      - run:
-          name: node install
-          command: sudo apt-get install -y nodejs
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "build.sbt" }}
