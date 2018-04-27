@@ -111,14 +111,14 @@ lazy val scalacOpts = Seq(
   "-Ywarn-value-discard"               // Warn when non-Unit expression results are unused.
 )
 
-lazy val micrositeFastOptJS = taskKey[Unit]("Build js, and adds it to a managed js dir")
+lazy val micrositeFullOptJS = taskKey[Unit]("Full build js, and adds it to a managed js dir")
 
 lazy val docsSettings = Seq(
   micrositeName := "uritemplate4s",
   micrositeDescription := "URI template implementation for Scala",
   micrositeBaseUrl := "/uritemplate4s",
   micrositeDocumentationUrl := "/uritemplate4s",
-  micrositeGithubOwner := "slakah",
+  micrositeGithubOwner := "Slakah",
   micrositeGithubRepo := "uritemplate4s",
   micrositeExtraMdFiles := Map(
     file("README.md") -> ExtraMdFileConfig(
@@ -133,11 +133,13 @@ lazy val docsSettings = Seq(
     )
   ),
   micrositeGitterChannel := false, // enable when configured
+  micrositePushSiteWith := GitHub4s,
+  micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
   micrositeJsDirectory := (managedResourceDirectories in Compile).value.head / "microsite" / "js",
   (includeFilter in makeSite) := (includeFilter in makeSite).value || "*.js.map",
-  micrositeFastOptJS := {
-    val jsFile = (fastOptJS in Compile).value.data
-    val jsMapFileOpt = (fastOptJS in Compile).value.get(scalaJSSourceMap)
+  micrositeFullOptJS := {
+    val jsFile = (fullOptJS in Compile).value.data
+    val jsMapFileOpt = (fullOptJS in Compile).value.get(scalaJSSourceMap)
     val managedJsDir = (resourceDirectory in Compile).value / "microsite" / "js"
     val targetDir = micrositeJsDirectory.value
     IO.copyFile(jsFile, targetDir / jsFile.name)
@@ -149,7 +151,7 @@ lazy val docsSettings = Seq(
   (mainClass in Compile) := Some("uritemplate4s.demo.Playground"),
   scalaJSUseMainModuleInitializer := true,
   makeMicrosite := Def.sequential(
-    micrositeFastOptJS,
+    micrositeFullOptJS,
     microsite,
     tut,
     micrositeTutExtraMdFiles,
