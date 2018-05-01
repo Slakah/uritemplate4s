@@ -1,0 +1,28 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk-node
+    working_directory: ~/repo
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.sbt" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+      - run:
+          name: build
+          command: sbt ";scalafixTest;test:compile"
+      - save_cache:
+          paths:
+            - ~/.ivy2/cache
+            - ~/.sbt
+            - ~/.coursier/cache
+          key: v1-dependencies--{{ checksum "build.sbt" }}
+      - run:
+          name: test
+          command: sbt "test"
