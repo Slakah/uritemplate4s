@@ -11,7 +11,7 @@ jobs:
       - checkout
       - run:
           name: gen cache key
-          command: find . -type f -name "*.sbt" -exec md5sum "{}" + > /tmp/sbt-hash.txt
+          command: find . -type f -name "*.sbt" -exec md5sum "{}" + | sort > /tmp/sbt-hash.txt
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "/tmp/sbt-hash.txt" }}
