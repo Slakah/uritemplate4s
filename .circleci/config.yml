@@ -9,9 +9,12 @@ jobs:
       TERM: dumb
     steps:
       - checkout
+      - run:
+          name: gen cache key
+          command: find . -type f -name "*.sbt" -exec md5sum "{}" + > /tmp/sbt-hash.txt
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "build.sbt" }}
+          - v1-dependencies-{{ checksum "/tmp/sbt-hash.txt" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
       - run:
@@ -22,7 +25,7 @@ jobs:
             - ~/.ivy2/cache
             - ~/.sbt
             - ~/.cache
-          key: v1-dependencies--{{ checksum "build.sbt" }}
+          key: v1-dependencies--{{ checksum "/tmp/sbt-hash.txt" }}
       - run:
           name: test
           command: sbt "test"
