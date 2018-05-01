@@ -25,7 +25,7 @@ jobs:
             - ~/.ivy2/cache
             - ~/.sbt
             - ~/.cache
-          key: v1-dependencies--{{ checksum "/tmp/sbt-hash.txt" }}
+          key: v1-dependencies-{{ checksum "/tmp/sbt-hash.txt" }}
       - run:
           name: test
           command: sbt "test"
