@@ -15,10 +15,10 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
   def expand(vars: (String, Value)*): Result = {
     lazy val varsMap = vars.toMap
 
-    val errorOrLiteralsList: List[Either[Error, Literals]] = for {
+    val errorsAndLiteralsList: List[(List[Error], List[Literals])] = for {
       component <- components
-      literals <- component match {
-        case literals: Literals => List(literals).map(Right.apply)
+      errorsAndLiterals = component match {
+        case literals: Literals => List.empty -> List(literals)
         case Expression(operator, variableList) =>
           val spec2value: List[(Varspec, Value)] = variableList.flatMap { spec =>
             varsMap.get(spec.varname) match {
@@ -41,38 +41,34 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
             case (errs, _) =>
               errs
           }
-          errorList match {
-            case Nil =>
-              val exploded: List[List[Literals]] = spec2value.map { case (spec, v) =>
-                v match {
-                  case StringValue(s) => explodeStringValue(s, operator, spec)
-                  case ListValue(l) => explodeListValue(l, operator, spec)
-                  case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
-                }
-              }
-              (exploded match {
-                case Nil => List.empty
-                case xs => Encoded(operator.first) :: xs.intersperse(List(Encoded(operator.sep))).flatten
-              }).map(Right.apply)
-            case errors => errors.map(Left.apply)
+          val exploded: List[List[Literals]] = spec2value.map { case (spec, v) =>
+            v match {
+              case StringValue(s) => explodeStringValue(s, operator, spec)
+              case ListValue(l) => explodeListValue(l, operator, spec)
+              case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
+            }
           }
+          val literals = exploded match {
+            case Nil => List.empty
+            case xs => Encoded(operator.first) :: xs.intersperse(List(Encoded(operator.sep))).flatten
+          }
+          (errorList, literals)
       }
-    } yield literals
+    } yield errorsAndLiterals
 
-    val (errorList, literalsList) = errorOrLiteralsList.reverse.foldLeft[(List[Error], List[Literals])](Nil -> Nil) {
-      case ((errs, literals), Left(err)) => (err :: errs) -> literals
-      case ((errs, literals), Right(lits)) => errs -> (lits :: literals)
-    }
+    // TODO: replace with foldLeft?
+    val errorList = errorsAndLiteralsList.flatMap(_._1)
+    val literalsList = errorsAndLiteralsList.flatMap(_._2)
+
+    val result = literalsList.map {
+      case Encoded(encoded) => encoded
+      case Unencoded(unencoded) => PercentEncoder.percentEncode(unencoded)
+    }.mkString
 
     if (errorList.isEmpty) {
-      val result = literalsList.map {
-        case Encoded(encoded) => encoded
-        case Unencoded(unencoded) => PercentEncoder.percentEncode(unencoded)
-      }.mkString
       Success(result)
     } else {
-      // TODO: add result
-      PartialSuccess("foo", Error.InvalidCombination(errorList.mkString(", ")))
+      PartialSuccess(result, Error.InvalidCombination(errorList.mkString(", ")))
     }
   }
 
