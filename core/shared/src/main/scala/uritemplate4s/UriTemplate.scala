@@ -1,10 +1,8 @@
 package uritemplate4s
 
 import fastparse.all.Parsed
-import uritemplate4s.Error.MalformedUriTemplate
 import uritemplate4s.ListSyntax._
 import uritemplate4s.UriTemplate._
-
 
 trait UriTemplate {
   def expand(vars: (String, Value)*): Result
@@ -15,52 +13,31 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
   def expand(vars: (String, Value)*): Result = {
     lazy val varsMap = vars.toMap
 
-    val errorsAndLiteralsList: List[(List[Error], List[Literals])] = for {
+    val errorsAndLiteralsList: List[(List[ExpandError], List[Literal])] = for {
       component <- components
       errorsAndLiterals = component match {
-        case literals: Literals => List.empty -> List(literals)
+        case literal: Literal => List.empty -> List(literal)
         case Expression(operator, variableList) =>
           val spec2value: List[(Varspec, Value)] = variableList.flatMap { spec =>
             varsMap.get(spec.varname) match {
-              case None => None
+              case None => None // TODO: create a warning?
               case Some(ListValue(Nil)) => None
               case Some(AssociativeArray(Nil)) => None
               case Some(v) => Some(spec -> v)
             }
           }
-          val errorList = spec2value.foldLeft(List.empty[Error]) {
-            case (errs, (Varspec(name, Prefix(_)), ListValue(l))) =>
-              val listShow = s"[${l.mkString(", ")}]"
-              Error.InvalidCombination(s"$name has the  unsupported prefix modifier for a list value of $listShow") :: errs
-            case (errs, (Varspec(name, Prefix(_)), AssociativeArray(arr))) =>
-              val assocShow = "{" + arr
-                .map { case (k, v) => s""""$k": "$v"""" }
-                .mkString(", ") + "}"
-              Error.InvalidCombination(
-                s"$name has the  unsupported prefix modifier for a associative array value of $assocShow") :: errs
-            case (errs, _) =>
-              errs
-          }
-          val exploded: List[List[Literals]] = spec2value.map { case (spec, v) =>
-            v match {
-              case StringValue(s) => explodeStringValue(s, operator, spec)
-              case ListValue(l) => explodeListValue(l, operator, spec)
-              case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
-            }
-          }
-          val literals = exploded match {
-            case Nil => List.empty
-            case xs => Encoded(operator.first) :: xs.intersperse(List(Encoded(operator.sep))).flatten
-          }
-          (errorList, literals)
+          val errorList = buildSpecExpansionErrorList(spec2value)
+          val literalList = explodeSpecs(spec2value, operator)
+          (errorList, literalList)
       }
     } yield errorsAndLiterals
 
-    // TODO: replace with foldLeft?
-    val errorList = errorsAndLiteralsList.flatMap(_._1)
-    val literalsList = errorsAndLiteralsList.flatMap(_._2)
+    val (errorList, literalList) = errorsAndLiteralsList.foldLeft(List.empty[ExpandError] -> List.empty[Literal]) {
+      case ((errorAcc, literalsAcc), (errors, literals)) =>
+        (errorAcc ::: errors) -> (literalsAcc ::: literals)
+    }
 
-    val result = literalsList.map {
+    val result = literalList.map {
       case Encoded(encoded) => encoded
       case Unencoded(unencoded) => PercentEncoder.percentEncode(unencoded)
     }.mkString
@@ -68,11 +45,42 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
     if (errorList.isEmpty) {
       Success(result)
     } else {
-      PartialSuccess(result, Error.InvalidCombination(errorList.mkString(", ")))
+      PartialSuccess(result, InvalidCombinationError(errorList.mkString(", ")))
     }
   }
 
-  private def explodeStringValue(s: String, operator: Operator, spec: Varspec): List[Literals] = {
+  /** Collect any spec to value mismatches. */
+  private def buildSpecExpansionErrorList(spec2value: List[(Varspec, Value)]) = {
+    spec2value.foldLeft(List.empty[ExpandError]) {
+      case (errs, (Varspec(name, Prefix(_)), ListValue(l))) =>
+        val listShow = s"[${l.mkString(", ")}]"
+        InvalidCombinationError(s"$name has the unsupported prefix modifier for a list value of $listShow") :: errs
+      case (errs, (Varspec(name, Prefix(_)), AssociativeArray(arr))) =>
+        val assocShow = "{" + arr
+          .map { case (k, v) => s""""$k": "$v"""" }
+          .mkString(", ") + "}"
+        InvalidCombinationError(
+          s"$name has the unsupported prefix modifier for a associative array value of $assocShow") :: errs
+      case (errs, _) =>
+        errs
+    }
+  }
+
+  private def explodeSpecs(spec2value: List[(Varspec, Value)], operator: Operator) = {
+    val exploded: List[List[Literal]] = spec2value.map { case (spec, value) =>
+      value match {
+        case StringValue(s) => explodeStringValue(s, operator, spec)
+        case ListValue(l) => explodeListValue(l, operator, spec)
+        case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
+      }
+    }
+    exploded match {
+      case Nil => List.empty
+      case xs => Encoded(operator.first) :: xs.intersperse(List(Encoded(operator.sep))).flatten
+    }
+  }
+
+  private def explodeStringValue(s: String, operator: Operator, spec: Varspec) = {
     val prefixS = spec.modifier match {
       case Prefix(maxLength) => s.take(maxLength)
       case _ => s
@@ -88,7 +96,7 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
     l: Seq[String],
     operator: Operator,
     spec: Varspec
-  ): List[Literals] = {
+  ): List[Literal] = {
     spec.modifier match {
       case (EmptyModifier | Prefix(_)) =>
         val literalValues = l.toList.map(encode(_, operator.allow)).intersperse(List(Encoded(","))).flatten
@@ -117,7 +125,7 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
     tuples: Seq[(String, String)],
     operator: Operator,
     spec: Varspec
-  ): List[Literals] = {
+  ): List[Literal] = {
     spec.modifier match {
       case (EmptyModifier | Prefix(_)) =>
         val nameValues = tuples.toList.flatMap { case (n, v) => List(n, v) }
@@ -143,12 +151,12 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
     }
   }
 
-  @inline private def namedValue(operator: Operator, spec: Varspec, isEmpty: Boolean, values: List[Literals]) = {
+  @inline private def namedValue(operator: Operator, spec: Varspec, isEmpty: Boolean, values: List[Literal]) = {
     val namedSep = if (isEmpty) operator.ifemp else "="
     Encoded(spec.varname) :: Encoded(namedSep) :: values
   }
 
-  @inline private def namedValue(operator: Operator, varnameLiterals: List[Literals], isEmpty: Boolean, values: List[Literals]) = {
+  @inline private def namedValue(operator: Operator, varnameLiterals: List[Literal], isEmpty: Boolean, values: List[Literal]) = {
     val namedSep = if (isEmpty) operator.ifemp else "="
     varnameLiterals ::: Encoded(namedSep) :: values
   }
@@ -156,7 +164,7 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
   private def encode(
     s: String,
     allow: Allow
-  ): List[Literals] = {
+  ): List[Literal] = {
     val encoder = allow match {
       case Allow.U => PercentEncoder.nonUnreserved
       case Allow.`U+R` => PercentEncoder.nonUnreservedAndReserved
@@ -166,28 +174,28 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
 }
 
 object UriTemplate {
-
-  def parse(template: String): Either[MalformedUriTemplate, UriTemplate] = {
+  /** Parse a URI Template according to [[https://tools.ietf.org/html/rfc6570]]. */
+  def parse(template: String): Either[ParseError, UriTemplate] = {
 
     UriTemplateParser.uriTemplate.parse(template) match {
       case Parsed.Success(components, _) => Right(new ComponentsUriTemplate(components))
-      case err: Parsed.Failure => Left(Error.MalformedUriTemplate(err.msg))
+      case err: Parsed.Failure => Left(MalformedUriTemplateError(err.index, err.msg))
     }
   }
 
   /**
-    * A successfully parsed uri template can always be expanded, but there maybe some warnings
-    * associated.
+    * A successfully parsed uri template can always be expanded, but there might be some
+    * warnings associated.
     */
   sealed trait Result {
     def value: String
 
-    def toEither: Either[Error, String]
+    def toEither: Either[ExpandError, String]
   }
 
   /** The [[UriTemplate]] was successfully expanded. */
   final case class Success(override val value: String) extends Result {
-    override def toEither: Either[Error, String] = Right(value)
+    override def toEither: Either[ExpandError, String] = Right(value)
   }
 
   /**
@@ -196,33 +204,29 @@ object UriTemplate {
     */
   final case class PartialSuccess(
     override val value: String,
-    error: Error
+    error: ExpandError
   ) extends Result {
-    override def toEither: Either[Error, String] = Left(error)
+    override def toEither: Either[ExpandError, String] = Left(error)
   }
 }
 
-sealed trait Value
-private final case class StringValue(value: String) extends Value
-private final case class ListValue(value: Seq[String]) extends Value
-private final case class AssociativeArray(value: Seq[(String, String)]) extends Value
-object Value {
-  implicit def string2stringValue(s: String): Value = StringValue(s)
-  implicit def seqString2listValue(seq: Seq[String]): Value = ListValue(seq)
-  implicit def seqTuple2associativeValue(tuples: Seq[(String, String)]): Value = AssociativeArray(tuples)
-}
-
+/** Represents a parsed URI Template component. */
 private sealed trait Component
 
-private sealed trait Literals extends Component {
+/** URI Template literal [[https://tools.ietf.org/html/rfc6570#section-2.1]]. */
+private sealed trait Literal extends Component {
   def value: String
 }
-private final case class Encoded(override val value: String) extends Literals
-private final case class Unencoded(override val value: String) extends Literals
+/** A [[Literal]] which is encoded. */
+private final case class Encoded(override val value: String) extends Literal
+/** A [[Literal]] which is unencoded, and will need to be encoded. */
+private final case class Unencoded(override val value: String) extends Literal
 
+/** Template expression [[https://tools.ietf.org/html/rfc6570#section-2.2]]. */
 private final case class Expression(operator: Operator, variableList: List[Varspec]) extends Component
 
 private sealed class Operator(val first: String, val sep: String, val named: Boolean, val ifemp: String, val allow: Allow)
+// https://tools.ietf.org/html/rfc6570#appendix-A
 private case object Simple extends Operator("", ",", false, "", Allow.U)
 private case object Reserved extends Operator("", ",", false, "", Allow.`U+R`)
 private case object Fragment extends Operator("#", ",", false, "", Allow.`U+R`)
@@ -240,6 +244,7 @@ private object Allow {
 
 private final case class Varspec(varname: String, modifier: ModifierLevel4)
 
+/** Value modifier [[https://tools.ietf.org/html/rfc6570#section-2.4]]. */
 private sealed trait ModifierLevel4
 private case object EmptyModifier extends ModifierLevel4
 private final case class Prefix(maxLength: Int) extends ModifierLevel4

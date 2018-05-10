@@ -1,7 +1,6 @@
 package uritemplate4s.demo
 
 import scala.scalajs.js
-import scala.util.control.NonFatal
 
 import cats.syntax.either._
 import io.circe._
@@ -12,8 +11,8 @@ import monix.reactive.OverflowStrategy.Unbounded
 import monix.reactive._
 import org.scalajs.dom.window.document
 import org.scalajs.dom.{Event, html}
-import uritemplate4s.Error.MalformedUriTemplate
 import uritemplate4s._
+import uritemplate4s.syntax._
 
 object Playground {
 
@@ -47,9 +46,9 @@ object Playground {
     val initialInput = "http://{string}.com{/list*}{?assoc*}"
 
     val initialVars: Map[String, Value] = Map(
-      "string" -> "foobar",
-      "list" -> List("apple", "pear", "orange"),
-      "assoc" -> List("foo" -> "bar", "wierd" -> "strange")
+      "string" -> "foobar".toValue,
+      "list" -> List("apple", "pear", "orange").toValue,
+      "assoc" -> List("foo" -> "bar", "wierd" -> "strange").toValue
     )
     document.getElementById("uritemplate-playground").innerHTML =
       s"""
@@ -95,13 +94,7 @@ object Playground {
 
 
     val templateSource = inputChange(input, "input")
-      .map { s =>
-        try {
-          UriTemplate.parse(s)
-        } catch {
-          case NonFatal(ex) => Left(MalformedUriTemplate(ex.getMessage))
-        }
-      }
+      .map(UriTemplate.parse)
 
     val valuesSource = inputChange(valuesInput, "input")
       .map(parseValues)

@@ -10,8 +10,8 @@ private[uritemplate4s] object PercentEncoder {
 
   private def encodeChar(ch: Char): String = s"%${"%04x".format(ch.toInt).substring(2).toUpperCase}"
 
-  lazy val nonUnreserved: P[List[Literals]] =
+  lazy val nonUnreserved: P[List[Literal]] =
     P(unreserved.rep(min = 1).!.map(Encoded) | (!unreserved ~ AnyChar).rep(min = 1).!.map(Unencoded)).rep.map(_.toList)
-  lazy val nonUnreservedAndReserved: P[List[Literals]] =
+  lazy val nonUnreservedAndReserved: P[List[Literal]] =
     P((unreserved | reserved).rep(min = 1).!.map(Encoded) | (!(unreserved | reserved) ~ AnyChar).rep(min = 1).!.map(Unencoded)).rep.map(_.toList)
 }
