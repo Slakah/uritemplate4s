@@ -66,13 +66,13 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
     spec2value.foldLeft(List.empty[Error]) {
       case (errs, (Varspec(name, Prefix(_)), ListValue(l))) =>
         val listShow = s"[${l.mkString(", ")}]"
-        Error.InvalidCombination(s"$name has the  unsupported prefix modifier for a list value of $listShow") :: errs
+        Error.InvalidCombination(s"$name has the unsupported prefix modifier for a list value of $listShow") :: errs
       case (errs, (Varspec(name, Prefix(_)), AssociativeArray(arr))) =>
         val assocShow = "{" + arr
           .map { case (k, v) => s""""$k": "$v"""" }
           .mkString(", ") + "}"
         Error.InvalidCombination(
-          s"$name has the  unsupported prefix modifier for a associative array value of $assocShow") :: errs
+          s"$name has the unsupported prefix modifier for a associative array value of $assocShow") :: errs
       case (errs, _) =>
         errs
     }
