@@ -44,9 +44,10 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
       }
     } yield errorsAndLiterals
 
-    // TODO: replace with foldLeft?
-    val errorList = errorsAndLiteralsList.flatMap(_._1)
-    val literalsList = errorsAndLiteralsList.flatMap(_._2)
+    val (errorList, literalsList) = errorsAndLiteralsList.foldLeft(List.empty[Error] -> List.empty[Literals]) {
+      case ((errorAcc, literalsAcc), (errors, literals)) =>
+        (errorAcc ::: errors) -> (literalsAcc ::: literals)
+    }
 
     val result = literalsList.map {
       case Encoded(encoded) => encoded
