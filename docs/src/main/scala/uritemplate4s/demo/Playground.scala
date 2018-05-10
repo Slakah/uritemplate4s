@@ -1,7 +1,6 @@
 package uritemplate4s.demo
 
 import scala.scalajs.js
-import scala.util.control.NonFatal
 
 import cats.syntax.either._
 import io.circe._
@@ -12,7 +11,6 @@ import monix.reactive.OverflowStrategy.Unbounded
 import monix.reactive._
 import org.scalajs.dom.window.document
 import org.scalajs.dom.{Event, html}
-import uritemplate4s.Error.MalformedUriTemplate
 import uritemplate4s._
 
 object Playground {
@@ -95,13 +93,7 @@ object Playground {
 
 
     val templateSource = inputChange(input, "input")
-      .map { s =>
-        try {
-          UriTemplate.parse(s)
-        } catch {
-          case NonFatal(ex) => Left(MalformedUriTemplate(ex.getMessage))
-        }
-      }
+      .map(UriTemplate.parse)
 
     val valuesSource = inputChange(valuesInput, "input")
       .map(parseValues)
