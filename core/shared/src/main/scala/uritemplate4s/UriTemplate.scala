@@ -28,19 +28,7 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
               case Some(v) => Some(spec -> v)
             }
           }
-          val errorList = spec2value.foldLeft(List.empty[Error]) {
-            case (errs, (Varspec(name, Prefix(_)), ListValue(l))) =>
-              val listShow = s"[${l.mkString(", ")}]"
-              Error.InvalidCombination(s"$name has the  unsupported prefix modifier for a list value of $listShow") :: errs
-            case (errs, (Varspec(name, Prefix(_)), AssociativeArray(arr))) =>
-              val assocShow = "{" + arr
-                .map { case (k, v) => s""""$k": "$v"""" }
-                .mkString(", ") + "}"
-              Error.InvalidCombination(
-                s"$name has the  unsupported prefix modifier for a associative array value of $assocShow") :: errs
-            case (errs, _) =>
-              errs
-          }
+          val errorList = buildSpecExpansionErrorList(spec2value)
           val exploded: List[List[Literals]] = spec2value.map { case (spec, v) =>
             v match {
               case StringValue(s) => explodeStringValue(s, operator, spec)
@@ -69,6 +57,23 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
       Success(result)
     } else {
       PartialSuccess(result, Error.InvalidCombination(errorList.mkString(", ")))
+    }
+  }
+
+  /** Collect any spec to value mismatches. */
+  private def buildSpecExpansionErrorList(spec2value: List[(Varspec, Value)]) = {
+    spec2value.foldLeft(List.empty[Error]) {
+      case (errs, (Varspec(name, Prefix(_)), ListValue(l))) =>
+        val listShow = s"[${l.mkString(", ")}]"
+        Error.InvalidCombination(s"$name has the  unsupported prefix modifier for a list value of $listShow") :: errs
+      case (errs, (Varspec(name, Prefix(_)), AssociativeArray(arr))) =>
+        val assocShow = "{" + arr
+          .map { case (k, v) => s""""$k": "$v"""" }
+          .mkString(", ") + "}"
+        Error.InvalidCombination(
+          s"$name has the  unsupported prefix modifier for a associative array value of $assocShow") :: errs
+      case (errs, _) =>
+        errs
     }
   }
 
