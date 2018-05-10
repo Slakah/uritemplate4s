@@ -1,22 +1,24 @@
 package uritemplate4s
 
-import fastparse.all._
+import fastparse.all.Parsed
 import uritemplate4s.Error.MalformedUriTemplate
-import ListSyntax._
+import uritemplate4s.ListSyntax._
+import uritemplate4s.UriTemplate._
 
 
 trait UriTemplate {
-  def expand(vars: (String, Value)*): Either[Error, String]
+  def expand(vars: (String, Value)*): Result
 }
 
 private final class ComponentsUriTemplate(components: List[Component]) extends UriTemplate {
-  def expand(vars: (String, Value)*): Either[Error, String] = {
+
+  def expand(vars: (String, Value)*): Result = {
     lazy val varsMap = vars.toMap
 
-    val errorOrLiteralsList: List[Either[Error, Literals]] = for {
+    val errorsAndLiteralsList: List[(List[Error], List[Literals])] = for {
       component <- components
-      literals <- component match {
-        case literals: Literals => List(literals).map(Right.apply)
+      errorsAndLiterals = component match {
+        case literals: Literals => List.empty -> List(literals)
         case Expression(operator, variableList) =>
           val spec2value: List[(Varspec, Value)] = variableList.flatMap { spec =>
             varsMap.get(spec.varname) match {
@@ -39,37 +41,34 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
             case (errs, _) =>
               errs
           }
-          errorList match {
-            case Nil =>
-              val exploded: List[List[Literals]] = spec2value.map { case (spec, v) =>
-                v match {
-                  case StringValue(s) => explodeStringValue(s, operator, spec)
-                  case ListValue(l) => explodeListValue(l, operator, spec)
-                  case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
-                }
-              }
-              (exploded match {
-                case Nil => List.empty
-                case xs => Encoded(operator.first) :: xs.intersperse(List(Encoded(operator.sep))).flatten
-              }).map(Right.apply)
-            case errors => errors.map(Left.apply)
+          val exploded: List[List[Literals]] = spec2value.map { case (spec, v) =>
+            v match {
+              case StringValue(s) => explodeStringValue(s, operator, spec)
+              case ListValue(l) => explodeListValue(l, operator, spec)
+              case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
+            }
           }
+          val literals = exploded match {
+            case Nil => List.empty
+            case xs => Encoded(operator.first) :: xs.intersperse(List(Encoded(operator.sep))).flatten
+          }
+          (errorList, literals)
       }
-    } yield literals
+    } yield errorsAndLiterals
 
-    val (errorList, literalsList) = errorOrLiteralsList.reverse.foldLeft[(List[Error], List[Literals])](Nil -> Nil) {
-      case ((errs, literals), Left(err)) => (err :: errs) -> literals
-      case ((errs, literals), Right(lits)) => errs -> (lits :: literals)
-    }
+    // TODO: replace with foldLeft?
+    val errorList = errorsAndLiteralsList.flatMap(_._1)
+    val literalsList = errorsAndLiteralsList.flatMap(_._2)
+
+    val result = literalsList.map {
+      case Encoded(encoded) => encoded
+      case Unencoded(unencoded) => PercentEncoder.percentEncode(unencoded)
+    }.mkString
 
     if (errorList.isEmpty) {
-      val result = literalsList.map {
-        case Encoded(encoded) => encoded
-        case Unencoded(unencoded) => PercentEncoder.percentEncode(unencoded)
-      }.mkString
-      Right(result)
+      Success(result)
     } else {
-      Left(Error.InvalidCombination(errorList.mkString(", ")))
+      PartialSuccess(result, Error.InvalidCombination(errorList.mkString(", ")))
     }
   }
 
@@ -175,6 +174,32 @@ object UriTemplate {
       case err: Parsed.Failure => Left(Error.MalformedUriTemplate(err.msg))
     }
   }
+
+  /**
+    * A successfully parsed uri template can always be expanded, but there maybe some warnings
+    * associated.
+    */
+  sealed trait Result {
+    def value: String
+
+    def toEither: Either[Error, String]
+  }
+
+  /** The [[UriTemplate]] was successfully expanded. */
+  final case class Success(override val value: String) extends Result {
+    override def toEither: Either[Error, String] = Right(value)
+  }
+
+  /**
+    * The [[UriTemplate]] expansion was partially successful.
+    * In most cases, this warning can be ignored.
+    */
+  final case class PartialSuccess(
+    override val value: String,
+    error: Error
+  ) extends Result {
+    override def toEither: Either[Error, String] = Left(error)
+  }
 }
 
 sealed trait Value
@@ -219,71 +244,3 @@ private sealed trait ModifierLevel4
 private case object EmptyModifier extends ModifierLevel4
 private final case class Prefix(maxLength: Int) extends ModifierLevel4
 private case object Explode extends ModifierLevel4
-
-private object PercentEncoder {
-  import UriTemplateParser._
-
-  @inline def percentEncode(s: String): String =
-    s.getBytes("UTF-8").flatMap(byte => encodeChar(byte.toChar)).mkString
-
-  private def encodeChar(ch: Char): String = s"%${"%04x".format(ch.toInt).substring(2).toUpperCase}"
-
-  lazy val nonUnreserved: P[List[Literals]] =
-    P(unreserved.rep(min = 1).!.map(Encoded) | (!unreserved ~ AnyChar).rep(min = 1).!.map(Unencoded)).rep.map(_.toList)
-  lazy val nonUnreservedAndReserved: P[List[Literals]] =
-    P((unreserved | reserved).rep(min = 1).!.map(Encoded) | (!(unreserved | reserved) ~ AnyChar).rep(min = 1).!.map(Unencoded)).rep.map(_.toList)
-}
-
-private object UriTemplateParser {
-  // 1.5. Notational Conventions
-  lazy val alpha: P0 = P(CharIn('a' to 'z', 'A' to 'Z'))
-  lazy val digit: P0 = P(CharIn('0' to '9'))
-  lazy val hexdig: P0 = P(CharIn('0' to '9', 'a' to 'f', 'A' to 'F'))
-  lazy val pctEncoded: P0 = P("%" ~ hexdig ~ hexdig)
-  lazy val unreserved: P0 = P(alpha | digit | "-" | "." | "_" | "~")
-  lazy val reserved: P0 =  P(genDelims | subDelims)
-  lazy val genDelims: P0 = P(CharIn(":", "/", "?", "#", "[", "]", "@"))
-  lazy val subDelims: P0 =  P(CharIn(
-    "!", "$", "&", "'", "(", ")",
-    "*", "+", ",", ";", "="))
-  lazy val ucschar: P0 = P(CharIn(
-    0xA0.toChar to 0xD7FF.toChar, 0xF900.toChar to 0xFDCF.toChar, 0xFDF0.toChar to 0xFFEF.toChar,
-    0x40000.toChar to 0x4FFFD.toChar, 0x50000.toChar to 0x5FFFD.toChar, 0x60000.toChar to 0x6FFFD.toChar,
-    0x70000.toChar to 0x7FFFD.toChar, 0x80000.toChar to 0x8FFFD.toChar, 0x90000.toChar to 0x9FFFD.toChar,
-    0xA0000.toChar to 0xAFFFD.toChar, 0xB0000.toChar to 0xBFFFD.toChar, 0xC0000.toChar to 0xCFFFD.toChar,
-    0xD0000.toChar to 0xDFFFD.toChar, 0xE1000.toChar to 0xEFFFD.toChar))
-  lazy val iprivate: P0 = P(CharIn(
-    0xE000.toChar to 0xF8FF.toChar, 0xF0000.toChar to 0xFFFFD.toChar, 0x100000.toChar to 0x10FFFD.toChar))
-  // 2. Syntax
-  lazy val uriTemplate: P[List[Component]] = P((expression | literals).rep ~ End).map(_.toList)
-  // 2.1 Literals
-  lazy val literals: P[Literals] = P(allowedLiterals.rep(min = 1).!.map(Encoded) | (!"}" ~ unallowedLiterals).rep(min = 1).!.map(Unencoded))
-  lazy val allowedLiterals: P0 = P(reserved | unreserved | pctEncoded)
-  lazy val unallowedLiterals: P0 = P(
-    CharIn(
-      List(0x21.toChar),  0x23.toChar to 0x24, List(0x26.toChar), 0x28.toChar to 0x3B.toChar, List(0x3D.toChar), 0x3F.toChar to 0x5B.toChar,
-      List(0x5D.toChar), List(0x5F.toChar), 0x61.toChar to 0x7A.toChar, List(0x7E.toChar))
-    | ucschar | iprivate | pctEncoded)
-  // 2.2. Expressions
-  lazy val expression: P[Expression] = P("{" ~/ operator.? ~ variableList ~ "}").map {
-    case (None, vl) => Expression(Simple, vl)
-    case (Some(op), vl) => Expression(op, vl)
-  }
-  lazy val operator: P[Operator] = opLevel2 | opLevel3 // | opReserve
-  lazy val opLevel2: P[Operator] = P("+".!.map(_ => Reserved) | "#".!.map(_ => Fragment))
-  lazy val opLevel3: P[Operator] =
-    P(".".!.map(_ => NameLabel) | "/".!.map(_ => PathSegment) | ";".!.map(_ => PathParameter) | "?".!.map(_ => Query) | "&".!.map(_ => QueryContinuation))
-  lazy val opReserve: P[Operator] = P(CharIn("=,!@|")).map(_ => Reserved)
-  // 2.3. Variables
-  lazy val variableList: P[List[Varspec]] = P(varspec.rep(min = 1, sep = ",")).map(_.toList)
-  lazy val varspec: P[Varspec] = P(varname ~ modifierLevel4.?).map {
-    case (n, Some(m)) => Varspec(n, m)
-    case (n, None) => Varspec(n, EmptyModifier)
-  }
-  lazy val varname: P[String] = P(varchar ~ (".".? ~ varchar).rep).!
-  lazy val varchar: P0 = P(alpha | digit | "_" | pctEncoded)
-  // 2.4. Value Modifiers
-  lazy val modifierLevel4: P[ModifierLevel4] = prefix | explode
-  lazy val prefix: P[ModifierLevel4] = P(":" ~ digit.rep(min = 1, max = 4).!).map(raw => Prefix(raw.toInt))
-  lazy val explode: P[ModifierLevel4] = P("*").map(_ => Explode)
-}
