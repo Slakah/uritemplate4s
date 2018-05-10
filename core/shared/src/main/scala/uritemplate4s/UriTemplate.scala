@@ -210,15 +210,6 @@ object UriTemplate {
   }
 }
 
-sealed trait Value
-private final case class StringValue(value: String) extends Value
-private final case class ListValue(value: Seq[String]) extends Value
-private final case class AssociativeArray(value: Seq[(String, String)]) extends Value
-object Value {
-  implicit def string2stringValue(s: String): Value = StringValue(s)
-  implicit def seqString2listValue(seq: Seq[String]): Value = ListValue(seq)
-  implicit def seqTuple2associativeValue(tuples: Seq[(String, String)]): Value = AssociativeArray(tuples)
-}
 /** Represents a parsed URI Template component. */
 private sealed trait Component
 

@@ -12,6 +12,7 @@ import monix.reactive._
 import org.scalajs.dom.window.document
 import org.scalajs.dom.{Event, html}
 import uritemplate4s._
+import uritemplate4s.syntax._
 
 object Playground {
 
@@ -45,9 +46,9 @@ object Playground {
     val initialInput = "http://{string}.com{/list*}{?assoc*}"
 
     val initialVars: Map[String, Value] = Map(
-      "string" -> "foobar",
-      "list" -> List("apple", "pear", "orange"),
-      "assoc" -> List("foo" -> "bar", "wierd" -> "strange")
+      "string" -> "foobar".toValue,
+      "list" -> List("apple", "pear", "orange").toValue,
+      "assoc" -> List("foo" -> "bar", "wierd" -> "strange").toValue
     )
     document.getElementById("uritemplate-playground").innerHTML =
       s"""

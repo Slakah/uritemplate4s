@@ -2,6 +2,8 @@ package uritemplate4s
 
 import utest._
 
+import uritemplate4s.syntax._
+
 object UriTemplateTests extends TestSuite {
 
   private def test(
@@ -34,8 +36,8 @@ object UriTemplateTests extends TestSuite {
       */
     'level1 - {
       val vars = Map[String, Value](
-        "var" -> "value",
-        "hello" -> "Hello World!"
+        "var" -> "value".toValue,
+        "hello" -> "Hello World!".toValue
       )
       "Simple string expansion (Sec 3.2.2)" - test(vars)(
         "{var}" -> "value",
@@ -69,9 +71,9 @@ object UriTemplateTests extends TestSuite {
       */
     'level2 - {
       val vars = Map[String, Value](
-        "var" -> "value",
-        "hello" -> "Hello World!",
-        "path" -> "/foo/bar"
+        "var" -> "value".toValue,
+        "hello" -> "Hello World!".toValue,
+        "path" -> "/foo/bar".toValue
       )
       "Reserved string expansion (Sec 3.2.3)" - test(vars)(
         "{+var}" -> "value",
@@ -150,12 +152,12 @@ object UriTemplateTests extends TestSuite {
       */
     'level3 - {
       val vars = Map[String, Value](
-        "var" -> "value",
-        "hello" -> "Hello World!",
-        "empty" -> "",
-        "path" -> "/foo/bar",
-        "x" -> "1024",
-        "y" -> "768"
+        "var" -> "value".toValue,
+        "hello" -> "Hello World!".toValue,
+        "empty" -> "".toValue,
+        "path" -> "/foo/bar".toValue,
+        "x" -> "1024".toValue,
+        "y" -> "768".toValue
       )
       "String expansion with multiple variables (Sec 3.2.2)" - test(vars)(
         "map?{x,y}" -> "map?1024,768",
@@ -280,11 +282,11 @@ object UriTemplateTests extends TestSuite {
       */
     'level4 - {
       val vars = Map[String, Value](
-        "var" -> "value",
-        "hello" -> "Hello World!",
-        "path" -> "/foo/bar",
-        "list" -> List("red", "green", "blue"),
-        "keys" -> List("semi" -> ";", "dot" -> ".", "comma" ->",")
+        "var" -> "value".toValue,
+        "hello" -> "Hello World!".toValue,
+        "path" -> "/foo/bar".toValue,
+        "list" -> List("red", "green", "blue").toValue,
+        "keys" -> List("semi" -> ";", "dot" -> ".", "comma" ->",").toValue
       )
       "String expansion with value modifiers (Sec 3.2.2)" - test(vars)(
         "{var:3}" -> "val",
