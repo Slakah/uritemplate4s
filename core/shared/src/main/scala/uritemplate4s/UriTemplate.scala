@@ -232,6 +232,7 @@ private final case class Unencoded(override val value: String) extends Literals
 
 private final case class Expression(operator: Operator, variableList: List[Varspec]) extends Component
 
+// https://tools.ietf.org/html/rfc6570#appendix-A
 private sealed class Operator(val first: String, val sep: String, val named: Boolean, val ifemp: String, val allow: Allow)
 private case object Simple extends Operator("", ",", false, "", Allow.U)
 private case object Reserved extends Operator("", ",", false, "", Allow.`U+R`)
