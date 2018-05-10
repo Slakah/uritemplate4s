@@ -22,24 +22,14 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
         case Expression(operator, variableList) =>
           val spec2value: List[(Varspec, Value)] = variableList.flatMap { spec =>
             varsMap.get(spec.varname) match {
-              case None => None
+              case None => None // TODO: create a warning?
               case Some(ListValue(Nil)) => None
               case Some(AssociativeArray(Nil)) => None
               case Some(v) => Some(spec -> v)
             }
           }
           val errorList = buildSpecExpansionErrorList(spec2value)
-          val exploded: List[List[Literals]] = spec2value.map { case (spec, v) =>
-            v match {
-              case StringValue(s) => explodeStringValue(s, operator, spec)
-              case ListValue(l) => explodeListValue(l, operator, spec)
-              case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
-            }
-          }
-          val literals = exploded match {
-            case Nil => List.empty
-            case xs => Encoded(operator.first) :: xs.intersperse(List(Encoded(operator.sep))).flatten
-          }
+          val literals = explodeSpecs(spec2value, operator)
           (errorList, literals)
       }
     } yield errorsAndLiterals
@@ -78,7 +68,21 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
     }
   }
 
-  private def explodeStringValue(s: String, operator: Operator, spec: Varspec): List[Literals] = {
+  private def explodeSpecs(spec2value: List[(Varspec, Value)], operator: Operator) = {
+    val exploded: List[List[Literals]] = spec2value.map { case (spec, value) =>
+      value match {
+        case StringValue(s) => explodeStringValue(s, operator, spec)
+        case ListValue(l) => explodeListValue(l, operator, spec)
+        case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
+      }
+    }
+    exploded match {
+      case Nil => List.empty
+      case xs => Encoded(operator.first) :: xs.intersperse(List(Encoded(operator.sep))).flatten
+    }
+  }
+
+  private def explodeStringValue(s: String, operator: Operator, spec: Varspec) = {
     val prefixS = spec.modifier match {
       case Prefix(maxLength) => s.take(maxLength)
       case _ => s
