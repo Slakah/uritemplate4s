@@ -2,6 +2,7 @@ package uritemplate4s
 
 import fastparse.all._
 
+/** URI Template parser [[https://tools.ietf.org/html/rfc6570#section-2]]. */
 private[uritemplate4s] object UriTemplateParser {
   // 1.5. Notational Conventions
   lazy val alpha: P0 = P(CharIn('a' to 'z', 'A' to 'Z'))
@@ -25,7 +26,7 @@ private[uritemplate4s] object UriTemplateParser {
   // 2. Syntax
   lazy val uriTemplate: P[List[Component]] = P((expression | literals).rep ~ End).map(_.toList)
   // 2.1 Literals
-  lazy val literals: P[Literals] = P(allowedLiterals.rep(min = 1).!.map(Encoded) | (!"}" ~ unallowedLiterals).rep(min = 1).!.map(Unencoded))
+  lazy val literals: P[Literal] = P(allowedLiterals.rep(min = 1).!.map(Encoded) | (!"}" ~ unallowedLiterals).rep(min = 1).!.map(Unencoded))
   lazy val allowedLiterals: P0 = P(reserved | unreserved | pctEncoded)
   lazy val unallowedLiterals: P0 = P(
     CharIn(
