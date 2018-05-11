@@ -21,6 +21,7 @@ lazy val utestVersion = "0.6.0"
 
 lazy val docs = project
   .enablePlugins(MicrositesPlugin)
+  .enablePlugins(SiteScaladocPlugin)
   .enablePlugins(ScalaJSPlugin)
   .dependsOn(coreJS)
   .settings(moduleName := "uritemplate4s-docs")
@@ -117,7 +118,7 @@ lazy val docsSettings = Seq(
   micrositeName := "uritemplate4s",
   micrositeDescription := "URI template implementation for Scala",
   micrositeBaseUrl := "/uritemplate4s",
-  micrositeDocumentationUrl := "/uritemplate4s",
+  micrositeDocumentationUrl := "/uritemplate4s/api/latest/uritemplate4s",
   micrositeGithubOwner := "Slakah",
   micrositeGithubRepo := "uritemplate4s",
   micrositeExtraMdFiles := Map(
@@ -158,7 +159,7 @@ lazy val docsSettings = Seq(
     makeSite,
     micrositeConfig
   ).value
-)
+) ++ SiteScaladocPlugin.scaladocSettings(SiteScaladoc, mappings in (Compile, packageDoc) in coreJVM, "api/latest")
 
 lazy val noPublishSettings = Seq(
   publish := {},
