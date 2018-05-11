@@ -18,9 +18,29 @@ object ToValue {
 
   def apply[A](implicit instance: ToValue[A]): ToValue[A] = instance
 
-  implicit val stringToValue: ToValue[String] = (s: String) => StringValue(s)
-  implicit def seqToValue[S <: Seq[String]]: ToValue[S] = (seq: S) => ListValue(seq)
-  implicit def seqTuplesToValue[T <: Seq[(String, String)]]: ToValue[T] =
-    (tuples: T) => AssociativeArray(tuples)
+  implicit lazy val stringToValue: ToStringValue[String] = (s: String) => s
+
+  implicit def seqToValue[E: ToStringValue, S <: Seq[E]]: ToValue[S] =
+    (seq: S) => ListValue(seq.map(ToStringValue[E].asString))
+
+  implicit def seqTuplesToValue[V: ToStringValue, T <: Seq[(String, V)]]: ToValue[T] =
+    (tuples: T) => AssociativeArray(tuples.map {
+      case (k, v) => k -> ToStringValue[V].asString(v)
+    })
 }
 
+/**
+  * Type class that provides a conversion from A to [[String]].
+  * This is used to define a specific type class for strings,
+  * to be used for the elements of [[ListValue]] and the values
+  * of [[AssociativeArray]].
+  */
+trait ToStringValue[A] extends ToValue[A] {
+  override def apply(a: A): Value = StringValue(asString(a))
+  def asString(a: A): String
+}
+
+object ToStringValue {
+
+  def apply[A](implicit instance: ToStringValue[A]): ToStringValue[A] = instance
+}
