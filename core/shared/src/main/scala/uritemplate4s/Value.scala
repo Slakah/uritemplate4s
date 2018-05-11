@@ -69,7 +69,7 @@ object ToValue {
 }
 
 /**
-  * Type class that provides a conversion from A to [[String]].
+  * Type class that provides a conversion from A to String.
   * This is used to define a specific type class for strings,
   * to be used for the elements of [[ListValue]] and the values
   * of [[AssociativeArray]].
