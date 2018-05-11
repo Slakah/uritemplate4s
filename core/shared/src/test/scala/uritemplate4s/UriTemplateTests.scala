@@ -156,8 +156,8 @@ object UriTemplateTests extends TestSuite {
         "hello" -> "Hello World!".toValue,
         "empty" -> "".toValue,
         "path" -> "/foo/bar".toValue,
-        "x" -> "1024".toValue,
-        "y" -> "768".toValue
+        "x" -> 1024.toValue,
+        "y" -> 768.toValue
       )
       "String expansion with multiple variables (Sec 3.2.2)" - test(vars)(
         "map?{x,y}" -> "map?1024,768",
@@ -286,7 +286,7 @@ object UriTemplateTests extends TestSuite {
         "hello" -> "Hello World!".toValue,
         "path" -> "/foo/bar".toValue,
         "list" -> List("red", "green", "blue").toValue,
-        "keys" -> List("semi" -> ";", "dot" -> ".", "comma" ->",").toValue
+        "keys" -> Map("semi" -> ";", "dot" -> ".", "comma" ->",").toValue
       )
       "String expansion with value modifiers (Sec 3.2.2)" - test(vars)(
         "{var:3}" -> "val",
@@ -346,7 +346,6 @@ object UriTemplateTests extends TestSuite {
         "{&list*}" -> "&list=red&list=green&list=blue",
         "{&keys}" -> "&keys=semi,%3B,dot,.,comma,%2C",
         "{&keys*}" -> "&semi=%3B&dot=.&comma=%2C"
-
       )
     }
   }

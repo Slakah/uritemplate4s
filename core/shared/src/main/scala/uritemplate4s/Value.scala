@@ -18,15 +18,20 @@ object ToValue {
 
   def apply[A](implicit instance: ToValue[A]): ToValue[A] = instance
 
-  implicit lazy val stringToValue: ToStringValue[String] = (s: String) => s
+  implicit val stringToStringValue: ToStringValue[String] = (s: String) => s
+  implicit val charToStringValue: ToStringValue[Char] = (c: Char) => String.valueOf(c)
+  implicit val intToStringValue: ToStringValue[Int] = (i: Int) => String.valueOf(i)
+  implicit val longToStringValue: ToStringValue[Long] = (l: Long) => String.valueOf(l)
+  implicit val booleanToStringValue: ToStringValue[Boolean] = (b: Boolean) => String.valueOf(b)
+  implicit def enumToStringValue[E <: Enumeration]: ToStringValue[E#Value] = (e: E#Value) => e.toString
 
-  implicit def seqToValue[E: ToStringValue, S <: Seq[E]]: ToValue[S] =
-    (seq: S) => ListValue(seq.map(ToStringValue[E].asString))
+  implicit def seqToValue[A, S[A] <: Seq[A]](implicit toValueA: ToStringValue[A]): ToValue[S[A]] =
+    (seq: S[A]) => ListValue(seq.map(toValueA.asString))
 
-  implicit def seqTuplesToValue[V: ToStringValue, T <: Seq[(String, V)]]: ToValue[T] =
-    (tuples: T) => AssociativeArray(tuples.map {
-      case (k, v) => k -> ToStringValue[V].asString(v)
-    })
+  implicit def mapLikeToValue[V, M[V] <: Map[String, V]](implicit toValueV: ToStringValue[V]): ToValue[M[V]] =
+    (m: M[V]) => AssociativeArray(m.map {
+      case (k, v) => k -> toValueV.asString(v)
+    }.toList)
 }
 
 /**

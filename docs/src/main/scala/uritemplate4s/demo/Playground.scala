@@ -48,7 +48,7 @@ object Playground {
     val initialVars: Map[String, Value] = Map(
       "string" -> "foobar".toValue,
       "list" -> List("apple", "pear", "orange").toValue,
-      "assoc" -> List("foo" -> "bar", "wierd" -> "strange").toValue
+      "assoc" -> Map("foo" -> "bar", "wierd" -> "strange").toValue
     )
     document.getElementById("uritemplate-playground").innerHTML =
       s"""
