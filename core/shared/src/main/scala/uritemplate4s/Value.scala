@@ -2,8 +2,11 @@ package uritemplate4s
 
 /** A value can be substituted in a template. */
 sealed trait Value
+/** A single string value for template substitution. */
 final case class StringValue(value: String) extends Value
+/** A list of values for template substitution. */
 final case class ListValue(value: Seq[String]) extends Value
+/** Name value pairs for template substitution. */
 final case class AssociativeArray(value: Seq[(String, String)]) extends Value
 
 /** Type class that provides a conversion from A to [[Value]]. */
