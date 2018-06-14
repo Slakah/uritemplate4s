@@ -4,7 +4,7 @@ import fastparse.all.Parsed
 import uritemplate4s.ListSyntax._
 import uritemplate4s.UriTemplate._
 
-trait UriTemplateBase {
+private[uritemplate4s] trait UriTemplateBase {
   /**
     * Expand the parsed URI Template using the supplied vars.
     * @param vars name value pairs to be substituted in the template.

@@ -10,7 +10,7 @@ object Boilerplate {
       |import syntax._
       |import UriTemplate.Result
       |
-      |trait UriTemplateArities extends UriTemplateBase {
+      |private[uritemplate4s] trait UriTemplateArities extends UriTemplateBase {
       |${methods.split("\n").map(method => s"  $method").mkString("\n")}
       |}
     """.stripMargin
