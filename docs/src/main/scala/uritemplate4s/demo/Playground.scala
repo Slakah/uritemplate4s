@@ -104,7 +104,7 @@ object Playground {
         val result = for {
           template <- templateE.leftMap(_.message)
           values <- valuesE.leftMap(_.getMessage)
-          result <- template.expand(values: _*)
+          result <- template.expandVars(values: _*)
             .toEither.leftMap(_.message)
         } yield result
         result.merge

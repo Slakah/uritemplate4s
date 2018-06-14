@@ -65,7 +65,7 @@ object ExternalTests extends TestSuite {
       (template, expectedResult) <- testcases
     } yield {
       def result =
-        UriTemplate.parse(template).flatMap(_.expand(variables.value.toVector: _*).toEither)
+        UriTemplate.parse(template).flatMap(_.expandVars(variables.value.toVector: _*).toEither)
       expectedResult match {
         case Expected(expectedValue) =>
           assert(result == Right(expectedValue))
