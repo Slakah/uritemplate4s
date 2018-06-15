@@ -53,6 +53,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     commonSettings,
     name := "uritemplate4s",
     testFrameworks += new TestFramework("utest.runner.Framework"),
+    sourceGenerators in Compile += (sourceManaged in Compile).map(Boilerplate.gen).taskValue,
     doctestTestFramework := DoctestTestFramework.MicroTest,
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "fastparse" % fastparseVersion

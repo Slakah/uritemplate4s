@@ -4,18 +4,20 @@ import fastparse.all.Parsed
 import uritemplate4s.ListSyntax._
 import uritemplate4s.UriTemplate._
 
-trait UriTemplate {
+private[uritemplate4s] trait UriTemplateBase {
   /**
     * Expand the parsed URI Template using the supplied vars.
     * @param vars name value pairs to be substituted in the template.
     * @return the expanded template.
     */
-  def expand(vars: (String, Value)*): Result
+  def expandVars(vars: (String, Value)*): Result
 }
+
+trait UriTemplate extends UriTemplateBase with UriTemplateArities
 
 private final class ComponentsUriTemplate(components: List[Component]) extends UriTemplate {
 
-  override def expand(vars: (String, Value)*): Result = {
+  override def expandVars(vars: (String, Value)*): Result = {
     lazy val varsMap = vars.toMap
 
     val errorsAndLiteralsList: List[(List[ExpandError], List[Literal])] = for {
