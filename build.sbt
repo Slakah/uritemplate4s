@@ -5,11 +5,20 @@ lazy val commonSettings = Seq(
   organization := "com.gubbns",
   homepage := Some(url(s"https://slakah.github.io/${name.value}/")),
   licenses += "MIT" -> url("http://opensource.org/licenses/MIT"),
+  scmInfo := Some(ScmInfo(
+    url(s"https://github.com/Slakah/${name.value}"),
+    s"scm:git@github.com:Slakah/${name.value}.git"
+  )),
   version := "0.1.0-SNAPSHOT",
   scalaVersion := "2.12.4",
-  scalacOptions ++=
-    scalacOpts :+ "-Yrangepos", // needed for scalafix
-  addCompilerPlugin("org.scalameta" % "semanticdb-scalac" % "3.7.4" cross CrossVersion.full)
+  scalacOptions ++= scalacOpts :+ "-Yrangepos" // needed for scalafix
+)
+
+lazy val publishSettings = Seq(
+  publishTo := sonatypePublishTo.value,
+  autoAPIMappings := true,
+  useGpg := false,
+  apiURL := Some(url("https://slakah.github.io/uritemplate4s/api/latest/uritemplate4s/"))
 )
 
 lazy val catsVersion = "1.0.1"
@@ -51,6 +60,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
   )
   .settings(
     commonSettings,
+    publishSettings,
     name := "uritemplate4s",
     testFrameworks += new TestFramework("utest.runner.Framework"),
     sourceGenerators in Compile += (sourceManaged in Compile).map(Boilerplate.gen).taskValue,
