@@ -1,5 +1,6 @@
 addSbtPlugin("com.47deg"  % "sbt-microsites" % "0.7.16")
 addSbtPlugin("com.github.tkawachi" % "sbt-doctest" % "0.8.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.0")
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.6.0-M5")
 addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.2")
 addSbtPlugin("org.portable-scala" % "sbt-crossproject" % "0.4.0")
