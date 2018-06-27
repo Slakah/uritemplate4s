@@ -130,6 +130,10 @@
                         <a class="class" href="StringValue.html" title="A single string value for template substitution."></a>
                         <a href="StringValue.html" title="A single string value for template substitution.">StringValue</a>
                       </li><li class="current-entities indented1">
+                        <a class="object" href="ToStringValue$.html" title=""></a>
+                        <a class="trait" href="ToStringValue.html" title="Type class that provides a conversion from A to String."></a>
+                        <a href="ToStringValue.html" title="Type class that provides a conversion from A to String.">ToStringValue</a>
+                      </li><li class="current-entities indented1">
                         <a class="object" href="" title=""></a>
                         <a class="trait" href="ToValue.html" title="Type class that provides a conversion from A to Value."></a>
                         <a href="ToValue.html" title="Type class that provides a conversion from A to Value.">ToValue</a>
@@ -308,6 +312,38 @@
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="uritemplate4s.ToValue#booleanToStringValue" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="booleanToStringValue:uritemplate4s.ToStringValue[Boolean]"></a><a id="booleanToStringValue:ToStringValue[Boolean]"></a>
+      <span class="permalink">
+      <a href="../uritemplate4s/ToValue$.html#booleanToStringValue:uritemplate4s.ToStringValue[Boolean]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">booleanToStringValue</span><span class="result">: <a href="ToStringValue.html" class="extype" name="uritemplate4s.ToStringValue">ToStringValue</a>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+      </span>
+      
+      
+    </li><li name="uritemplate4s.ToValue#charToStringValue" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="charToStringValue:uritemplate4s.ToStringValue[Char]"></a><a id="charToStringValue:ToStringValue[Char]"></a>
+      <span class="permalink">
+      <a href="../uritemplate4s/ToValue$.html#charToStringValue:uritemplate4s.ToStringValue[Char]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">charToStringValue</span><span class="result">: <a href="ToStringValue.html" class="extype" name="uritemplate4s.ToStringValue">ToStringValue</a>[<span class="extype" name="scala.Char">Char</span>]</span>
+      </span>
+      
+      
     </li><li name="scala.AnyRef#clone" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a><a id="clone():AnyRef"></a>
       <span class="permalink">
@@ -332,6 +368,25 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="uritemplate4s.ToValue#enumToStringValue" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="enumToStringValue[E&lt;:Enumeration]:uritemplate4s.ToStringValue[E#Value]"></a><a id="enumToStringValue[E&lt;:Enumeration]:ToStringValue[ToValue.enumToStringValue.E.Value]"></a>
+      <span class="permalink">
+      <a href="../uritemplate4s/ToValue$.html#enumToStringValue[E&lt;:Enumeration]:uritemplate4s.ToStringValue[E#Value]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">enumToStringValue</span><span class="tparams">[<span name="E">E &lt;: <span class="extype" name="scala.Enumeration">Enumeration</span></span>]</span><span class="result">: <a href="ToStringValue.html" class="extype" name="uritemplate4s.ToStringValue">ToStringValue</a>[<span class="extype" name="scala.Enumeration.Value">ToValue.enumToStringValue.E.Value</span>]</span>
+      </span>
+      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"><p></p><pre>&gt;&gt;&gt; <span class="kw">import</span> uritemplate4s._
+&gt;&gt;&gt; <span class="kw">object</span> WeekDays <span class="kw">extends</span> <span class="std">Enumeration</span> { <span class="kw">val</span> Mon,Tue,Wed,Thu,Fri = Value }
+&gt;&gt;&gt; ToValue[WeekDays.Value].apply(WeekDays.Tue)
+StringValue(Tue)</pre></div></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a><a id="eq(AnyRef):Boolean"></a>
       <span class="permalink">
@@ -424,6 +479,22 @@
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
+    </li><li name="uritemplate4s.ToValue#intToStringValue" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="intToStringValue:uritemplate4s.ToStringValue[Int]"></a><a id="intToStringValue:ToStringValue[Int]"></a>
+      <span class="permalink">
+      <a href="../uritemplate4s/ToValue$.html#intToStringValue:uritemplate4s.ToStringValue[Int]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">intToStringValue</span><span class="result">: <a href="ToStringValue.html" class="extype" name="uritemplate4s.ToStringValue">ToStringValue</a>[<span class="extype" name="scala.Int">Int</span>]</span>
+      </span>
+      
+      
     </li><li name="scala.Any#isInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <span class="permalink">
@@ -440,6 +511,40 @@
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="uritemplate4s.ToValue#longToStringValue" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="longToStringValue:uritemplate4s.ToStringValue[Long]"></a><a id="longToStringValue:ToStringValue[Long]"></a>
+      <span class="permalink">
+      <a href="../uritemplate4s/ToValue$.html#longToStringValue:uritemplate4s.ToStringValue[Long]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">longToStringValue</span><span class="result">: <a href="ToStringValue.html" class="extype" name="uritemplate4s.ToStringValue">ToStringValue</a>[<span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      
+      
+    </li><li name="uritemplate4s.ToValue#mapLikeToValue" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="mapLikeToValue[V,M[V]&lt;:Map[String,V]](implicittoValueV:uritemplate4s.ToStringValue[V]):uritemplate4s.ToValue[M[V]]"></a><a id="mapLikeToValue[V,M[V]&lt;:Map[String,V]](ToStringValue[V]):ToValue[M[V]]"></a>
+      <span class="permalink">
+      <a href="../uritemplate4s/ToValue$.html#mapLikeToValue[V,M[V]&lt;:Map[String,V]](implicittoValueV:uritemplate4s.ToStringValue[V]):uritemplate4s.ToValue[M[V]]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">mapLikeToValue</span><span class="tparams">[<span name="V">V</span>, <span name="M">M<span class="tparams">[<span name="V">V</span>]</span> &lt;: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="uritemplate4s.ToValue.mapLikeToValue.M.V">V</span>]</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="toValueV">toValueV: <a href="ToStringValue.html" class="extype" name="uritemplate4s.ToStringValue">ToStringValue</a>[<span class="extype" name="uritemplate4s.ToValue.mapLikeToValue.V">V</span>]</span>)</span><span class="result">: <a href="ToValue.html" class="extype" name="uritemplate4s.ToValue">ToValue</a>[<span class="extype" name="uritemplate4s.ToValue.mapLikeToValue.M">M</span>[<span class="extype" name="uritemplate4s.ToValue.mapLikeToValue.V">V</span>]]</span>
+      </span>
+      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"><p></p><pre>&gt;&gt;&gt; <span class="kw">import</span> uritemplate4s._
+&gt;&gt;&gt; ToValue[<span class="std">Map</span>[<span class="std">String</span>, <span class="std">Int</span>]].apply(<span class="std">Map</span>(<span class="lit">"one"</span> -&gt; <span class="num">1</span>, <span class="lit">"two"</span> -&gt; <span class="num">2</span>, <span class="lit">"three"</span> -&gt; <span class="num">3</span>))
+AssociativeArray(<span class="std">List</span>((one,<span class="num">1</span>), (two,<span class="num">2</span>), (three,<span class="num">3</span>)))</pre></div></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a><a id="ne(AnyRef):Boolean"></a>
       <span class="permalink">
@@ -494,10 +599,10 @@
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="uritemplate4s.ToValue#seqToValue" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="seqToValue[S&lt;:Seq[String]]:uritemplate4s.ToValue[S]"></a><a id="seqToValue[S&lt;:Seq[String]]:ToValue[S]"></a>
+    </li><li name="uritemplate4s.ToValue#seqToValue" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="seqToValue[A,S[A]&lt;:Seq[A]](implicittoValueA:uritemplate4s.ToStringValue[A]):uritemplate4s.ToValue[S[A]]"></a><a id="seqToValue[A,S[A]&lt;:Seq[A]](ToStringValue[A]):ToValue[S[A]]"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ToValue$.html#seqToValue[S&lt;:Seq[String]]:uritemplate4s.ToValue[S]" title="Permalink">
+      <a href="../uritemplate4s/ToValue$.html#seqToValue[A,S[A]&lt;:Seq[A]](implicittoValueA:uritemplate4s.ToStringValue[A]):uritemplate4s.ToValue[S[A]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -506,30 +611,19 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">seqToValue</span><span class="tparams">[<span name="S">S &lt;: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>]</span><span class="result">: <a href="ToValue.html" class="extype" name="uritemplate4s.ToValue">ToValue</a>[<span class="extype" name="uritemplate4s.ToValue.seqToValue.S">S</span>]</span>
+        <span class="name">seqToValue</span><span class="tparams">[<span name="A">A</span>, <span name="S">S<span class="tparams">[<span name="A">A</span>]</span> &lt;: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="uritemplate4s.ToValue.seqToValue.S.A">A</span>]</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="toValueA">toValueA: <a href="ToStringValue.html" class="extype" name="uritemplate4s.ToStringValue">ToStringValue</a>[<span class="extype" name="uritemplate4s.ToValue.seqToValue.A">A</span>]</span>)</span><span class="result">: <a href="ToValue.html" class="extype" name="uritemplate4s.ToValue">ToValue</a>[<span class="extype" name="uritemplate4s.ToValue.seqToValue.S">S</span>[<span class="extype" name="uritemplate4s.ToValue.seqToValue.A">A</span>]]</span>
       </span>
       
-      
-    </li><li name="uritemplate4s.ToValue#seqTuplesToValue" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="seqTuplesToValue[T&lt;:Seq[(String,String)]]:uritemplate4s.ToValue[T]"></a><a id="seqTuplesToValue[T&lt;:Seq[(String,String)]]:ToValue[T]"></a>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"><p></p><pre>&gt;&gt;&gt; <span class="kw">import</span> uritemplate4s._
+&gt;&gt;&gt; ToValue[Vector[<span class="std">String</span>]].apply(Vector(<span class="lit">"red"</span>, <span class="lit">"green"</span>, <span class="lit">"blue"</span>))
+ListValue(Vector(red, green, blue))
+
+&gt;&gt;&gt; ToValue[Vector[<span class="std">Int</span>]].apply(Vector(<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>))
+ListValue(Vector(<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>))</pre></div></div>
+    </li><li name="uritemplate4s.ToValue#stringToStringValue" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="stringToStringValue:uritemplate4s.ToStringValue[String]"></a><a id="stringToStringValue:ToStringValue[String]"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ToValue$.html#seqTuplesToValue[T&lt;:Seq[(String,String)]]:uritemplate4s.ToValue[T]" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">seqTuplesToValue</span><span class="tparams">[<span name="T">T &lt;: <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)]</span>]</span><span class="result">: <a href="ToValue.html" class="extype" name="uritemplate4s.ToValue">ToValue</a>[<span class="extype" name="uritemplate4s.ToValue.seqTuplesToValue.T">T</span>]</span>
-      </span>
-      
-      
-    </li><li name="uritemplate4s.ToValue#stringToValue" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="stringToValue:uritemplate4s.ToValue[String]"></a><a id="stringToValue:ToValue[String]"></a>
-      <span class="permalink">
-      <a href="../uritemplate4s/ToValue$.html#stringToValue:uritemplate4s.ToValue[String]" title="Permalink">
+      <a href="../uritemplate4s/ToValue$.html#stringToStringValue:uritemplate4s.ToStringValue[String]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -538,10 +632,12 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">stringToValue</span><span class="result">: <a href="ToValue.html" class="extype" name="uritemplate4s.ToValue">ToValue</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+        <span class="name">stringToStringValue</span><span class="result">: <a href="ToStringValue.html" class="extype" name="uritemplate4s.ToStringValue">ToStringValue</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       
-      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"><p></p><pre>&gt;&gt;&gt; <span class="kw">import</span> uritemplate4s._
+&gt;&gt;&gt; ToValue[<span class="std">String</span>].apply(<span class="lit">"woo"</span>)
+StringValue(woo)</pre></div></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a><a id="synchronized[T0](⇒T0):T0"></a>
       <span class="permalink">
@@ -642,6 +738,22 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="uritemplate4s.ToValue.WeekDays" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="WeekDays"></a><a id="WeekDays:WeekDays"></a>
+      <span class="permalink">
+      <a href="../uritemplate4s/ToValue$.html#WeekDays" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="ToValue$$WeekDays$.html"><span class="name">WeekDays</span></a><span class="result"> extends <span class="extype" name="scala.Enumeration">Enumeration</span></span>
+      </span>
+      
+      
     </li>
               </ol>
             </div>

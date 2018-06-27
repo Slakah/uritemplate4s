@@ -130,6 +130,10 @@
                         <a class="class" href="StringValue.html" title="A single string value for template substitution."></a>
                         <a href="StringValue.html" title="A single string value for template substitution.">StringValue</a>
                       </li><li class="current-entities indented1">
+                        <a class="object" href="ToStringValue$.html" title=""></a>
+                        <a class="trait" href="ToStringValue.html" title="Type class that provides a conversion from A to String."></a>
+                        <a href="ToStringValue.html" title="Type class that provides a conversion from A to String.">ToStringValue</a>
+                      </li><li class="current-entities indented1">
                         <a class="object" href="ToValue$.html" title=""></a>
                         <a class="trait" href="ToValue.html" title="Type class that provides a conversion from A to Value."></a>
                         <a href="ToValue.html" title="Type class that provides a conversion from A to Value.">ToValue</a>
@@ -316,6 +320,26 @@
       </span>
       
       <p class="shortcomment cmt">A single string value for template substitution.</p>
+    </li><li name="uritemplate4s.ToStringValue" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="ToStringValue[A]extendsToValue[A]"></a><a id="ToStringValue[A]:ToStringValue[A]"></a>
+      <span class="permalink">
+      <a href="../uritemplate4s/index.html#ToStringValue[A]extendsToValue[A]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a title="Type class that provides a conversion from A to String." href="ToStringValue.html"><span class="name">ToStringValue</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="ToValue.html" class="extype" name="uritemplate4s.ToValue">ToValue</a>[<span class="extype" name="uritemplate4s.ToStringValue.A">A</span>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">Type class that provides a conversion from A to String.</p><div class="fullcomment"><div class="comment cmt"><p>Type class that provides a conversion from A to String.
+This is used to define a specific type class for strings,
+to be used for the elements of <a href="ListValue.html" class="extype" name="uritemplate4s.ListValue">ListValue</a> and the values
+of <a href="AssociativeArray.html" class="extype" name="uritemplate4s.AssociativeArray">AssociativeArray</a>.
+</p></div></div>
     </li><li name="uritemplate4s.ToValue" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="ToValue[A]extendsAnyRef"></a><a id="ToValue[A]:ToValue[A]"></a>
       <span class="permalink">
@@ -333,9 +357,9 @@
       
       <p class="shortcomment cmt">Type class that provides a conversion from A to <a href="Value.html" class="extype" name="uritemplate4s.Value">Value</a>.</p>
     </li><li name="uritemplate4s.UriTemplate" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="UriTemplateextendsAnyRef"></a><a id="UriTemplate:UriTemplate"></a>
+      <a id="UriTemplateextendsUriTemplateBasewithUriTemplateArities"></a><a id="UriTemplate:UriTemplate"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/index.html#UriTemplateextendsAnyRef" title="Permalink">
+      <a href="../uritemplate4s/index.html#UriTemplateextendsUriTemplateBasewithUriTemplateArities" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -344,7 +368,7 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a title="" href="UriTemplate.html"><span class="name">UriTemplate</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <a title="" href="UriTemplate.html"><span class="name">UriTemplate</span></a><span class="result"> extends <span class="extype" name="uritemplate4s.UriTemplateBase">UriTemplateBase</span> with <span class="extype" name="uritemplate4s.UriTemplateArities">UriTemplateArities</span></span>
       </span>
       
       
@@ -372,7 +396,23 @@
         <div class="values members">
               <h3>Value Members</h3>
               <ol>
-                <li name="uritemplate4s.ToValue" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+                <li name="uritemplate4s.ToStringValue" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ToStringValue"></a><a id="ToStringValue:ToStringValue"></a>
+      <span class="permalink">
+      <a href="../uritemplate4s/index.html#ToStringValue" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="ToStringValue$.html"><span class="name">ToStringValue</span></a>
+      </span>
+      
+      
+    </li><li name="uritemplate4s.ToValue" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ToValue"></a><a id="ToValue:ToValue"></a>
       <span class="permalink">
       <a href="../uritemplate4s/index.html#ToValue" title="Permalink">
