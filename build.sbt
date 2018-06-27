@@ -20,9 +20,7 @@ lazy val scalajsDomVersion = "0.9.2"
 lazy val utestVersion = "0.6.0"
 
 lazy val docs = project
-  .enablePlugins(MicrositesPlugin)
-  .enablePlugins(SiteScaladocPlugin)
-  .enablePlugins(ScalaJSPlugin)
+  .enablePlugins(MicrositesPlugin, SiteScaladocPlugin, GhpagesPlugin, SiteScaladocPlugin, ScalaJSPlugin)
   .dependsOn(coreJS)
   .settings(moduleName := "uritemplate4s-docs")
   .settings(
@@ -141,9 +139,10 @@ lazy val docsSettings = Seq(
     )
   ),
   micrositeGitterChannel := false, // enable when configured
-  micrositePushSiteWith := GitHub4s,
+  micrositePushSiteWith := GHPagesPlugin,
   micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
   micrositeJsDirectory := (managedResourceDirectories in Compile).value.head / "microsite" / "js",
+  git.remoteRepo := "git@github.com:slakah/uritemplate4s.git",
   (includeFilter in makeSite) := (includeFilter in makeSite).value || "*.js.map",
   micrositeFullOptJS := {
     val jsFile = (fullOptJS in Compile).value.data
@@ -158,14 +157,7 @@ lazy val docsSettings = Seq(
   },
   (mainClass in Compile) := Some("uritemplate4s.demo.Playground"),
   scalaJSUseMainModuleInitializer := true,
-  makeMicrosite := Def.sequential(
-    micrositeFullOptJS,
-    microsite,
-    tut,
-    micrositeTutExtraMdFiles,
-    makeSite,
-    micrositeConfig
-  ).value
+  makeMicrosite := makeMicrosite.dependsOn(micrositeFullOptJS).value
 ) ++ SiteScaladocPlugin.scaladocSettings(SiteScaladoc, mappings in (Compile, packageDoc) in coreJVM, "api/latest")
 
 lazy val noPublishSettings = Seq(
