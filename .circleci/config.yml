@@ -58,8 +58,14 @@ jobs:
           name: install jekyll
           command: sudo apt-get update && sudo apt-get install jekyll
       - run:
+          name: git config
+          command: |
+            git config --global user.email "circleci@noreply.circleci.com"
+            git config --global user.name "circleci"
+      - run:
           name: publish microsite
-          command: sbt "publishMicrosite"
+          command: |
+            sbt ";set docs/git.remoteRepo := \"https://$GITHUB_TOKEN@github.com/Slakah/uritemplate4s.git\";publishMicrosite"
 
 workflows:
   version: 2
