@@ -26,7 +26,7 @@ jobs:
           - v1-dependencies-
       - run:
           name: build
-          command: sbt ";scalafixTest;test:compile"
+          command: sbt ";scalafixEnable;scalafixTest;test:compile"
       - save_cache:
           paths:
             - ~/.ivy2/cache
