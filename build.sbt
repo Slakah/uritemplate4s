@@ -18,7 +18,11 @@ lazy val publishSettings = Seq(
   publishTo := sonatypePublishTo.value,
   autoAPIMappings := true,
   useGpg := false,
-  apiURL := Some(url("https://slakah.github.io/uritemplate4s/api/latest/uritemplate4s/"))
+  apiURL := Some(url("https://slakah.github.io/uritemplate4s/api/latest/uritemplate4s/")),
+  credentials ++= (for {
+    username <- sys.env.get("SONATYPE_USERNAME")
+    password <- sys.env.get("SONATYPE_PASSWORD")
+  } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
 )
 
 lazy val catsVersion = "1.0.1"
