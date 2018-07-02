@@ -2,4 +2,4 @@
 set -ue
 export SBT_GHPAGES_COMMIT_MESSAGE="updated site [ci skip]"
 
-exec ";set docs/git.remoteRepo := \"https://$GITHUB_TOKEN@github.com/Slakah/uritemplate4s.git\";publishMicrosite"
+exec sbt ";set docs/git.remoteRepo := \"https://$GITHUB_TOKEN@github.com/Slakah/uritemplate4s.git\";publishMicrosite"
