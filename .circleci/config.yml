@@ -18,12 +18,12 @@ jobs:
       - run:
           name: gen cache key
           command: |
-                find . -type f -name "*.sbt" -exec md5sum "{}" + | sort > /tmp/sbt-hash.txt
+            find . -type f -name "*.sbt" -exec md5sum "{}" + | sort > /tmp/sbt-hash.txt
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "/tmp/sbt-hash.txt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+          - v1-dependencies-{{ checksum "/tmp/sbt-hash.txt" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
       - run:
           name: build
           command: sbt ";scalafixTest;test:compile"
@@ -51,9 +51,9 @@ jobs:
             find . -type f -name "*.sbt" -exec md5sum "{}" + | sort > /tmp/sbt-hash.txt
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "/tmp/sbt-hash.txt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+          - v1-dependencies-{{ checksum "/tmp/sbt-hash.txt" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
       - run:
           name: install jekyll
           command: sudo apt-get update && sudo apt-get install jekyll
@@ -64,7 +64,8 @@ jobs:
             git config --global user.name "circleci"
       - run:
           name: publish microsite
-          command: ./bin/publish-site.sh
+          command: |
+            sbt ";set docs/git.remoteRepo := \"https://$GITHUB_TOKEN@github.com/Slakah/uritemplate4s.git\";publishMicrosite"
 
 workflows:
   version: 2
