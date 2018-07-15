@@ -23,13 +23,17 @@ object ToValue {
     * >>> import uritemplate4s._
     * >>> ToValue[String].apply("woo")
     * StringValue(woo)
+    *
+    * >>> ToValue[Int].apply(42)
+    * StringValue(42)
+    *
+    * >>> ToValue[Long].apply(42L)
+    * StringValue(42)
     * }}}
     */
   implicit val stringToStringValue: ToStringValue[String] = (s: String) => s
-  implicit val charToStringValue: ToStringValue[Char] = (c: Char) => String.valueOf(c)
   implicit val intToStringValue: ToStringValue[Int] = (i: Int) => String.valueOf(i)
   implicit val longToStringValue: ToStringValue[Long] = (l: Long) => String.valueOf(l)
-  implicit val booleanToStringValue: ToStringValue[Boolean] = (b: Boolean) => String.valueOf(b)
 
   /**
     * {{{
@@ -45,6 +49,12 @@ object ToValue {
   /**
     * {{{
     * >>> import uritemplate4s._
+    * >>> ToValue[Seq[String]].apply(Seq("red", "green", "blue"))
+    * ListValue(List(red, green, blue))
+    *
+    * >>> ToValue[List[String]].apply(List("red", "green", "blue"))
+    * ListValue(List(red, green, blue))
+    *
     * >>> ToValue[Vector[String]].apply(Vector("red", "green", "blue"))
     * ListValue(Vector(red, green, blue))
     *
@@ -52,8 +62,12 @@ object ToValue {
     * ListValue(Vector(1, 2, 3))
     * }}}
     */
-  implicit def seqToValue[A, S[A] <: Seq[A]](implicit toValueA: ToStringValue[A]): ToValue[S[A]] =
-    (seq: S[A]) => ListValue(seq.map(toValueA.asString))
+  implicit def seqToValue[A](implicit toValueA: ToStringValue[A]): ToValue[Seq[A]] =
+    (seq: Seq[A]) => ListValue(seq.map(toValueA.asString))
+  implicit def listToValue[A](implicit toValueA: ToStringValue[A]): ToValue[List[A]] =
+    (list: List[A]) => ListValue(list.map(toValueA.asString))
+  implicit def vectorToValue[A](implicit toValueA: ToStringValue[A]): ToValue[Vector[A]] =
+    (seq: Vector[A]) => ListValue(seq.map(toValueA.asString))
 
   /**
     * {{{
@@ -62,10 +76,30 @@ object ToValue {
     * AssociativeArray(List((one,1), (two,2), (three,3)))
     * }}}
     */
-  implicit def mapLikeToValue[V, M[V] <: Map[String, V]](implicit toValueV: ToStringValue[V]): ToValue[M[V]] =
-    (m: M[V]) => AssociativeArray(m.map {
+  implicit def mapToValue[V](implicit toValueV: ToStringValue[V]): ToValue[Map[String, V]] =
+    (m: Map[String, V]) => AssociativeArray(m.map {
       case (k, v) => k -> toValueV.asString(v)
     }.toList)
+
+  /**
+    * {{{
+    * >>> import uritemplate4s._
+    * >>> ToValue[Seq[(String, Int)]].apply(Seq("one" -> 1, "two" -> 2, "three" -> 3))
+    * AssociativeArray(List((one,1), (two,2), (three,3)))
+    *
+    * >>> ToValue[List[(String, Int)]].apply(List("one" -> 1, "two" -> 2, "three" -> 3))
+    * AssociativeArray(List((one,1), (two,2), (three,3)))
+    *
+    * >>> ToValue[Vector[(String, Int)]].apply(Vector("one" -> 1, "two" -> 2, "three" -> 3))
+    * AssociativeArray(Vector((one,1), (two,2), (three,3)))
+    * }}}
+    */
+  implicit def seqTuplesToValue[A](implicit toValueA: ToStringValue[A]): ToValue[Seq[(String, A)]] =
+    (seq: Seq[(String, A)]) => AssociativeArray(seq.map { case (k, v) => k -> toValueA.asString(v) })
+  implicit def listTuplesToValue[A](implicit toValueA: ToStringValue[A]): ToValue[List[(String, A)]] =
+    (list: List[(String, A)]) => AssociativeArray(list.map { case (k, v) => k -> toValueA.asString(v) })
+  implicit def vectorTuplesToValue[A](implicit toValueA: ToStringValue[A]): ToValue[Vector[(String, A)]] =
+    (vector: Vector[(String, A)]) => AssociativeArray(vector.map { case (k, v) => k -> toValueA.asString(v) })
 }
 
 /**

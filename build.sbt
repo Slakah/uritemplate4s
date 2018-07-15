@@ -152,6 +152,7 @@ lazy val docsSettings = Seq(
       Map("title" -> "License",   "section" -> "License",   "position" -> "101")
     )
   ),
+  scalacOptions in Tut --= Seq("-Ywarn-unused-import", "-Ywarn-unused:imports"),
   micrositeGitterChannel := false, // enable when configured
   micrositePushSiteWith := GHPagesPlugin,
   micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
