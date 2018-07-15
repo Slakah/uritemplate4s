@@ -107,10 +107,10 @@
                         <a href="AssociativeArray.html" title="Name value pairs for template substitution.">AssociativeArray</a>
                       </li><li class="current-entities indented1">
                         <span class="separator"></span>
-                        <a class="trait" href="" title="Error when a UriTemplate is expanded."></a>
-                        <a href="" title="Error when a UriTemplate is expanded.">ExpandError</a>
+                        <a class="trait" href="ExpandError.html" title="Error when a UriTemplate is expanded."></a>
+                        <a href="ExpandError.html" title="Error when a UriTemplate is expanded.">ExpandError</a>
                       </li><li class="current-entities indented1">
-                        <a class="object" href="ExpandResult$.html" title=""></a>
+                        <a class="object" href="" title=""></a>
                         <a class="trait" href="ExpandResult.html" title="A successfully parsed uri template can always be expanded, but there might be some warnings associated."></a>
                         <a href="ExpandResult.html" title="A successfully parsed uri template can always be expanded, but there might be some warnings associated.">ExpandResult</a>
                       </li><li class="current-entities indented1">
@@ -154,40 +154,37 @@
             </div>
           </div>
           <div id="content">
-            <body class="trait type">
+            <body class="object value">
       <div id="definition">
-        <div class="big-circle trait">t</div>
+        <a href="ExpandResult.html" title="See companion trait"><div class="big-circle object-companion-trait">o</div></a>
         <p id="owner"><a href="index.html" class="extype" name="uritemplate4s">uritemplate4s</a></p>
-        <h1>ExpandError<span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html" title="Permalink">
+        <h1><a href="ExpandResult.html" title="See companion trait">ExpandResult</a><span class="permalink">
+      <a href="../uritemplate4s/ExpandResult$.html" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span></h1>
-        <h3><span class="morelinks"></span></h3>
+        <h3><span class="morelinks"><div>
+            Companion <a href="ExpandResult.html" title="See companion trait">trait ExpandResult</a>
+          </div></span></h3>
       </div>
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier">sealed </span>
-        <span class="kind">trait</span>
+        <span class="modifier"></span>
+        <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">ExpandError</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">ExpandResult</span>
       </span>
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Error when a <a href="UriTemplate.html" class="extype" name="uritemplate4s.UriTemplate">UriTemplate</a> is expanded.</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
           </span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
-        </div><div class="toggleContainer block">
-            <span class="toggle">
-              Known Subclasses
-            </span>
-            <div class="subClasses hiddenContent"><a href="InvalidCombinationError.html" class="extype" name="uritemplate4s.InvalidCombinationError">InvalidCombinationError</a></div>
-          </div></div>
+        </div></div>
         
 
       <div id="mbrsel">
@@ -212,7 +209,7 @@
                   <span class="filtertype">Inherited<br />
                   </span>
                   <ol id="linearization">
-                    <li class="in" name="uritemplate4s.ExpandError"><span>ExpandError</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                    <li class="in" name="uritemplate4s.ExpandResult"><span>ExpandResult</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                   </ol>
                 </div><div class="ancestors">
               <span class="filtertype"></span>
@@ -232,36 +229,54 @@
         <div id="allMembers">
         
 
-        
-
-        <div class="values members">
-              <h3>Abstract Value Members</h3>
-              <ol><li name="uritemplate4s.ExpandError#message" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="message:String"></a>
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="uritemplate4s.ExpandResult.PartialSuccess" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="PartialSuccessextendsExpandResultwithProductwithSerializable"></a><a id="PartialSuccess:PartialSuccess"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#message:String" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#PartialSuccessextendsExpandResultwithProductwithSerializable" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
       <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
+        <span class="modifier">final </span>
+        <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">message</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <a title="The UriTemplate expansion was partially successful." href="ExpandResult$$PartialSuccess.html"><span class="name">PartialSuccess</span></a><span class="params">(<span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="error">error: <a href="ExpandError.html" class="extype" name="uritemplate4s.ExpandError">ExpandError</a></span>)</span><span class="result"> extends <a href="ExpandResult.html" class="extype" name="uritemplate4s.ExpandResult">ExpandResult</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
+      <p class="shortcomment cmt">The <a href="UriTemplate.html" class="extype" name="uritemplate4s.UriTemplate">UriTemplate</a> expansion was partially successful.</p><div class="fullcomment"><div class="comment cmt"><p>The <a href="UriTemplate.html" class="extype" name="uritemplate4s.UriTemplate">UriTemplate</a> expansion was partially successful.
+In most cases, this warning can be ignored.
+</p></div></div>
+    </li><li name="uritemplate4s.ExpandResult.Success" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SuccessextendsExpandResultwithProductwithSerializable"></a><a id="Success:Success"></a>
+      <span class="permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#SuccessextendsExpandResultwithProductwithSerializable" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a title="The UriTemplate was successfully expanded." href="ExpandResult$$Success.html"><span class="name">Success</span></a><span class="params">(<span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="ExpandResult.html" class="extype" name="uritemplate4s.ExpandResult">ExpandResult</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
       
+      <p class="shortcomment cmt">The <a href="UriTemplate.html" class="extype" name="uritemplate4s.UriTemplate">UriTemplate</a> was successfully expanded.</p>
     </li></ol>
             </div>
 
+        
+
         <div class="values members">
-              <h3>Concrete Value Members</h3>
+              <h3>Value Members</h3>
               <ol>
                 <li name="scala.AnyRef#!=" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a><a id="!=(Any):Boolean"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#!=(x$1:Any):Boolean" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#!=(x$1:Any):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -277,7 +292,7 @@
     </li><li name="scala.AnyRef###" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html###():Int" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html###():Int" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -293,7 +308,7 @@
     </li><li name="scala.AnyRef#==" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a><a id="==(Any):Boolean"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#==(x$1:Any):Boolean" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#==(x$1:Any):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -309,7 +324,7 @@
     </li><li name="scala.Any#asInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#asInstanceOf[T0]:T0" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#asInstanceOf[T0]:T0" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -325,7 +340,7 @@
     </li><li name="scala.AnyRef#clone" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a><a id="clone():AnyRef"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#clone():Object" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#clone():Object" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -349,7 +364,7 @@
     </li><li name="scala.AnyRef#eq" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a><a id="eq(AnyRef):Boolean"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#eq(x$1:AnyRef):Boolean" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#eq(x$1:AnyRef):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -365,7 +380,7 @@
     </li><li name="scala.AnyRef#equals" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="equals(x$1:Any):Boolean"></a><a id="equals(Any):Boolean"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#equals(x$1:Any):Boolean" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#equals(x$1:Any):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -381,7 +396,7 @@
     </li><li name="scala.AnyRef#finalize" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#finalize():Unit" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#finalize():Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -403,7 +418,7 @@
     </li><li name="scala.AnyRef#getClass" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#getClass():Class[_]" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#getClass():Class[_]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -422,7 +437,7 @@
     </li><li name="scala.AnyRef#hashCode" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#hashCode():Int" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#hashCode():Int" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -441,7 +456,7 @@
     </li><li name="scala.Any#isInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#isInstanceOf[T0]:Boolean" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#isInstanceOf[T0]:Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -457,7 +472,7 @@
     </li><li name="scala.AnyRef#ne" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a><a id="ne(AnyRef):Boolean"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#ne(x$1:AnyRef):Boolean" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#ne(x$1:AnyRef):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -473,7 +488,7 @@
     </li><li name="scala.AnyRef#notify" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#notify():Unit" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#notify():Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -492,7 +507,7 @@
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#notifyAll():Unit" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#notifyAll():Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -511,7 +526,7 @@
     </li><li name="scala.AnyRef#synchronized" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a><a id="synchronized[T0](⇒T0):T0"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#synchronized[T0](x$1:=&gt;T0):T0" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#synchronized[T0](x$1:=&gt;T0):T0" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -527,7 +542,7 @@
     </li><li name="scala.AnyRef#toString" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#toString():String" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#toString():String" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -543,7 +558,7 @@
     </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#wait():Unit" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#wait():Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -565,7 +580,7 @@
     </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait(x$1:Long,x$2:Int):Unit"></a><a id="wait(Long,Int):Unit"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#wait(x$1:Long,x$2:Int):Unit" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#wait(x$1:Long,x$2:Int):Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -587,7 +602,7 @@
     </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait(x$1:Long):Unit"></a><a id="wait(Long):Unit"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandError.html#wait(x$1:Long):Unit" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$.html#wait(x$1:Long):Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>

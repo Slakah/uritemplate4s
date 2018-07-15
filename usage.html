@@ -11,7 +11,7 @@
 <span class="c1">// rawTemplate: String = http://example.com/search{?q,lang}
 </span>
 <span class="k">val</span> <span class="n">parseResult</span> <span class="k">=</span> <span class="nc">UriTemplate</span><span class="o">.</span><span class="n">parse</span><span class="o">(</span><span class="n">rawTemplate</span><span class="o">)</span>
-<span class="c1">// parseResult: Either[uritemplate4s.ParseError,uritemplate4s.UriTemplate] = Right(uritemplate4s.ComponentsUriTemplate@462ca200)
+<span class="c1">// parseResult: Either[uritemplate4s.ParseError,uritemplate4s.UriTemplate] = Right(uritemplate4s.ComponentsUriTemplate@144b961c)
 </span></code></pre></div>
 
 <p>Because parsing a template can fail, the result is an <code class="highlighter-rouge">Either</code> of type <code class="highlighter-rouge">Either[ParseError, UriTemplate]</code>.</p>
@@ -28,7 +28,7 @@
   <span class="k">case</span> <span class="nc">Left</span><span class="o">(</span><span class="n">error</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">Exception</span><span class="o">(</span><span class="n">s</span><span class="s">"Unable to parse $rawTemplate, due to:\n${error.message}"</span><span class="o">)</span>
   <span class="k">case</span> <span class="nc">Right</span><span class="o">(</span><span class="n">parsedTemplate</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">parsedTemplate</span>
 <span class="o">}</span>
-<span class="c1">// template: uritemplate4s.UriTemplate = uritemplate4s.ComponentsUriTemplate@4e272f92
+<span class="c1">// template: uritemplate4s.UriTemplate = uritemplate4s.ComponentsUriTemplate@5afbd015
 </span></code></pre></div>
 
 <h2 id="template-expansion">Template Expansion</h2>
@@ -36,13 +36,14 @@
 <p>A template can be expanded by supplying tuples representing the name/value pairs to be used in expansion.</p>
 
 <div class="language-scala highlighter-rouge"><pre class="codehilite"><code><span class="n">template</span><span class="o">.</span><span class="n">expand</span><span class="o">(</span><span class="s">"q"</span> <span class="o">-&gt;</span> <span class="s">"After the Quake"</span><span class="o">,</span> <span class="s">"lang"</span> <span class="o">-&gt;</span> <span class="s">"en"</span><span class="o">)</span>
-<span class="c1">// res1: uritemplate4s.UriTemplate.Result = Success(http://example.com/search?q=After%20the%20Quake&amp;lang=en)
+<span class="c1">// res1: uritemplate4s.ExpandResult = Success(http://example.com/search?q=After%20the%20Quake&amp;lang=en)
 </span></code></pre></div>
 
-<p>In the previous example it should be noted that the resultant URI is wrapped in a <code class="highlighter-rouge">UriTemplate.Success</code>,
-this there are some possible soft failures which can occur during template expansion. Meaning an expansion
-result could be either a <code class="highlighter-rouge">Success</code> or a <code class="highlighter-rouge">PartialSuccess</code>. To extract the result from either case, the <code class="highlighter-rouge">.value</code>
-field can be used.</p>
+<p>In the previous example it should be noted that the resultant URI is wrapped in a <code class="highlighter-rouge">ExpandResult.Success</code>.
+There are some possible soft failures which can occur during template expansion, meaning an expansion
+result could be either a <code class="highlighter-rouge">ExpandResult.Success</code> or a <code class="highlighter-rouge">ExpandResult.PartialSuccess</code>.</p>
+
+<p>To extract the result from either case, the <code class="highlighter-rouge">.value</code> field can be used.</p>
 
 <div class="language-scala highlighter-rouge"><pre class="codehilite"><code><span class="k">val</span> <span class="n">uri</span> <span class="k">=</span> <span class="n">template</span><span class="o">.</span><span class="n">expand</span><span class="o">(</span><span class="s">"q"</span> <span class="o">-&gt;</span> <span class="s">"After the Quake"</span><span class="o">,</span> <span class="s">"lang"</span> <span class="o">-&gt;</span> <span class="s">"en"</span><span class="o">).</span><span class="n">value</span>
 <span class="c1">// uri: String = http://example.com/search?q=After%20the%20Quake&amp;lang=en
@@ -53,7 +54,7 @@ field can be used.</p>
 <p>List expansion is supported as defined in <a href="https://tools.ietf.org/html/rfc6570#page-8">RFC 6570 Level 4</a>.</p>
 
 <div class="language-scala highlighter-rouge"><pre class="codehilite"><code><span class="k">val</span> <span class="n">listTemplate</span> <span class="k">=</span> <span class="nc">UriTemplate</span><span class="o">.</span><span class="n">parse</span><span class="o">(</span><span class="s">"/search{?list}"</span><span class="o">).</span><span class="n">right</span><span class="o">.</span><span class="n">get</span>
-<span class="c1">// listTemplate: uritemplate4s.UriTemplate = uritemplate4s.ComponentsUriTemplate@51df48e3
+<span class="c1">// listTemplate: uritemplate4s.UriTemplate = uritemplate4s.ComponentsUriTemplate@2eaf7cee
 </span>
 <span class="k">val</span> <span class="n">seq</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"red"</span><span class="o">,</span> <span class="s">"green"</span><span class="o">,</span> <span class="s">"blue"</span><span class="o">)</span>
 <span class="c1">// seq: Seq[String] = List(red, green, blue)
@@ -74,7 +75,7 @@ field can be used.</p>
 <p>Associative array expansion is supported as defined in <a href="https://tools.ietf.org/html/rfc6570#page-8">RFC 6570 Level 4</a>.</p>
 
 <div class="language-scala highlighter-rouge"><pre class="codehilite"><code><span class="k">val</span> <span class="n">assocTemplate</span> <span class="k">=</span> <span class="nc">UriTemplate</span><span class="o">.</span><span class="n">parse</span><span class="o">(</span><span class="s">"/search{?address*}"</span><span class="o">).</span><span class="n">right</span><span class="o">.</span><span class="n">get</span>
-<span class="c1">// assocTemplate: uritemplate4s.UriTemplate = uritemplate4s.ComponentsUriTemplate@750be769
+<span class="c1">// assocTemplate: uritemplate4s.UriTemplate = uritemplate4s.ComponentsUriTemplate@628487e4
 </span>
 <span class="k">val</span> <span class="n">addressMap</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">"city"</span> <span class="o">-&gt;</span> <span class="s">"Manchester"</span><span class="o">,</span> <span class="s">"country"</span> <span class="o">-&gt;</span> <span class="s">"England"</span><span class="o">,</span> <span class="s">"postcode"</span> <span class="o">-&gt;</span> <span class="s">"M2 5DB"</span><span class="o">)</span>
 <span class="c1">// addressMap: scala.collection.immutable.Map[String,String] = Map(city -&gt; Manchester, country -&gt; England, postcode -&gt; M2 5DB)
