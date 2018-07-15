@@ -8,7 +8,6 @@ object Boilerplate {
       |package uritemplate4s
       |
       |import syntax._
-      |import UriTemplate.Result
       |
       |private[uritemplate4s] trait UriTemplateArities extends UriTemplateBase {
       |${methods.split("\n").map(method => s"  $method").mkString("\n")}
@@ -21,7 +20,7 @@ object Boilerplate {
       val genericTypes = range.map(i => s"A$i : ToValue").mkString(", ")
       val args = range.map(i => s"a$i: (String, A$i)").mkString(", ")
       val params = range.map(i => s"a$i._1 -> a$i._2.toValue").mkString(", ")
-      s"def expand[$genericTypes]($args): Result = expandVars($params)"
+      s"def expand[$genericTypes]($args): ExpandResult = expandVars($params)"
     }.mkString("\n")
   )
 
