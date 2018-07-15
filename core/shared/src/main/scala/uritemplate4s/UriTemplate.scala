@@ -2,7 +2,6 @@ package uritemplate4s
 
 import fastparse.all.Parsed
 import uritemplate4s.ListSyntax._
-import uritemplate4s.UriTemplate._
 
 private[uritemplate4s] trait UriTemplateBase {
   /**
@@ -10,14 +9,14 @@ private[uritemplate4s] trait UriTemplateBase {
     * @param vars name value pairs to be substituted in the template.
     * @return the expanded template.
     */
-  def expandVars(vars: (String, Value)*): Result
+  def expandVars(vars: (String, Value)*): ExpandResult
 }
 
 trait UriTemplate extends UriTemplateBase with UriTemplateArities
 
 private final class ComponentsUriTemplate(components: List[Component]) extends UriTemplate {
 
-  override def expandVars(vars: (String, Value)*): Result = {
+  override def expandVars(vars: (String, Value)*): ExpandResult = {
     lazy val varsMap = vars.toMap
 
     val errorsAndLiteralsList: List[(List[ExpandError], List[Literal])] = for {
@@ -50,9 +49,9 @@ private final class ComponentsUriTemplate(components: List[Component]) extends U
     }.mkString
 
     if (errorList.isEmpty) {
-      Success(result)
+      ExpandResult.Success(result)
     } else {
-      PartialSuccess(result, InvalidCombinationError(errorList.mkString(", ")))
+      ExpandResult.PartialSuccess(result, InvalidCombinationError(errorList.mkString(", ")))
     }
   }
 
@@ -188,32 +187,6 @@ object UriTemplate {
       case Parsed.Success(components, _) => Right(new ComponentsUriTemplate(components))
       case err: Parsed.Failure => Left(MalformedUriTemplateError(err.index, err.msg))
     }
-  }
-
-  /**
-    * A successfully parsed uri template can always be expanded, but there might be some
-    * warnings associated.
-    */
-  sealed trait Result {
-    def value: String
-
-    def toEither: Either[ExpandError, String]
-  }
-
-  /** The [[UriTemplate]] was successfully expanded. */
-  final case class Success(override val value: String) extends Result {
-    override def toEither: Either[ExpandError, String] = Right(value)
-  }
-
-  /**
-    * The [[UriTemplate]] expansion was partially successful.
-    * In most cases, this warning can be ignored.
-    */
-  final case class PartialSuccess(
-    override val value: String,
-    error: ExpandError
-  ) extends Result {
-    override def toEither: Either[ExpandError, String] = Left(error)
   }
 }
 

@@ -43,10 +43,11 @@ A template can be expanded by supplying tuples representing the name/value pairs
 template.expand("q" -> "After the Quake", "lang" -> "en")
 ```
 
-In the previous example it should be noted that the resultant URI is wrapped in a `UriTemplate.Success`,
-this there are some possible soft failures which can occur during template expansion. Meaning an expansion
-result could be either a `Success` or a `PartialSuccess`. To extract the result from either case, the `.value`
-field can be used.
+In the previous example it should be noted that the resultant URI is wrapped in a `ExpandResult.Success`.
+There are some possible soft failures which can occur during template expansion, meaning an expansion
+result could be either a `ExpandResult.Success` or a `ExpandResult.PartialSuccess`.
+
+To extract the result from either case, the `.value` field can be used.
 
 ```tut:book
 val uri = template.expand("q" -> "After the Quake", "lang" -> "en").value
