@@ -1,4 +1,4 @@
-addSbtPlugin("com.47deg"  % "sbt-microsites" % "0.7.16")
+addSbtPlugin("com.47deg"  % "sbt-microsites" % "0.7.21")
 addSbtPlugin("com.github.tkawachi" % "sbt-doctest" % "0.8.0")
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.0")
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.6.0-M5")
