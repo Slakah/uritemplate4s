@@ -60,7 +60,7 @@ object ExternalTests extends TestSuite {
 
   private def test()(implicit path: TestPath): Unit = {
     val tests = parseTests(path.value.mkString)
-    for {
+    val _ = for {
       Test(name, _, variables, testcases) <- tests
       (template, expectedResult) <- testcases
     } yield {
@@ -75,6 +75,7 @@ object ExternalTests extends TestSuite {
           assertMatch(result) { case Left(_) => }
       }
     }
+    ()
   }
 
   private def parseTests(path: String) = {
