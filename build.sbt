@@ -27,6 +27,7 @@ lazy val publishSettings = Seq(
 
 lazy val catsVersion = "1.0.1"
 lazy val circeVersion = "0.9.1"
+lazy val contextualVersion = "1.1.0"
 lazy val fastparseVersion = "1.0.0"
 lazy val monixVersion = "3.0.0-M3"
 lazy val scalajsDomVersion = "0.9.2"
@@ -68,6 +69,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     sourceGenerators in Compile += (sourceManaged in Compile).map(Boilerplate.gen).taskValue,
     doctestTestFramework := DoctestTestFramework.MicroTest,
     libraryDependencies ++= Seq(
+      "com.propensive" %%% "contextual" % contextualVersion,
       "com.lihaoyi" %%% "fastparse" % fastparseVersion
     ) ++ Seq(
       "org.typelevel" %%% "cats-core" % catsVersion,
