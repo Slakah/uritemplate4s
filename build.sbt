@@ -32,6 +32,8 @@ lazy val monixVersion = "3.0.0-M3"
 lazy val scalajsDomVersion = "0.9.2"
 lazy val utestVersion = "0.6.0"
 
+addCommandAlias("validate", ";scalafixEnable;scalafixTest;test:compile;test;tut")
+
 lazy val docs = project
   .enablePlugins(MicrositesPlugin, SiteScaladocPlugin, GhpagesPlugin, SiteScaladocPlugin, ScalaJSPlugin)
   .dependsOn(coreJS)

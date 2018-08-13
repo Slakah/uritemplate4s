@@ -25,17 +25,14 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
       - run:
-          name: build
-          command: sbt ";scalafixEnable;scalafixTest;test:compile"
+          name: validate
+          command: sbt validate
       - save_cache:
           paths:
             - ~/.ivy2/cache
             - ~/.sbt
             - ~/.cache
           key: v1-dependencies-{{ checksum "/tmp/sbt-hash.txt" }}
-      - run:
-          name: test
-          command: sbt "test"
   publish:
     docker:
       - image: circleci/openjdk:8-jdk-node
