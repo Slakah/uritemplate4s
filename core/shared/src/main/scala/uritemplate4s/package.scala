@@ -13,8 +13,8 @@ package object uritemplate4s {
   /**
     * Parse and validate a Uri Template at compile time.
     * {{{
-    * >>> uritemplate"http://{name}.com".expand("name" -> "example").value
-    * http://example.com
+    * >>> Right(uritemplate"http://{name}.com") == UriTemplate.parse("http://{name}.com")
+    * true
     *
     * >>> compileError("""uritemplate"http://{invalid" """).msg
     * not a valid URI Template, "}":1:16 ...""
