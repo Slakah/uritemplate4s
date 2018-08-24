@@ -13,6 +13,7 @@ package object uritemplate4s {
   /**
     * Parse and validate a Uri Template at compile time.
     * {{{
+    * >>> import uritemplate4s._
     * >>> Right(uritemplate"http://{name}.com") == UriTemplate.parse("http://{name}.com")
     * true
     *
