@@ -10,7 +10,7 @@ lazy val commonSettings = Seq(
     s"scm:git@github.com:Slakah/${name.value}.git"
   )),
   version := "0.1.0-SNAPSHOT",
-  scalaVersion := "2.12.4",
+  scalaVersion := "2.12.6",
   scalacOptions ++= scalacOpts :+ "-Yrangepos" // needed for scalafix
 )
 

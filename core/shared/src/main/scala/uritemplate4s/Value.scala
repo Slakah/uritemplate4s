@@ -20,7 +20,6 @@ object ToValue {
 
   /**
     * {{{
-    * >>> import uritemplate4s._
     * >>> ToValue[String].apply("woo")
     * StringValue(woo)
     *
@@ -37,18 +36,15 @@ object ToValue {
 
   /**
     * {{{
-    * >>> import uritemplate4s._
     * >>> object WeekDays extends Enumeration { val Mon,Tue,Wed,Thu,Fri = Value }
     * >>> ToValue[WeekDays.Value].apply(WeekDays.Tue)
     * StringValue(Tue)
     * }}}
     */
   implicit def enumToStringValue[E <: Enumeration]: ToStringValue[E#Value] = (e: E#Value) => e.toString
-  object WeekDays extends Enumeration { val Mon,Tue,Wed,Thu,Fri = Value }
 
   /**
     * {{{
-    * >>> import uritemplate4s._
     * >>> ToValue[Seq[String]].apply(Seq("red", "green", "blue"))
     * ListValue(List(red, green, blue))
     *
@@ -71,7 +67,6 @@ object ToValue {
 
   /**
     * {{{
-    * >>> import uritemplate4s._
     * >>> ToValue[Map[String, Int]].apply(Map("one" -> 1, "two" -> 2, "three" -> 3))
     * AssociativeArray(List((one,1), (two,2), (three,3)))
     * }}}
@@ -83,7 +78,6 @@ object ToValue {
 
   /**
     * {{{
-    * >>> import uritemplate4s._
     * >>> ToValue[Seq[(String, Int)]].apply(Seq("one" -> 1, "two" -> 2, "three" -> 3))
     * AssociativeArray(List((one,1), (two,2), (three,3)))
     *
