@@ -14,7 +14,7 @@ private[uritemplate4s] trait UriTemplateBase {
 
 trait UriTemplate extends UriTemplateBase with UriTemplateArities
 
-private final class ComponentsUriTemplate(components: List[Component]) extends UriTemplate {
+private final case class ComponentsUriTemplate(private val components: List[Component]) extends UriTemplate {
 
   override def expandVars(vars: (String, Value)*): ExpandResult = {
     lazy val varsMap = vars.toMap
