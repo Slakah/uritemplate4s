@@ -147,6 +147,14 @@
                         <a href="UriTemplate.html" title="">UriTemplate</a>
                       </li><li class="current-entities indented1">
                         <span class="separator"></span>
+                        <a class="class" href="package$$UriTemplateStringContext.html" title="Parse and validate a Uri Template at compile time."></a>
+                        <a href="package$$UriTemplateStringContext.html" title="Parse and validate a Uri Template at compile time.">UriTemplateStringContext</a>
+                      </li><li class="current-entities indented1">
+                        <span class="separator"></span>
+                        <a class="object" href="package$$UriTemplateVerifier$.html" title=""></a>
+                        <a href="package$$UriTemplateVerifier$.html" title="">UriTemplateVerifier</a>
+                      </li><li class="current-entities indented1">
+                        <span class="separator"></span>
                         <a class="trait" href="Value.html" title="A value can be substituted in a template."></a>
                         <a href="Value.html" title="A value can be substituted in a template.">Value</a>
                       </li>
@@ -177,7 +185,12 @@
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"></div>
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <span class="toggle">
+            Linear Supertypes
+          </span>
+          <div class="superTypes hiddenContent"><a href="http://www.scala-lang.org/api/2.12.4/scala/collection/immutable/List.html#scala.AnyRef" class="extype" name="scala.collection.immutable.List">AnyRef</a>, <a href="http://www.scala-lang.org/api/2.12.4/scala/collection/immutable/List.html#scala.Any" class="extype" name="scala.collection.immutable.List">Any</a></div>
+        </div></div>
         
 
       <div id="mbrsel">
@@ -195,10 +208,22 @@
             <ol>
               
               <li class="alpha in"><span>Alphabetic</span></li>
-              
+              <li class="inherit out"><span>By Inheritance</span></li>
             </ol>
           </div>
-          
+          <div class="ancestors">
+                  <span class="filtertype">Inherited<br />
+                  </span>
+                  <ol id="linearization">
+                    <li class="in" name="uritemplate4s"><span>uritemplate4s</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  </ol>
+                </div><div class="ancestors">
+              <span class="filtertype"></span>
+              <ol>
+                <li class="hideall out"><span>Hide All</span></li>
+                <li class="showall in"><span>Show All</span></li>
+              </ol>
+            </div>
           <div id="visbl">
               <span class="filtertype">Visibility</span>
               <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
@@ -393,6 +418,26 @@ of <a href="AssociativeArray.html" class="extype" name="uritemplate4s.Associativ
       </span>
       
       
+    </li><li name="uritemplate4s.UriTemplateStringContext" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="UriTemplateStringContextextendsAnyVal"></a><a id="UriTemplateStringContext:UriTemplateStringContext"></a>
+      <span class="permalink">
+      <a href="../uritemplate4s/index.html#UriTemplateStringContextextendsAnyVal" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">implicit final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a title="Parse and validate a Uri Template at compile time." href="package$$UriTemplateStringContext.html"><span class="name">UriTemplateStringContext</span></a><span class="result"> extends <a href="http://www.scala-lang.org/api/2.12.4/scala/collection/immutable/List.html#scala.AnyVal" class="extype" name="scala.collection.immutable.List">AnyVal</a></span>
+      </span>
+      
+      <p class="shortcomment cmt">Parse and validate a Uri Template at compile time.</p><div class="fullcomment"><div class="comment cmt"><p>Parse and validate a Uri Template at compile time.</p><pre>&gt;&gt;&gt; Right(uritemplate<span class="lit">"http://{name}.com"</span>) == UriTemplate.parse(<span class="lit">"http://{name}.com"</span>)
+<span class="kw">true</span>
+
+&gt;&gt;&gt; compileError(<span class="lit">""</span><span class="lit">"uritemplate"</span>http:<span class="cmt">//{invalid" """).msg</span>
+not a valid URI Template, <span class="lit">"}"</span>:<span class="num">1</span>:<span class="num">16</span> ...<span class="lit">""</span></pre></div></div>
     </li><li name="uritemplate4s.Value" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="ValueextendsAnyRef"></a><a id="Value:Value"></a>
       <span class="permalink">
@@ -481,6 +526,22 @@ of <a href="AssociativeArray.html" class="extype" name="uritemplate4s.Associativ
       </span>
       
       
+    </li><li name="uritemplate4s.UriTemplateVerifier" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="UriTemplateVerifier"></a><a id="UriTemplateVerifier:UriTemplateVerifier"></a>
+      <span class="permalink">
+      <a href="../uritemplate4s/index.html#UriTemplateVerifier" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="package$$UriTemplateVerifier$.html"><span class="name">UriTemplateVerifier</span></a><span class="result"> extends <span class="extype" name="contextual.Verifier">Verifier</span>[<a href="UriTemplate.html" class="extype" name="uritemplate4s.UriTemplate">UriTemplate</a>]</span>
+      </span>
+      
+      
     </li>
               </ol>
             </div>
@@ -491,7 +552,11 @@ of <a href="AssociativeArray.html" class="extype" name="uritemplate4s.Associativ
         </div>
 
         <div id="inheritedMembers">
-        
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <a href="http://www.scala-lang.org/api/2.12.4/scala/collection/immutable/List.html#scala.AnyRef" class="extype" name="scala.collection.immutable.List">AnyRef</a></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <a href="http://www.scala-lang.org/api/2.12.4/scala/collection/immutable/List.html#scala.Any" class="extype" name="scala.collection.immutable.List">Any</a></h3>
+            </div>
         
         </div>
 

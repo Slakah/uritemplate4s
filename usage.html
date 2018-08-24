@@ -11,7 +11,7 @@
 <span class="c1">// rawTemplate: String = http://example.com/search{?q,lang}
 </span>
 <span class="k">val</span> <span class="n">parseResult</span> <span class="k">=</span> <span class="nc">UriTemplate</span><span class="o">.</span><span class="n">parse</span><span class="o">(</span><span class="n">rawTemplate</span><span class="o">)</span>
-<span class="c1">// parseResult: Either[uritemplate4s.ParseError,uritemplate4s.UriTemplate] = Right(uritemplate4s.ComponentsUriTemplate@11d7a359)
+<span class="c1">// parseResult: Either[uritemplate4s.ParseError,uritemplate4s.UriTemplate] = Right(ComponentsUriTemplate(List(Encoded(http://example.com/search), Expression(Query,List(Varspec(q,EmptyModifier), Varspec(lang,EmptyModifier))))))
 </span></code></pre></div>
 
 <p>Because parsing a template can fail, the result is an <code class="highlighter-rouge">Either</code> of type <code class="highlighter-rouge">Either[ParseError, UriTemplate]</code>.</p>
@@ -28,7 +28,7 @@
   <span class="k">case</span> <span class="nc">Left</span><span class="o">(</span><span class="n">error</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">Exception</span><span class="o">(</span><span class="n">s</span><span class="s">"Unable to parse $rawTemplate, due to:\n${error.message}"</span><span class="o">)</span>
   <span class="k">case</span> <span class="nc">Right</span><span class="o">(</span><span class="n">parsedTemplate</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">parsedTemplate</span>
 <span class="o">}</span>
-<span class="c1">// template: uritemplate4s.UriTemplate = uritemplate4s.ComponentsUriTemplate@4aa70a38
+<span class="c1">// template: uritemplate4s.UriTemplate = ComponentsUriTemplate(List(Encoded(http://example.com/search), Expression(Query,List(Varspec(q,EmptyModifier), Varspec(lang,EmptyModifier)))))
 </span></code></pre></div>
 
 <h2 id="template-expansion">Template Expansion</h2>
@@ -54,7 +54,7 @@ result could be either a <code class="highlighter-rouge">ExpandResult.Success</c
 <p>List expansion is supported as defined in <a href="https://tools.ietf.org/html/rfc6570#page-8">RFC 6570 Level 4</a>.</p>
 
 <div class="language-scala highlighter-rouge"><pre class="codehilite"><code><span class="k">val</span> <span class="n">listTemplate</span> <span class="k">=</span> <span class="nc">UriTemplate</span><span class="o">.</span><span class="n">parse</span><span class="o">(</span><span class="s">"/search{?list}"</span><span class="o">).</span><span class="n">right</span><span class="o">.</span><span class="n">get</span>
-<span class="c1">// listTemplate: uritemplate4s.UriTemplate = uritemplate4s.ComponentsUriTemplate@7f204ac5
+<span class="c1">// listTemplate: uritemplate4s.UriTemplate = ComponentsUriTemplate(List(Encoded(/search), Expression(Query,List(Varspec(list,EmptyModifier)))))
 </span>
 <span class="k">val</span> <span class="n">seq</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"red"</span><span class="o">,</span> <span class="s">"green"</span><span class="o">,</span> <span class="s">"blue"</span><span class="o">)</span>
 <span class="c1">// seq: Seq[String] = List(red, green, blue)
@@ -75,7 +75,7 @@ result could be either a <code class="highlighter-rouge">ExpandResult.Success</c
 <p>Associative array expansion is supported as defined in <a href="https://tools.ietf.org/html/rfc6570#page-8">RFC 6570 Level 4</a>.</p>
 
 <div class="language-scala highlighter-rouge"><pre class="codehilite"><code><span class="k">val</span> <span class="n">assocTemplate</span> <span class="k">=</span> <span class="nc">UriTemplate</span><span class="o">.</span><span class="n">parse</span><span class="o">(</span><span class="s">"/search{?address*}"</span><span class="o">).</span><span class="n">right</span><span class="o">.</span><span class="n">get</span>
-<span class="c1">// assocTemplate: uritemplate4s.UriTemplate = uritemplate4s.ComponentsUriTemplate@6206a4f1
+<span class="c1">// assocTemplate: uritemplate4s.UriTemplate = ComponentsUriTemplate(List(Encoded(/search), Expression(Query,List(Varspec(address,Explode)))))
 </span>
 <span class="k">val</span> <span class="n">addressMap</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">"city"</span> <span class="o">-&gt;</span> <span class="s">"Manchester"</span><span class="o">,</span> <span class="s">"country"</span> <span class="o">-&gt;</span> <span class="s">"England"</span><span class="o">,</span> <span class="s">"postcode"</span> <span class="o">-&gt;</span> <span class="s">"M2 5DB"</span><span class="o">)</span>
 <span class="c1">// addressMap: scala.collection.immutable.Map[String,String] = Map(city -&gt; Manchester, country -&gt; England, postcode -&gt; M2 5DB)
