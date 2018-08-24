@@ -9,11 +9,23 @@ position: 1
 
 ## Parsing
 
-Parsing an URI Template is achieved as follows:
+Parsing an URI Template at compile time can be achieved as follows:
 
-```tut:book
+```tut:silent
 import uritemplate4s._
 
+val template = uritemplate"http://example.com/search{?q,lang}"
+```
+
+When an invalid template is supplied, the error will be shown at compile time.
+
+```tut:fail
+uritemplate"http://example.com/search{q"
+```
+
+URI Templates are usually dynamically provided, and so will need to be parsed at runtime like so:
+
+```tut:book
 val rawTemplate = "http://example.com/search{?q,lang}"
 val parseResult = UriTemplate.parse(rawTemplate)
 ```
@@ -28,7 +40,7 @@ UriTemplate.parse("http://example.com/search{q")
 
 To extract the parsed URI Template from the `Either`, pattern matching can be used:
 
-```tut:book
+```tut:silent
 val template: UriTemplate = UriTemplate.parse(rawTemplate) match {
   case Left(error) => throw new Exception(s"Unable to parse $rawTemplate, due to:\n${error.message}")
   case Right(parsedTemplate) => parsedTemplate
@@ -61,6 +73,8 @@ List expansion is supported as defined in [RFC 6570 Level 4](https://tools.ietf.
 val listTemplate = UriTemplate.parse("/search{?list}").right.get
 val seq = Seq("red", "green", "blue")
 listTemplate.expand("list" -> seq).value
+```
+```tut:silent
 // List and Vectors are also supported
 listTemplate.expand("list" -> seq.toList).value
 listTemplate.expand("list" -> seq.toVector).value
