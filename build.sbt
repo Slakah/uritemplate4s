@@ -137,7 +137,6 @@ lazy val docsSettings = Seq(
     )
   ),
   scalacOptions in Tut += "-Ywarn-unused:-imports",
-  micrositeGitterChannel := false, // enable when configured
   micrositePushSiteWith := GHPagesPlugin,
   micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
   micrositeJsDirectory := (managedResourceDirectories in Compile).value.head / "microsite" / "js",
