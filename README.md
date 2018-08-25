@@ -1,4 +1,4 @@
-# uritemplate4s [![CircleCI](https://circleci.com/gh/Slakah/uritemplate4s/tree/master.svg?style=svg)](https://circleci.com/gh/Slakah/uritemplate4s/tree/master)
+# uritemplate4s [![CircleCI](https://circleci.com/gh/Slakah/uritemplate4s/tree/master.svg?style=svg)](https://circleci.com/gh/Slakah/uritemplate4s/tree/master) [![Join the chat at https://gitter.im/uritemplate4s/Lobby](https://badges.gitter.im/uritemplate4s/Lobby.svg)](https://gitter.im/uritemplate4s/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Scala implementation of URI Template ([RFC 6570](https://tools.ietf.org/html/rfc6570)).
 
