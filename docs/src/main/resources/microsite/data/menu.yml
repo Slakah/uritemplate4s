@@ -1,3 +1,22 @@
 # https://47deg.github.io/sbt-microsites/docs/layouts.html#how-to-setup-the-docs-menu
 
 options:
+- title: Usage
+  url: usage.html
+
+  nested_options:
+  - title: Parsing
+    url: usage.html#parsing
+
+  - title: Template Expansion
+    url: usage.html#template-expansion
+
+- title: ToValue
+  url: tovalue.html
+
+  nested_options:
+  - title: Custom ToValue
+    url: tovalue.html#creating-a-custom-tovalue
+
+- title: Playground
+  url: playground.html

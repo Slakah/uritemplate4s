@@ -1,7 +1,6 @@
 ---
-layout: page
+layout: docs
 title:  "ToValue"
-section: "tovalue"
 position: 2
 ---
 

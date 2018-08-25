@@ -1,7 +1,6 @@
 ---
-layout: page
+layout: docs
 title:  "Playground"
-section: "playground"
 position: 3
 ---
 

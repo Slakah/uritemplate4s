@@ -1,7 +1,6 @@
 ---
-layout: page
+layout: docs
 title:  "Usage"
-section: "usage"
 position: 1
 ---
 
