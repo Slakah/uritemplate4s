@@ -12,15 +12,16 @@ libraryDependencies += "com.gubbns" %% "uritemplate4s" % "0.1.0-SNAPSHOT"
 
 ## Usage
 
-```tut:silent
+```scala
 import uritemplate4s._
 
 val template = uritemplate"https://{host}/search{?q}{&params*}"
-```
-```tut:book
 template.expand(
     "host" -> "search-engine.com",
     "q" -> "Esio Trot",
     "params" -> Map("lang" -> "en", "type" -> "book")
   ).value
+// res0: String = https://search-engine.com/search?q=Esio%20Trot&lang=en&type=book
 ```
+
+Further documentation is available [here](https://slakah.github.io/uritemplate4s/).
