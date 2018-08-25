@@ -65,6 +65,9 @@ To extract the result from either case, the `.value` field can be used.
 val uri = template.expand("q" -> "After the Quake", "lang" -> "en").value
 ```
 
+For examples and details of the features supported in URI Template expansion, refer to [RFC 6570 Section 3](https://tools.ietf.org/html/rfc6570#section-3)
+as well as the tests included in this project.
+
 ### List Expansion
 
 List expansion is supported as defined in [RFC 6570 Level 4](https://tools.ietf.org/html/rfc6570#page-8).
