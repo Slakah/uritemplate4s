@@ -29,11 +29,23 @@ lazy val catsVersion = "1.0.1"
 lazy val circeVersion = "0.9.1"
 lazy val contextualVersion = "1.1.0"
 lazy val fastparseVersion = "1.0.0"
+lazy val handyUriTemplatesVersion = "2.1.7"
 lazy val monixVersion = "3.0.0-M3"
 lazy val scalajsDomVersion = "0.9.2"
 lazy val utestVersion = "0.6.0"
 
 addCommandAlias("validate", ";scalafixEnable;scalafixTest;test:compile;test;tut")
+
+lazy val bench = project
+  .enablePlugins(JmhPlugin)
+  .dependsOn(coreJVM)
+  .settings(moduleName := "uritemplate4s-bench")
+  .settings(
+    noPublishSettings,
+    libraryDependencies ++= Seq(
+      "com.damnhandy" % "handy-uri-templates" % handyUriTemplatesVersion
+    )
+  )
 
 lazy val docs = project
   .enablePlugins(MicrositesPlugin, SiteScaladocPlugin, GhpagesPlugin, SiteScaladocPlugin, ScalaJSPlugin)
