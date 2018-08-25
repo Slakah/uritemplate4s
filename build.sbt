@@ -35,6 +35,12 @@ lazy val utestVersion = "0.6.0"
 
 addCommandAlias("validate", ";scalafixEnable;scalafixTest;test:compile;test;tut")
 
+lazy val bench = project
+  .enablePlugins(JmhPlugin)
+  .dependsOn(coreJVM)
+  .settings(moduleName := "uritemplate4s-bench")
+  .settings(noPublishSettings)
+
 lazy val docs = project
   .enablePlugins(MicrositesPlugin, SiteScaladocPlugin, GhpagesPlugin, SiteScaladocPlugin, ScalaJSPlugin)
   .dependsOn(coreJS)
