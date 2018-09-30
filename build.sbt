@@ -25,14 +25,14 @@ lazy val publishSettings = Seq(
   } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
 )
 
-lazy val catsVersion = "1.0.1"
-lazy val circeVersion = "0.9.1"
+lazy val catsVersion = "1.4.0"
+lazy val circeVersion = "0.10.0"
 lazy val contextualVersion = "1.1.0"
 lazy val fastparseVersion = "1.0.0"
 lazy val handyUriTemplatesVersion = "2.1.7"
-lazy val monixVersion = "3.0.0-M3"
-lazy val scalajsDomVersion = "0.9.2"
-lazy val utestVersion = "0.6.0"
+lazy val monixVersion = "3.0.0-RC1"
+lazy val scalajsDomVersion = "0.9.6"
+lazy val utestVersion = "0.6.6"
 
 addCommandAlias("validate", ";scalafixEnable;scalafixTest;test:compile;test;tut")
 
