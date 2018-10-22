@@ -28,7 +28,7 @@ lazy val publishSettings = Seq(
 lazy val catsVersion = "1.4.0"
 lazy val circeVersion = "0.10.0"
 lazy val contextualVersion = "1.1.0"
-lazy val fastparseVersion = "1.0.0"
+lazy val fastparseVersion = "2.0.4"
 lazy val handyUriTemplatesVersion = "2.1.7"
 lazy val monixVersion = "3.0.0-RC1"
 lazy val scalajsDomVersion = "0.9.6"
@@ -122,7 +122,7 @@ lazy val scalacOpts = Seq(
   "-Ywarn-nullary-override",           // Warn when non-nullary `def f()' overrides nullary `def f'.
   "-Ywarn-nullary-unit",               // Warn when nullary methods return Unit.
   "-Ywarn-numeric-widen",              // Warn when numerics are widened.
-  "-Ywarn-unused:-explicits,_",        // Warn if declarations are unused.
+  "-Ywarn-unused:-explicits,-patvars,_",        // Warn if declarations are unused.
   "-Ywarn-value-discard",              // Warn when non-Unit expression results are unused.
   "-Ywarn-macros:both"
 )

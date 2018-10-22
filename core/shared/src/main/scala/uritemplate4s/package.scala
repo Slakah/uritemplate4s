@@ -18,7 +18,7 @@ package object uritemplate4s {
     * true
     *
     * >>> compileError("""uritemplate"http://{invalid" """).msg
-    * not a valid URI Template, "}":1:16 ...""
+    * not a valid URI Template, Position 1:16, found ""
     * }}}
     */
   implicit final class UriTemplateStringContext(private val sc: StringContext) extends AnyVal {
