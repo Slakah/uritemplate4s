@@ -10,7 +10,7 @@ import monix.execution.cancelables.SingleAssignCancelable
 import monix.reactive.OverflowStrategy.Unbounded
 import monix.reactive._
 import org.scalajs.dom.window.document
-import org.scalajs.dom.{Event, html}
+import org.scalajs.dom.{html, Event}
 import uritemplate4s._
 import uritemplate4s.syntax._
 

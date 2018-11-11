@@ -11,7 +11,9 @@ lazy val commonSettings = Seq(
   )),
   version := "0.1.0-SNAPSHOT",
   scalaVersion := "2.12.7",
-  scalacOptions ++= scalacOpts :+ "-Yrangepos" // needed for scalafix
+  // https://scalacenter.github.io/scalafix/docs/users/installation.html
+  addCompilerPlugin(scalafixSemanticdb),
+  scalacOptions ++= scalacOpts :+ "-Yrangepos"
 )
 
 lazy val publishSettings = Seq(
@@ -31,10 +33,22 @@ lazy val contextualVersion = "1.1.0"
 lazy val fastparseVersion = "2.0.5"
 lazy val handyUriTemplatesVersion = "2.1.7"
 lazy val monixVersion = "3.0.0-RC1"
+lazy val scalafixNoinferVersion = "0.1.0-M1"
 lazy val scalajsDomVersion = "0.9.6"
 lazy val utestVersion = "0.6.6"
 
-addCommandAlias("validate", ";scalafixEnable;scalafixTest;test:compile;test;tut")
+ThisBuild / scalafixDependencies +=
+  "com.eed3si9n.fix" %% "scalafix-noinfer" % scalafixNoinferVersion
+
+
+addCommandAlias("validate", Seq(
+  "scalafixEnable",
+  "scalafix --check",
+  "test:scalafix --check",
+  "test:compile",
+  "test",
+  "tut").mkString(";", ";", "")
+)
 
 lazy val bench = project
   .enablePlugins(JmhPlugin)

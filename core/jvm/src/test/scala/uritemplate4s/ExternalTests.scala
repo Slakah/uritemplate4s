@@ -84,7 +84,7 @@ object ExternalTests extends TestSuite {
       json <- parse(rawJs)
       tests <- json.as(decodeTests)
     } yield tests
-    result.fold(throw _, identity)
+    result.fold(throw _, identity) /* scalafix:ok */
   }
 
   override def tests = Tests {
