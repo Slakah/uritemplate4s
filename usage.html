@@ -12,9 +12,9 @@
 <p>When an invalid template is supplied, the error will be shown at compile time.</p>
 
 <div class="language-scala highlighter-rouge"><pre class="codehilite"><code><span class="n">scala</span><span class="o">&gt;</span> <span class="n">uritemplate</span><span class="s">"http://example.com/search{q"</span>
-<span class="o">&lt;</span><span class="n">console</span><span class="k">&gt;:</span><span class="mi">16</span><span class="k">:</span> <span class="kt">error:</span> <span class="kt">not</span> <span class="kt">a</span> <span class="kt">valid</span> <span class="kt">URI</span> <span class="kt">Template</span><span class="o">,</span> <span class="s">"}"</span><span class="k">:</span><span class="err">1</span><span class="kt">:</span><span class="err">28</span> <span class="kt">...</span><span class="err">""</span>
-       <span class="kt">uritemplate</span><span class="err">"</span><span class="kt">http://example.com/search</span><span class="o">{</span><span class="kt">q</span><span class="err">"</span>
-                                              <span class="kt">^</span>
+<span class="o">&lt;</span><span class="n">console</span><span class="k">&gt;:</span><span class="mi">16</span><span class="k">:</span> <span class="kt">error:</span> <span class="kt">not</span> <span class="kt">a</span> <span class="kt">valid</span> <span class="kt">URI</span> <span class="kt">Template</span><span class="o">,</span> <span class="nc">Position</span> <span class="mi">1</span><span class="k">:</span><span class="err">28</span><span class="o">,</span> <span class="n">found</span> <span class="s">""</span>
+       <span class="n">uritemplate</span><span class="s">"http://example.com/search{q"</span>
+                                              <span class="o">^</span>
 </code></pre></div>
 
 <p>URI Templates are usually dynamically provided, and so will need to be parsed at runtime like so:</p>
@@ -31,7 +31,7 @@
 <p>When parsing fails the result is a <code class="highlighter-rouge">Left</code> containing the error with details of the cause.</p>
 
 <div class="language-scala highlighter-rouge"><pre class="codehilite"><code><span class="nc">UriTemplate</span><span class="o">.</span><span class="n">parse</span><span class="o">(</span><span class="s">"http://example.com/search{q"</span><span class="o">)</span>
-<span class="c1">// res1: Either[uritemplate4s.ParseError,uritemplate4s.UriTemplate] = Left(MalformedUriTemplateError(27,"}":1:28 ...""))
+<span class="c1">// res1: Either[uritemplate4s.ParseError,uritemplate4s.UriTemplate] = Left(MalformedUriTemplateError(27,Position 1:28, found ""))
 </span></code></pre></div>
 
 <p>To extract the parsed URI Template from the <code class="highlighter-rouge">Either</code>, pattern matching can be used:</p>
