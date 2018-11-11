@@ -1,6 +1,6 @@
 package uritemplate4s
 
-import fastparse.all.Parsed
+import fastparse._
 import uritemplate4s.ListSyntax._
 
 private[uritemplate4s] trait UriTemplateBase {
@@ -171,11 +171,11 @@ private final case class ComponentsUriTemplate(private val components: List[Comp
     s: String,
     allow: Allow
   ): List[Literal] = {
-    val encoder = allow match {
-      case Allow.U => PercentEncoder.nonUnreserved
-      case Allow.`U+R` => PercentEncoder.nonUnreservedAndReserved
+    val result = allow match {
+      case Allow.U => parse(s, PercentEncoder.nonUnreserved(_))
+      case Allow.`U+R` => parse(s, PercentEncoder.nonUnreservedAndReserved(_))
     }
-    encoder.parse(s).get.value
+    result.get.value
   }
 }
 
@@ -183,8 +183,8 @@ object UriTemplate {
   /** Parse a URI Template according to [[https://tools.ietf.org/html/rfc6570]]. */
   def parse(template: String): Either[ParseError, UriTemplate] = {
 
-    UriTemplateParser.uriTemplate.parse(template) match {
-      case Parsed.Success(components, _) => Right(new ComponentsUriTemplate(components))
+    fastparse.parse(template, UriTemplateParser.uriTemplate(_)) match {
+      case Parsed.Success(components, _) => Right(ComponentsUriTemplate(components))
       case err: Parsed.Failure => Left(MalformedUriTemplateError(err.index, err.msg))
     }
   }

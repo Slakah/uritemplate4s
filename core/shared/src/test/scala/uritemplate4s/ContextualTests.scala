@@ -11,7 +11,7 @@ object ContextualTests extends TestSuite {
     }
     "error when unable to parse a URI Template at compile time" - {
       compileError("""uritemplate"http://{woo.com" """)
-        .check("", """not a valid URI Template, "}":1:16 ...""""")
+        .check("", """not a valid URI Template, Position 1:16, found """"")
     }
   }
 }
