@@ -10,29 +10,22 @@ private[uritemplate4s] object UriTemplateParser {
   def hexdig[_: P]: P0 = P(CharIn("0-9", "a-f", "A-F"))
   def pctEncoded[_: P]: P0 = P("%" ~ hexdig ~ hexdig)
   def unreserved[_: P]: P0 = P(alpha | digit | StringIn("-", ".", "_", "~"))
-  def reserved[_: P]: P0 =  P(genDelims | subDelims)
-  def genDelims[_: P]: P0 = P(StringIn(":", "/", "?", "#", "[", "]", "@"))
-  def subDelims[_: P]: P0 =  P(CharIn(
-    "!", "$", "&", "'", "(", ")",
-    "*", "+", ",", ";", "="))
-  def ucschar[_: P]: P0 = P(HexIntIn(
-    0xA0.toChar to 0xD7FF.toChar, 0xF900.toChar to 0xFDCF.toChar, 0xFDF0.toChar to 0xFFEF.toChar,
-    0x40000.toChar to 0x4FFFD.toChar, 0x50000.toChar to 0x5FFFD.toChar, 0x60000.toChar to 0x6FFFD.toChar,
-    0x70000.toChar to 0x7FFFD.toChar, 0x80000.toChar to 0x8FFFD.toChar, 0x90000.toChar to 0x9FFFD.toChar,
-    0xA0000.toChar to 0xAFFFD.toChar, 0xB0000.toChar to 0xBFFFD.toChar, 0xC0000.toChar to 0xCFFFD.toChar,
-    0xD0000.toChar to 0xDFFFD.toChar, 0xE1000.toChar to 0xEFFFD.toChar))
-  def iprivate[_: P]: P0 = P(HexIntIn(
-    0xE000.toChar to 0xF8FF.toChar, 0xF0000.toChar to 0xFFFFD.toChar, 0x100000.toChar to 0x10FFFD.toChar))
+  def reserved[_: P]: P0 =  P(CharIn(
+    ":", "/", "?", "#", "[", "]", "@", // gen-delims
+    "!", "$", "&", "'", "(", ")", "*", "+", ",", ";", "=" // sub-delims
+  ))
+  def ucschar[_: P]: P0 = P(CharIn("\u00a0-\ud7ff", "\uf900-\ufdcf", "\ufdf0-\uffef", "\u0000-\ufffd"))
+  def iprivate[_: P]: P0 = P(CharIn(
+    "\ue000-\uf8ff", "\u0000-\ufffd"))
   // 2. Syntax
   def uriTemplate[_: P]: P[List[Component]] = P((expression | literals).rep ~ End).map(_.toList)
   // 2.1 Literals
   def literals[_: P]: P[Literal] = P(allowedLiterals.rep(1).!.map[Literal](Encoded) | (!"}" ~ unallowedLiterals).rep(1).!.map[Literal](Unencoded))
   def allowedLiterals[_: P]: P0 = P(reserved | unreserved | pctEncoded)
   def unallowedLiterals[_: P]: P0 = P(
-    HexIntIn(
-      List(0x21.toChar),  0x23.toChar to 0x24.toChar, 0x26.toString, 0x28.toChar to 0x3B.toChar, List(0x3D.toChar), 0x3F.toChar to 0x5B.toChar,
-      List(0x5D.toChar), List(0x5F.toChar), 0x61.toChar to 0x7A.toChar, List(0x7E.toChar))
-    | ucschar | iprivate | pctEncoded)
+    CharIn(
+      "\u0021", "\u0023-\u0024", "\u0026", "\u0028-\u003B", "\u003D", "\u003F-\u005B",
+      "\u005D", "\u005F", "\u0061-\u007A", "\u007E") | ucschar | iprivate | pctEncoded)
   // 2.2. Expressions
   def expression[_: P]: P[Expression] = P("{" ~/ operator.? ~ variableList ~ "}").map {
     case (None, vl) => Expression(Simple, vl)
@@ -56,8 +49,4 @@ private[uritemplate4s] object UriTemplateParser {
   def prefix[_: P]: P[ModifierLevel4] = P(":" ~ digit.rep(1, max = 4).!).map(raw => Prefix(raw.toInt))
   def explode[_: P]: P[ModifierLevel4] = P("*").map(_ => Explode)
 
-
-  def HexIntIn(chars: Seq[Char]*)(implicit ctx: P[_]): P0 = {
-    CharPred(chars.flatten.contains)
-  }
 }
