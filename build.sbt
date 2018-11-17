@@ -27,6 +27,7 @@ lazy val publishSettings = Seq(
   } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
 )
 
+lazy val betterMonadicForVersion = "0.2.4"
 lazy val catsVersion = "1.4.0"
 lazy val circeVersion = "0.10.0"
 lazy val contextualVersion = "1.1.0"
@@ -40,6 +41,8 @@ lazy val utestVersion = "0.6.6"
 ThisBuild / scalafixDependencies +=
   "com.eed3si9n.fix" %% "scalafix-noinfer" % scalafixNoinferVersion
 
+ThisBuild / libraryDependencies +=
+  compilerPlugin("com.olegpy" %% "better-monadic-for" % betterMonadicForVersion)
 
 addCommandAlias("validate", Seq(
   "scalafixEnable",
