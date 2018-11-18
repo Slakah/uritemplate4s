@@ -61,15 +61,28 @@ object ExternalTests extends TestSuite {
   private def test()(implicit path: TestPath): Unit = {
     val tests = parseTests(path.value.mkString)
     val _ = for {
-      Test(name, _, variables, testcases) <- tests
+      Test(_, _, variables, testcases) <- tests
       (template, expectedResult) <- testcases
     } yield {
-      def result =
-        UriTemplate.parse(template).flatMap(_.expandVars(variables.value.toVector: _*).toEither)
+      @SuppressWarnings(Array("scalafix:DisableSyntax.isInstanceOf"))
+      val result: Either[String, String] = for {
+        template <- UriTemplate.parse(template).leftMap(_.message)
+        expanded <- template.expandVars(variables.value.toVector: _*) match {
+          // Tests assume that MissingValueError will not result in error
+          case ExpandResult.PartialSuccess(_, errors) if errors.exists(_.isInstanceOf[InvalidCombinationError]) =>
+            Left(errors.map(_.message).mkString(","))
+          case ExpandResult.PartialSuccess(value, _) => Right(value)
+          case ExpandResult.Success(value) => Right(value)
+        }
+      } yield expanded
       expectedResult match {
         case Expected(expectedValue) =>
           assert(result == Right(expectedValue))
         case MultiExpected(possibleValues) =>
+          if (!possibleValues.exists(result.contains)) {
+            println(possibleValues)
+            println(result)
+          }
           assert(possibleValues.exists(result.contains))
         case FailExpected =>
           assertMatch(result) { case Left(_) => }

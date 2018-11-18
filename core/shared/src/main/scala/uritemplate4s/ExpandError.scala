@@ -7,14 +7,14 @@ package uritemplate4s
 sealed trait ExpandResult {
   def value: String
 
-  def toEither: Either[ExpandError, String]
+  def toEither: Either[Seq[ExpandError], String]
 }
 
 object ExpandResult {
 
   /** The [[UriTemplate]] was successfully expanded. */
   final case class Success(override val value: String) extends ExpandResult {
-    @inline override def toEither: Either[ExpandError, String] = Right(value)
+    @inline override def toEither: Either[Seq[ExpandError], String] = Right(value)
   }
 
   /**
@@ -23,9 +23,9 @@ object ExpandResult {
     */
   final case class PartialSuccess(
     override val value: String,
-    error: ExpandError
+    errors: Seq[ExpandError]
   ) extends ExpandResult {
-    @inline override def toEither: Either[ExpandError, String] = Left(error)
+    @inline override def toEither: Either[Seq[ExpandError], String] = Left(errors)
   }
 }
 
@@ -34,5 +34,15 @@ sealed trait ExpandError {
   def message: String
 }
 
+/** Error when the value supplied for substitution is not supported. */
 final case class InvalidCombinationError(override val message: String) extends ExpandError
-
+/**
+  * Error when a value has not been supplied for the template variable.
+  * {{{
+  * >>> uritemplate"http://{missingval}.com{/present}".expand("present" -> "foo").toEither
+  * Left(List(MissingValueError(missingval)))
+  * }}}
+  */
+final case class MissingValueError(varname: String) extends ExpandError {
+  override def message: String = s"$varname wasn't supplied as a variable value"
+}
