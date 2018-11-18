@@ -115,8 +115,8 @@
                         <a href="" title="A successfully parsed uri template can always be expanded, but there might be some warnings associated.">ExpandResult</a>
                       </li><li class="current-entities indented1">
                         <span class="separator"></span>
-                        <a class="class" href="InvalidCombinationError.html" title=""></a>
-                        <a href="InvalidCombinationError.html" title="">InvalidCombinationError</a>
+                        <a class="class" href="InvalidCombinationError.html" title="Error when the value supplied for substitution is not supported."></a>
+                        <a href="InvalidCombinationError.html" title="Error when the value supplied for substitution is not supported.">InvalidCombinationError</a>
                       </li><li class="current-entities indented1">
                         <span class="separator"></span>
                         <a class="class" href="ListValue.html" title="A list of values for template substitution."></a>
@@ -125,6 +125,10 @@
                         <span class="separator"></span>
                         <a class="class" href="MalformedUriTemplateError.html" title="Unable to parse the supplied malformed URI Template."></a>
                         <a href="MalformedUriTemplateError.html" title="Unable to parse the supplied malformed URI Template.">MalformedUriTemplateError</a>
+                      </li><li class="current-entities indented1">
+                        <span class="separator"></span>
+                        <a class="class" href="MissingValueError.html" title="Error when a value has not been supplied for the template variable."></a>
+                        <a href="MissingValueError.html" title="Error when a value has not been supplied for the template variable.">MissingValueError</a>
                       </li><li class="current-entities indented1">
                         <span class="separator"></span>
                         <a class="trait" href="ParseError.html" title="Error when parsing a UriTemplate."></a>
@@ -249,9 +253,9 @@ warnings associated.
         <div class="values members">
               <h3>Abstract Value Members</h3>
               <ol><li name="uritemplate4s.ExpandResult#toEither" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="toEither:Either[uritemplate4s.ExpandError,String]"></a><a id="toEither:Either[ExpandError,String]"></a>
+      <a id="toEither:Either[Seq[uritemplate4s.ExpandError],String]"></a><a id="toEither:Either[Seq[ExpandError],String]"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandResult.html#toEither:Either[uritemplate4s.ExpandError,String]" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult.html#toEither:Either[Seq[uritemplate4s.ExpandError],String]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -260,7 +264,7 @@ warnings associated.
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">toEither</span><span class="result">: <span class="extype" name="scala.Either">Either</span>[<a href="ExpandError.html" class="extype" name="uritemplate4s.ExpandError">ExpandError</a>, <span class="extype" name="scala.Predef.String">String</span>]</span>
+        <span class="name">toEither</span><span class="result">: <span class="extype" name="scala.Either">Either</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="ExpandError.html" class="extype" name="uritemplate4s.ExpandError">ExpandError</a>], <span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       
       

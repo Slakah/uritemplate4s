@@ -132,7 +132,7 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">PartialSuccess</span><span class="params">(<span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="error">error: <a href="ExpandError.html" class="extype" name="uritemplate4s.ExpandError">ExpandError</a></span>)</span><span class="result"> extends <a href="ExpandResult.html" class="extype" name="uritemplate4s.ExpandResult">ExpandResult</a> with <a href="http://www.scala-lang.org/api/2.12.7/scala/Product.html#scala.Product" class="extype" name="scala.Product">Product</a> with <a href="http://www.scala-lang.org/api/2.12.7/scala/Serializable.html#scala.Serializable" class="extype" name="scala.Serializable">Serializable</a></span>
+        <span class="name">PartialSuccess</span><span class="params">(<span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="errors">errors: <span class="extype" name="scala.Seq">Seq</span>[<a href="ExpandError.html" class="extype" name="uritemplate4s.ExpandError">ExpandError</a>]</span>)</span><span class="result"> extends <a href="ExpandResult.html" class="extype" name="uritemplate4s.ExpandResult">ExpandResult</a> with <a href="http://www.scala-lang.org/api/2.12.7/scala/Product.html#scala.Product" class="extype" name="scala.Product">Product</a> with <a href="http://www.scala-lang.org/api/2.12.7/scala/Serializable.html#scala.Serializable" class="extype" name="scala.Serializable">Serializable</a></span>
       </span>
       </h4>
 
@@ -190,9 +190,9 @@ In most cases, this warning can be ignored.
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="uritemplate4s.ExpandResult.PartialSuccess#&lt;init&gt;" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(value:String,error:uritemplate4s.ExpandError):uritemplate4s.ExpandResult.PartialSuccess"></a><a id="&lt;init&gt;:PartialSuccess"></a>
+      <a id="&lt;init&gt;(value:String,errors:Seq[uritemplate4s.ExpandError]):uritemplate4s.ExpandResult.PartialSuccess"></a><a id="&lt;init&gt;:PartialSuccess"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandResult$$PartialSuccess.html#&lt;init&gt;(value:String,error:uritemplate4s.ExpandError):uritemplate4s.ExpandResult.PartialSuccess" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$$PartialSuccess.html#&lt;init&gt;(value:String,errors:Seq[uritemplate4s.ExpandError]):uritemplate4s.ExpandResult.PartialSuccess" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -201,7 +201,7 @@ In most cases, this warning can be ignored.
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">PartialSuccess</span><span class="params">(<span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="error">error: <a href="ExpandError.html" class="extype" name="uritemplate4s.ExpandError">ExpandError</a></span>)</span>
+        <span class="name">PartialSuccess</span><span class="params">(<span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="errors">errors: <span class="extype" name="scala.Seq">Seq</span>[<a href="ExpandError.html" class="extype" name="uritemplate4s.ExpandError">ExpandError</a>]</span>)</span>
       </span>
       
       
@@ -319,10 +319,10 @@ In most cases, this warning can be ignored.
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="uritemplate4s.ExpandResult.PartialSuccess#error" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="error:uritemplate4s.ExpandError"></a><a id="error:ExpandError"></a>
+    </li><li name="uritemplate4s.ExpandResult.PartialSuccess#errors" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="errors:Seq[uritemplate4s.ExpandError]"></a><a id="errors:Seq[ExpandError]"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandResult$$PartialSuccess.html#error:uritemplate4s.ExpandError" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$$PartialSuccess.html#errors:Seq[uritemplate4s.ExpandError]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -331,7 +331,7 @@ In most cases, this warning can be ignored.
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">error</span><span class="result">: <a href="ExpandError.html" class="extype" name="uritemplate4s.ExpandError">ExpandError</a></span>
+        <span class="name">errors</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="ExpandError.html" class="extype" name="uritemplate4s.ExpandError">ExpandError</a>]</span>
       </span>
       
       
@@ -463,9 +463,9 @@ In most cases, this warning can be ignored.
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="uritemplate4s.ExpandResult.PartialSuccess#toEither" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="toEither:Either[uritemplate4s.ExpandError,String]"></a><a id="toEither:Either[ExpandError,String]"></a>
+      <a id="toEither:Either[Seq[uritemplate4s.ExpandError],String]"></a><a id="toEither:Either[Seq[ExpandError],String]"></a>
       <span class="permalink">
-      <a href="../uritemplate4s/ExpandResult$$PartialSuccess.html#toEither:Either[uritemplate4s.ExpandError,String]" title="Permalink">
+      <a href="../uritemplate4s/ExpandResult$$PartialSuccess.html#toEither:Either[Seq[uritemplate4s.ExpandError],String]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -474,7 +474,7 @@ In most cases, this warning can be ignored.
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">toEither</span><span class="result">: <span class="extype" name="scala.Either">Either</span>[<a href="ExpandError.html" class="extype" name="uritemplate4s.ExpandError">ExpandError</a>, <span class="extype" name="scala.Predef.String">String</span>]</span>
+        <span class="name">toEither</span><span class="result">: <span class="extype" name="scala.Either">Either</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="ExpandError.html" class="extype" name="uritemplate4s.ExpandError">ExpandError</a>], <span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="uritemplate4s.ExpandResult.PartialSuccess">PartialSuccess</a> → <a href="ExpandResult.html" class="extype" name="uritemplate4s.ExpandResult">ExpandResult</a></dd><dt>Annotations</dt><dd>
