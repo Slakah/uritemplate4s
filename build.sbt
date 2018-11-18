@@ -20,6 +20,9 @@ lazy val publishSettings = Seq(
   publishTo := sonatypePublishTo.value,
   autoAPIMappings := true,
   useGpg := false,
+  pgpPassphrase ~= (_.orElse(sys.env.get("PGP_PASSPHRASE").map(_.toCharArray))),
+  pgpPublicRing := file(s"./pubring.asc"),
+  pgpSecretRing := file(s"./secring.asc"),
   apiURL := Some(url("https://slakah.github.io/uritemplate4s/api/latest/uritemplate4s/")),
   credentials ++= (for {
     username <- sys.env.get("SONATYPE_USERNAME")

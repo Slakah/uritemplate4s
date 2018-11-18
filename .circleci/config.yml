@@ -52,6 +52,27 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
       - run:
+          name: publish jar
+          command: ./bin/publish.sh
+  publish_site:
+    docker:
+      - image: circleci/openjdk:8-jdk-node
+    working_directory: ~/repo
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+    steps:
+      - checkout
+      - run:
+          name: gen cache key
+          command: |
+            find . -type f -name "*.sbt" -exec md5sum "{}" + | sort > /tmp/sbt-hash.txt
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "/tmp/sbt-hash.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run:
           name: install jekyll
           command: sudo apt-get update && sudo apt-get install jekyll
       - run:
@@ -69,6 +90,14 @@ workflows:
     jobs:
       - build
       - publish:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              only: master
+      - publish_site:
           requires:
             - build
           filters:
