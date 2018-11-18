@@ -24,15 +24,19 @@ private final case class ComponentsUriTemplate(private val components: List[Comp
       errorsAndLiterals = component match {
         case literal: Literal => List.empty -> List(literal)
         case Expression(operator, variableList) =>
-          val spec2value: List[(Varspec, Value)] = variableList.flatMap { spec =>
+          val spec2optValue: List[(Varspec, Option[Value])] = variableList.flatMap { spec =>
             varsMap.get(spec.varname) match {
-              case None => None // TODO: create a warning?
+              case None => Some(spec -> None) // TODO: create a warning?
               case Some(ListValue(Nil)) => None
               case Some(AssociativeArray(Nil)) => None
-              case Some(v) => Some(spec -> v)
+              case Some(v) => Some(spec -> Some(v))
             }
           }
-          val errorList = buildSpecExpansionErrorList(spec2value)
+          val errorList = buildSpecExpansionErrorList(spec2optValue)
+          val spec2value = spec2optValue.flatMap {
+            case (spec, Some(value)) => Some(spec -> value)
+            case (spec, None) => None
+          }
           val literalList = explodeSpecs(spec2value, operator)
           (errorList, literalList)
       }
@@ -51,17 +55,18 @@ private final case class ComponentsUriTemplate(private val components: List[Comp
     if (errorList.isEmpty) {
       ExpandResult.Success(result)
     } else {
-      ExpandResult.PartialSuccess(result, InvalidCombinationError(errorList.mkString(", ")))
+      ExpandResult.PartialSuccess(result, errorList)
     }
   }
 
   /** Collect any spec to value mismatches. */
-  private def buildSpecExpansionErrorList(spec2value: List[(Varspec, Value)]) = {
-    spec2value.foldLeft(List.empty[ExpandError]) {
-      case (errs, (Varspec(name, Prefix(_)), ListValue(l))) =>
+  private def buildSpecExpansionErrorList(spec2optValue: List[(Varspec, Option[Value])]) = {
+    spec2optValue.foldLeft(List.empty[ExpandError]) {
+      case (errs, (Varspec(name, _), None)) => MissingValueError(name) :: errs
+      case (errs, (Varspec(name, Prefix(_)), Some(ListValue(l)))) =>
         val listShow = s"[${l.mkString(", ")}]"
         InvalidCombinationError(s"$name has the unsupported prefix modifier for a list value of $listShow") :: errs
-      case (errs, (Varspec(name, Prefix(_)), AssociativeArray(arr))) =>
+      case (errs, (Varspec(name, Prefix(_)), Some(AssociativeArray(arr)))) =>
         val assocShow = "{" + arr
           .map { case (k, v) => s""""$k": "$v"""" }
           .mkString(", ") + "}"
@@ -104,7 +109,7 @@ private final case class ComponentsUriTemplate(private val components: List[Comp
     spec: Varspec
   ): List[Literal] = {
     spec.modifier match {
-      case (EmptyModifier | Prefix(_)) =>
+      case EmptyModifier | Prefix(_) =>
         val literalValues = l.toList.map(encode(_, operator.allow)).intersperse(List(Encoded(","))).flatten
 
         if (operator.named) {
@@ -133,7 +138,7 @@ private final case class ComponentsUriTemplate(private val components: List[Comp
     spec: Varspec
   ): List[Literal] = {
     spec.modifier match {
-      case (EmptyModifier | Prefix(_)) =>
+      case EmptyModifier | Prefix(_) =>
         val nameValues = tuples.toList.flatMap { case (n, v) => List(n, v) }
         val literalValues = nameValues.map(encode(_, operator.allow)).intersperse(List(Encoded(","))).flatten
 
