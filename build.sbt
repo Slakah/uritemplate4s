@@ -9,7 +9,6 @@ lazy val commonSettings = Seq(
     url(s"https://github.com/Slakah/${name.value}"),
     s"scm:git@github.com:Slakah/${name.value}.git"
   )),
-  version := "0.1.0-SNAPSHOT",
   scalaVersion := "2.12.7",
   // https://scalacenter.github.io/scalafix/docs/users/installation.html
   addCompilerPlugin(scalafixSemanticdb),
@@ -17,17 +16,24 @@ lazy val commonSettings = Seq(
 )
 
 lazy val publishSettings = Seq(
-  publishTo := sonatypePublishTo.value,
   autoAPIMappings := true,
+  publishMavenStyle := true,
+  publishArtifact in Test := false,
+  pomIncludeRepository := { _ => false },
   useGpg := false,
   pgpPassphrase ~= (_.orElse(sys.env.get("PGP_PASSPHRASE").map(_.toCharArray))),
   pgpPublicRing := file(s"./pubring.asc"),
   pgpSecretRing := file(s"./secring.asc"),
   apiURL := Some(url("https://slakah.github.io/uritemplate4s/api/latest/uritemplate4s/")),
-  credentials ++= (for {
-    username <- sys.env.get("SONATYPE_USERNAME")
-    password <- sys.env.get("SONATYPE_PASSWORD")
-  } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
+  pomExtra := {
+    <developers>
+      <developer>
+        <id>slakah</id>
+        <name>James Collier</name>
+        <url>https://github.com/Slakah</url>
+      </developer>
+    </developers>
+  }
 )
 
 lazy val betterMonadicForVersion = "0.2.4"
@@ -46,6 +52,12 @@ ThisBuild / scalafixDependencies +=
 
 ThisBuild / libraryDependencies +=
   compilerPlugin("com.olegpy" %% "better-monadic-for" % betterMonadicForVersion)
+
+ThisBuild / releaseEarlyWith := SonatypePublisher
+ThisBuild / releaseEarlyEnableLocalReleases := true
+ThisBuild / organization := "com.gubbns"
+
+publishArtifact := false
 
 addCommandAlias("validate", Seq(
   "scalafixEnable",
@@ -193,5 +205,7 @@ lazy val docsSettings = Seq(
 lazy val noPublishSettings = Seq(
   publish := {},
   publishLocal := {},
+  PgpKeys.publishSigned := {},
+  PgpKeys.publishLocalSigned := {},
   publishArtifact := false
 )

@@ -53,7 +53,7 @@ jobs:
             - v1-dependencies-
       - run:
           name: publish jar
-          command: ./bin/publish.sh
+          command: git fetch --tags && ./bin/publish.sh
   publish_site:
     docker:
       - image: circleci/openjdk:8-jdk-node
@@ -93,8 +93,6 @@ workflows:
           requires:
             - build
           filters:
-            tags:
-              only: /^v.*/
             branches:
               only: master
       - publish_site:
