@@ -16,7 +16,6 @@ lazy val commonSettings = Seq(
 )
 
 lazy val publishSettings = Seq(
-  publishTo := sonatypePublishTo.value,
   autoAPIMappings := true,
   publishMavenStyle := true,
   publishArtifact in Test := false,
@@ -57,6 +56,11 @@ ThisBuild / scalafixDependencies +=
 
 ThisBuild / libraryDependencies +=
   compilerPlugin("com.olegpy" %% "better-monadic-for" % betterMonadicForVersion)
+
+ThisBuild / releaseEarlyWith := SonatypePublisher
+ThisBuild / releaseEarlyEnableLocalReleases := true
+ThisBuild / organization := "com.gubbns"
+publishArtifact := false
 
 addCommandAlias("validate", Seq(
   "scalafixEnable",
@@ -113,6 +117,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     testFrameworks += new TestFramework("utest.runner.Framework"),
     sourceGenerators in Compile += (sourceManaged in Compile).map(Boilerplate.gen).taskValue,
     doctestTestFramework := DoctestTestFramework.MicroTest,
+    releaseEarlyEnableLocalReleases := true,
     libraryDependencies ++= Seq(
       "com.propensive" %%% "contextual" % contextualVersion,
       "com.lihaoyi" %%% "fastparse" % fastparseVersion
@@ -206,5 +211,5 @@ lazy val noPublishSettings = Seq(
   publishLocal := {},
   PgpKeys.publishSigned := {},
   PgpKeys.publishLocalSigned := {},
-  publishArtifact := false,
+  publishArtifact := false
 )
