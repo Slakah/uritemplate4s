@@ -33,8 +33,12 @@ private[uritemplate4s] object UriTemplateParser {
   }
   def operator[_: P]: P[Operator] = opLevel2 | opLevel3 // | opReserve
   def opLevel2[_: P]: P[Operator] = P("+".!.map(_ => Reserved) | "#".!.map(_ => Fragment))
-  def opLevel3[_: P]: P[Operator] =
-    P(".".!.map(_ => NameLabel) | "/".!.map(_ => PathSegment) | ";".!.map(_ => PathParameter) | "?".!.map(_ => Query) | "&".!.map(_ => QueryContinuation))
+  def opLevel3[_: P]: P[Operator] =P(
+    ".".!.map(_ => NameLabel) |
+    "/".!.map(_ => PathSegment) |
+    ";".!.map(_ => PathParameter) |
+    "?".!.map(_ => Query) |
+    "&".!.map(_ => QueryContinuation))
   def opReserve[_: P]: P[Operator] = P(CharIn("=,!@|")).map(_ => Reserved)
   // 2.3. Variables
   def variableList[_: P]: P[List[Varspec]] = P(varspec.rep(1, sep = ",")).map(_.toList)
