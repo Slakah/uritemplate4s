@@ -454,8 +454,7 @@ of <a href="AssociativeArray.html" class="extype" name="uritemplate4s.Associativ
         <a title="Parse and validate a Uri Template at compile time." href="package$$UriTemplateStringContext.html"><span class="name">UriTemplateStringContext</span></a><span class="result"> extends <a href="http://www.scala-lang.org/api/2.12.7/scala/AnyVal.html#scala.AnyVal" class="extype" name="scala.AnyVal">AnyVal</a></span>
       </span>
       
-      <p class="shortcomment cmt">Parse and validate a Uri Template at compile time.</p><div class="fullcomment"><div class="comment cmt"><p>Parse and validate a Uri Template at compile time.</p><pre>&gt;&gt;&gt; <span class="kw">import</span> uritemplate4s._
-&gt;&gt;&gt; Right(uritemplate<span class="lit">"http://{name}.com"</span>) == UriTemplate.parse(<span class="lit">"http://{name}.com"</span>)
+      <p class="shortcomment cmt">Parse and validate a Uri Template at compile time.</p><div class="fullcomment"><div class="comment cmt"><p>Parse and validate a Uri Template at compile time.</p><pre>&gt;&gt;&gt; Right(uritemplate<span class="lit">"http://{name}.com"</span>) == UriTemplate.parse(<span class="lit">"http://{name}.com"</span>)
 <span class="kw">true</span>
 
 &gt;&gt;&gt; compileError(<span class="lit">""</span><span class="lit">"uritemplate"</span>http:<span class="cmt">//{invalid" """).msg</span>
