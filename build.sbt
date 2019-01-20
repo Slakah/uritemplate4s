@@ -9,7 +9,7 @@ lazy val commonSettings = Seq(
     url(s"https://github.com/Slakah/${name.value}"),
     s"scm:git@github.com:Slakah/${name.value}.git"
   )),
-  scalaVersion := "2.12.7",
+  scalaVersion := "2.12.8",
   // https://scalacenter.github.io/scalafix/docs/users/installation.html
   addCompilerPlugin(scalafixSemanticdb),
   scalacOptions ++= scalacOpts :+ "-Yrangepos"
