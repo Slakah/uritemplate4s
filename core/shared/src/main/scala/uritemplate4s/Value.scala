@@ -1,5 +1,7 @@
 package uritemplate4s
 
+import scala.annotation.implicitNotFound
+
 /** A value can be substituted in a template. */
 sealed trait Value
 /** A single string value for template substitution. */
@@ -10,8 +12,9 @@ final case class ListValue(value: Seq[String]) extends Value
 final case class AssociativeArray(value: Seq[(String, String)]) extends Value
 
 /** Type class that provides a conversion from A to [[Value]]. */
+@implicitNotFound("No Argument instance found for ${A}. For more info, see: https://slakah.github.io/uritemplate4s/tovalue.html")
 trait ToValue[A] {
-  def apply(a: A): Value
+  def write(a: A): Value
 }
 
 object ToValue {
@@ -20,13 +23,13 @@ object ToValue {
 
   /**
     * {{{
-    * >>> ToValue[String].apply("woo")
+    * >>> ToValue[String].write("woo")
     * StringValue(woo)
     *
-    * >>> ToValue[Int].apply(42)
+    * >>> ToValue[Int].write(42)
     * StringValue(42)
     *
-    * >>> ToValue[Long].apply(42L)
+    * >>> ToValue[Long].write(42L)
     * StringValue(42)
     * }}}
     */
@@ -37,7 +40,7 @@ object ToValue {
   /**
     * {{{
     * >>> object WeekDays extends Enumeration { val Mon,Tue,Wed,Thu,Fri = Value }
-    * >>> ToValue[WeekDays.Value].apply(WeekDays.Tue)
+    * >>> ToValue[WeekDays.Value].write(WeekDays.Tue)
     * StringValue(Tue)
     * }}}
     */
@@ -45,16 +48,16 @@ object ToValue {
 
   /**
     * {{{
-    * >>> ToValue[Seq[String]].apply(Seq("red", "green", "blue"))
+    * >>> ToValue[Seq[String]].write(Seq("red", "green", "blue"))
     * ListValue(List(red, green, blue))
     *
-    * >>> ToValue[List[String]].apply(List("red", "green", "blue"))
+    * >>> ToValue[List[String]].write(List("red", "green", "blue"))
     * ListValue(List(red, green, blue))
     *
-    * >>> ToValue[Vector[String]].apply(Vector("red", "green", "blue"))
+    * >>> ToValue[Vector[String]].write(Vector("red", "green", "blue"))
     * ListValue(Vector(red, green, blue))
     *
-    * >>> ToValue[Vector[Int]].apply(Vector(1, 2, 3))
+    * >>> ToValue[Vector[Int]].write(Vector(1, 2, 3))
     * ListValue(Vector(1, 2, 3))
     * }}}
     */
@@ -67,7 +70,7 @@ object ToValue {
 
   /**
     * {{{
-    * >>> ToValue[Map[String, Int]].apply(Map("one" -> 1, "two" -> 2, "three" -> 3))
+    * >>> ToValue[Map[String, Int]].write(Map("one" -> 1, "two" -> 2, "three" -> 3))
     * AssociativeArray(List((one,1), (two,2), (three,3)))
     * }}}
     */
@@ -78,13 +81,13 @@ object ToValue {
 
   /**
     * {{{
-    * >>> ToValue[Seq[(String, Int)]].apply(Seq("one" -> 1, "two" -> 2, "three" -> 3))
+    * >>> ToValue[Seq[(String, Int)]].write(Seq("one" -> 1, "two" -> 2, "three" -> 3))
     * AssociativeArray(List((one,1), (two,2), (three,3)))
     *
-    * >>> ToValue[List[(String, Int)]].apply(List("one" -> 1, "two" -> 2, "three" -> 3))
+    * >>> ToValue[List[(String, Int)]].write(List("one" -> 1, "two" -> 2, "three" -> 3))
     * AssociativeArray(List((one,1), (two,2), (three,3)))
     *
-    * >>> ToValue[Vector[(String, Int)]].apply(Vector("one" -> 1, "two" -> 2, "three" -> 3))
+    * >>> ToValue[Vector[(String, Int)]].write(Vector("one" -> 1, "two" -> 2, "three" -> 3))
     * AssociativeArray(Vector((one,1), (two,2), (three,3)))
     * }}}
     */
@@ -103,7 +106,7 @@ object ToValue {
   * of [[AssociativeArray]].
   */
 trait ToStringValue[A] extends ToValue[A] {
-  override def apply(a: A): Value = StringValue(asString(a))
+  override def write(a: A): Value = StringValue(asString(a))
   def asString(a: A): String
 }
 

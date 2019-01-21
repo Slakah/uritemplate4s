@@ -26,6 +26,6 @@ implicit val instantToStringValue: ToStringValue[Instant] = (instant: Instant) =
 ```
 Test the type class is wired in correctly
 ```tut:book
-ToValue[Instant].apply(Instant.now())
+ToValue[Instant].write(Instant.now())
 uritemplate"http://clock-service.com/clock{?time}".expand("time" -> Instant.now()).value
 ```
