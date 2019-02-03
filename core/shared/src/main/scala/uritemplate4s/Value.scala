@@ -1,5 +1,7 @@
 package uritemplate4s
 
+import scala.annotation.implicitNotFound
+
 /** A value can be substituted in a template. */
 sealed trait Value
 /** A single string value for template substitution. */
@@ -10,6 +12,7 @@ final case class ListValue(value: Seq[String]) extends Value
 final case class AssociativeArray(value: Seq[(String, String)]) extends Value
 
 /** Type class that provides a conversion from A to [[Value]]. */
+@implicitNotFound("No Argument instance found for ${A}. For more info, see: https://slakah.github.io/uritemplate4s/tovalue.html")
 trait ToValue[A] {
   def apply(a: A): Value
 }
