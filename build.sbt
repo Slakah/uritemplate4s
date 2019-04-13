@@ -36,7 +36,7 @@ lazy val publishSettings = Seq(
   }
 )
 
-lazy val betterMonadicForVersion = "0.2.4"
+lazy val betterMonadicForVersion = "0.3.0"
 lazy val catsVersion = "1.6.0"
 lazy val circeVersion = "0.11.1"
 lazy val contextualVersion = "1.1.0"
