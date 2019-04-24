@@ -1,4 +1,6 @@
 version: 2
+orbs:
+  queue: eddiewebb/queue@1.1.2
 
 general:
   branches:
@@ -51,6 +53,9 @@ jobs:
             - v1-dependencies-{{ checksum "/tmp/sbt-hash.txt" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
+      - queue/until_front_of_line:
+          consider-branch: false
+          time: '10' # timeout after 10min
       - run:
           name: publish jar
           command: git fetch --tags && ./bin/publish.sh
