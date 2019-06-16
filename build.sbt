@@ -38,7 +38,7 @@ lazy val publishSettings = Seq(
 
 lazy val betterMonadicForVersion = "0.3.0"
 lazy val catsVersion = "1.6.1"
-lazy val circeVersion = "0.11.1"
+lazy val circeVersion = "0.12.0-M3"
 lazy val contextualVersion = "1.1.0"
 lazy val fastparseVersion = "2.1.3"
 lazy val handyUriTemplatesVersion = "2.1.8"
@@ -64,7 +64,7 @@ addCommandAlias("validate", Seq(
   "scalafix --check",
   "test:scalafix --check",
   "test:compile",
-  "test",
+  "+test",
   "tut").mkString(";", ";", "")
 )
 
@@ -106,6 +106,9 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     // currently sbt-doctest doesn't work in JS builds
     // https://github.com/tkawachi/sbt-doctest/issues/52
     doctestGenTests := Seq.empty
+  )
+  .jvmSettings(
+    crossScalaVersions := List(scalaVersion.value, "2.13.0")
   )
   .settings(
     commonSettings,
@@ -203,8 +206,7 @@ lazy val docsSettings = Seq(
 ) ++ SiteScaladocPlugin.scaladocSettings(SiteScaladoc, mappings in (Compile, packageDoc) in coreJVM, "api/latest")
 
 lazy val noPublishSettings = Seq(
-  publish := {},
-  publishLocal := {},
+  skip in publish := true,
   PgpKeys.publishSigned := {},
   PgpKeys.publishLocalSigned := {},
   publishArtifact := false
