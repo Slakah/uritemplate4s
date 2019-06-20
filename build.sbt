@@ -9,7 +9,7 @@ lazy val commonSettings = Seq(
     url(s"https://github.com/Slakah/${name.value}"),
     s"scm:git@github.com:Slakah/${name.value}.git"
   )),
-  scalaVersion := "2.12.8",
+  scalaVersion := "2.13.0",
   // https://scalacenter.github.io/scalafix/docs/users/installation.html
   addCompilerPlugin(scalafixSemanticdb),
   scalacOptions ++= scalacOpts :+ "-Yrangepos"
@@ -37,12 +37,12 @@ lazy val publishSettings = Seq(
 )
 
 lazy val betterMonadicForVersion = "0.3.0"
-lazy val catsVersion = "1.6.1"
+lazy val catsVersion = "2.0.0-M4"
 lazy val circeVersion = "0.12.0-M3"
 lazy val contextualVersion = "1.1.0"
 lazy val fastparseVersion = "2.1.3"
 lazy val handyUriTemplatesVersion = "2.1.8"
-lazy val monixVersion = "3.0.0-RC1"
+lazy val monixVersion = "3.0.0-RC3"
 lazy val scalafixNoinferVersion = "0.1.0-M1"
 lazy val scalajsDomVersion = "0.9.7"
 lazy val utestVersion = "0.7.1"
@@ -108,7 +108,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     doctestGenTests := Seq.empty
   )
   .jvmSettings(
-    crossScalaVersions := List(scalaVersion.value, "2.13.0")
+    crossScalaVersions := List(scalaVersion.value, "2.12.8")
   )
   .settings(
     commonSettings,
