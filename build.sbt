@@ -39,7 +39,7 @@ lazy val publishSettings = Seq(
 lazy val betterMonadicForVersion = "0.3.1"
 lazy val catsVersion = "1.6.1"
 lazy val circeVersion = "0.11.1"
-lazy val contextualVersion = "1.1.0"
+lazy val contextualVersion = "1.2.1"
 lazy val fastparseVersion = "2.1.3"
 lazy val handyUriTemplatesVersion = "2.1.8"
 lazy val monixVersion = "3.0.0-RC1"
@@ -115,6 +115,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     sourceGenerators in Compile += (sourceManaged in Compile).map(Boilerplate.gen).taskValue,
     doctestTestFramework := DoctestTestFramework.MicroTest,
     libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
       "com.propensive" %%% "contextual" % contextualVersion,
       "com.lihaoyi" %%% "fastparse" % fastparseVersion
     ) ++ Seq(
