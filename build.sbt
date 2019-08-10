@@ -115,6 +115,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     sourceGenerators in Compile += (sourceManaged in Compile).map(Boilerplate.gen).taskValue,
     doctestTestFramework := DoctestTestFramework.MicroTest,
     libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
       "com.propensive" %%% "contextual" % contextualVersion,
       "com.lihaoyi" %%% "fastparse" % fastparseVersion
     ) ++ Seq(
