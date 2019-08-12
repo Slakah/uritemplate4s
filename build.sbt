@@ -1,5 +1,5 @@
 import microsites._
-import sbtcrossproject.{crossProject, CrossType}
+import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 lazy val commonSettings = Seq(
   organization := "com.gubbns",
@@ -37,6 +37,7 @@ lazy val publishSettings = Seq(
 )
 
 lazy val betterMonadicForVersion = "0.3.1"
+lazy val caseAppVersion = "2.0.0-M3"
 lazy val catsVersion = "1.6.1"
 lazy val circeVersion = "0.11.1"
 lazy val contextualVersion = "1.2.1"
@@ -79,26 +80,19 @@ lazy val bench = project
     )
   )
 
-lazy val docs = project
-  .enablePlugins(MicrositesPlugin, SiteScaladocPlugin, GhpagesPlugin, SiteScaladocPlugin, ScalaJSPlugin)
-  .dependsOn(coreJS)
-  .settings(moduleName := "uritemplate4s-docs")
+lazy val cli = project
+  .dependsOn(coreJVM)
+  .settings(moduleName := "uritemplate4s-cli")
   .settings(
-    commonSettings,
     noPublishSettings,
-    docsSettings,
     libraryDependencies ++= Seq(
+      "com.github.alexarchambault" %% "case-app" % caseAppVersion,
       "org.typelevel" %%% "cats-core" % catsVersion,
       "org.typelevel" %%% "cats-kernel" % catsVersion,
-      "org.typelevel" %%% "cats-macros" % catsVersion,
-      "io.circe" %%% "circe-core" % circeVersion,
-      "io.circe" %%% "circe-generic" % circeVersion,
-      "io.circe" %%% "circe-parser" % circeVersion,
-      "io.monix" %%% "monix-execution" % monixVersion,
-      "io.monix" %%% "monix-reactive" % monixVersion,
-      "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion
+      "org.typelevel" %%% "cats-macros" % catsVersion
     )
   )
+
 
 lazy val core = crossProject(JSPlatform, JVMPlatform)
   .in(file("core"))
@@ -131,6 +125,27 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
 
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
+
+lazy val docs = project
+  .enablePlugins(MicrositesPlugin, SiteScaladocPlugin, GhpagesPlugin, SiteScaladocPlugin, ScalaJSPlugin)
+  .dependsOn(coreJS)
+  .settings(moduleName := "uritemplate4s-docs")
+  .settings(
+    commonSettings,
+    noPublishSettings,
+    docsSettings,
+    libraryDependencies ++= Seq(
+      "org.typelevel" %%% "cats-core" % catsVersion,
+      "org.typelevel" %%% "cats-kernel" % catsVersion,
+      "org.typelevel" %%% "cats-macros" % catsVersion,
+      "io.circe" %%% "circe-core" % circeVersion,
+      "io.circe" %%% "circe-generic" % circeVersion,
+      "io.circe" %%% "circe-parser" % circeVersion,
+      "io.monix" %%% "monix-execution" % monixVersion,
+      "io.monix" %%% "monix-reactive" % monixVersion,
+      "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion
+    )
+  )
 
 lazy val scalacOpts = Seq(
   "-deprecation",                      // Emit warning and location for usages of deprecated APIs.
