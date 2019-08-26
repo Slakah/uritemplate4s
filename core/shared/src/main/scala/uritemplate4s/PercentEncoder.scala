@@ -2,6 +2,7 @@ package uritemplate4s
 
 import fastparse._, NoWhitespace._
 import java.nio.charset.StandardCharsets
+import scala.annotation.switch
 
 private[uritemplate4s] object PercentEncoder {
   import UriTemplateParser._
@@ -12,7 +13,7 @@ private[uritemplate4s] object PercentEncoder {
     }.mkString
   }
 
-  private def memoEncodeChar(ch: Char) = ch match {
+  private def memoEncodeChar(ch: Char) = (ch: @switch) match {
     case ' ' => "%20"
     case '%' => "%25"
     case '{' => "%7B"
