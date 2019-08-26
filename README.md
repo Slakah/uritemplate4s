@@ -12,7 +12,7 @@ uritemplate4s is currently available for Scala 2.12 and [Scala.js](http://www.sc
 Add the following to your `build.sbt`:
 
 ```scala
-libraryDependencies += "com.gubbns" %% "uritemplate4s" % "0.3.0"
+libraryDependencies += "com.gubbns" %% "uritemplate4s" % "0.4.0"
 ```
 
 ## Usage
