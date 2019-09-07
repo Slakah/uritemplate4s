@@ -99,6 +99,7 @@ lazy val docs = project
       "io.circe" %%% "circe-core" % circeVersion,
       "io.circe" %%% "circe-generic" % circeVersion,
       "io.circe" %%% "circe-parser" % circeVersion,
+      "io.circe" %%% "not-java-time" % "0.2.0",
       "io.monix" %%% "monix-execution" % monixVersion,
       "io.monix" %%% "monix-reactive" % monixVersion,
       "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion
