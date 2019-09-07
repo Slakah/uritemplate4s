@@ -2,6 +2,7 @@ package uritemplate4s
 
 import fastparse._
 import uritemplate4s.ListSyntax._
+import uritemplate4s.ast._
 
 private[uritemplate4s] trait UriTemplateBase {
   /**
@@ -14,7 +15,7 @@ private[uritemplate4s] trait UriTemplateBase {
 
 trait UriTemplate extends UriTemplateBase with UriTemplateArities
 
-private[uritemplate4s] final case class ComponentsUriTemplate(private val components: List[Component]) extends UriTemplate {
+final case class ComponentsUriTemplate(private val components: List[Component]) extends UriTemplate {
 
   override def expandVars(vars: (String, Value)*): ExpandResult = {
     lazy val varsMap = vars.toMap
@@ -22,7 +23,7 @@ private[uritemplate4s] final case class ComponentsUriTemplate(private val compon
     val errorsAndLiteralsList: List[(List[ExpandError], List[Literal])] = for {
       component <- components
       errorsAndLiterals = component match {
-        case literal: Literal => List.empty -> List(literal)
+        case LiteralComponent(literal) => List.empty -> List(literal)
         case Expression(operator, variableList) =>
           val spec2optValue: List[(Varspec, Option[Value])] = variableList.flatMap { spec =>
             varsMap.get(spec.varname) match {
@@ -193,44 +194,7 @@ object UriTemplate {
       case err: Parsed.Failure => Left(MalformedUriTemplateError(err.index, err.msg))
     }
   }
+
+
 }
 
-/** Represents a parsed URI Template component. */
-private[uritemplate4s] sealed trait Component
-
-/** URI Template literal [[https://tools.ietf.org/html/rfc6570#section-2.1]]. */
-private[uritemplate4s] sealed trait Literal extends Component {
-  def value: String
-}
-/** A [[Literal]] which is encoded. */
-private[uritemplate4s] final case class Encoded(override val value: String) extends Literal
-/** A [[Literal]] which is unencoded, and will need to be encoded. */
-private[uritemplate4s] final case class Unencoded(override val value: String) extends Literal
-
-/** Template expression [[https://tools.ietf.org/html/rfc6570#section-2.2]]. */
-private[uritemplate4s] final case class Expression(operator: Operator, variableList: List[Varspec]) extends Component
-
-private[uritemplate4s] sealed class Operator(val first: String, val sep: String, val named: Boolean, val ifemp: String, val allow: Allow)
-// https://tools.ietf.org/html/rfc6570#appendix-A
-private[uritemplate4s] case object Simple extends Operator("", ",", false, "", Allow.U)
-private[uritemplate4s] case object Reserved extends Operator("", ",", false, "", Allow.`U+R`)
-private[uritemplate4s] case object Fragment extends Operator("#", ",", false, "", Allow.`U+R`)
-private[uritemplate4s] case object NameLabel extends Operator(".", ".", false, "", Allow.U)
-private[uritemplate4s] case object PathSegment extends Operator("/", "/", false, "", Allow.U)
-private[uritemplate4s] case object PathParameter extends Operator(";", ";", true, "", Allow.U)
-private[uritemplate4s] case object Query extends Operator("?", "&", true, "=", Allow.U)
-private[uritemplate4s] case object QueryContinuation extends Operator("&", "&", true, "=", Allow.U)
-
-private[uritemplate4s] sealed trait Allow
-private[uritemplate4s] object Allow {
-  case object U extends Allow
-  case object `U+R` extends Allow
-}
-
-private[uritemplate4s] final case class Varspec(varname: String, modifier: ModifierLevel4)
-
-/** Value modifier [[https://tools.ietf.org/html/rfc6570#section-2.4]]. */
-private[uritemplate4s] sealed trait ModifierLevel4
-private[uritemplate4s] case object EmptyModifier extends ModifierLevel4
-private[uritemplate4s] final case class Prefix(maxLength: Int) extends ModifierLevel4
-private[uritemplate4s] case object Explode extends ModifierLevel4
