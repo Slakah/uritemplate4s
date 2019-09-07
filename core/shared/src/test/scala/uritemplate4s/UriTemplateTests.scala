@@ -6,14 +6,17 @@ import uritemplate4s.syntax._
 
 object UriTemplateTests extends TestSuite {
 
-  private def test(
+  private def runTest(
                   vars: Map[String, Value])(
                   testCases: (String, String)*
                   ): Unit = {
     val varList = vars.toList
-    testCases.foreach { case (template, exp) =>
-      val actual = UriTemplate.parse(template).flatMap(_.expandVars(varList: _*).toEither)
-      assert(Right(exp) == actual)
+    testCases.toList.foreach { case (rawTemplate, exp) =>
+      val actual: Either[Object, String] = for {
+        template <- UriTemplate.parse(rawTemplate).left.map(_.message)
+        result <- template.expandVars(varList: _*).toEither.left.map(_.map(_.message).mkString(", "))
+      } yield result
+      assert(actual == Right(exp))
     }
   }
 
@@ -34,12 +37,12 @@ object UriTemplateTests extends TestSuite {
       * |     |    {hello}               Hello%20World%21                 |
       * '-----------------------------------------------------------------'
       */
-    'level1 - {
+    test("level1") - {
       val vars = Map[String, Value](
         "var" -> "value".toValue,
         "hello" -> "Hello World!".toValue
       )
-      "Simple string expansion (Sec 3.2.2)" - test(vars)(
+      test("Simple string expansion (Sec 3.2.2)") - runTest(vars)(
         "{var}" -> "value",
         "{hello}" -> "Hello%20World%21"
       )
@@ -69,19 +72,19 @@ object UriTemplateTests extends TestSuite {
       * |     |    X{#hello}             X#Hello%20World!                 |
       * '-----------------------------------------------------------------'
       */
-    'level2 - {
+    test("level2") - {
       val vars = Map[String, Value](
         "var" -> "value".toValue,
         "hello" -> "Hello World!".toValue,
         "path" -> "/foo/bar".toValue
       )
-      "Reserved string expansion (Sec 3.2.3)" - test(vars)(
+      test("Reserved string expansion (Sec 3.2.3)") - runTest(vars)(
         "{+var}" -> "value",
         "{+hello}" -> "Hello%20World!",
         "{+path}/here" ->"/foo/bar/here",
         "here?ref={+path}" -> "here?ref=/foo/bar"
       )
-      "Fragment expansion, crosshatch-prefixed (Sec 3.2.4)" - test(vars)(
+      test("Fragment expansion, crosshatch-prefixed (Sec 3.2.4)") - runTest(vars)(
         "X{#var}" -> "X#value",
         "X{#hello}" -> "X#Hello%20World!"
       )
@@ -150,7 +153,7 @@ object UriTemplateTests extends TestSuite {
       * |     |                                                           |
       * '-----------------------------------------------------------------'
       */
-    'level3 - {
+    test("level3") - {
       val vars = Map[String, Value](
         "var" -> "value".toValue,
         "hello" -> "Hello World!".toValue,
@@ -159,35 +162,35 @@ object UriTemplateTests extends TestSuite {
         "x" -> 1024.toValue,
         "y" -> 768.toValue
       )
-      "String expansion with multiple variables (Sec 3.2.2)" - test(vars)(
+      test("String expansion with multiple variables (Sec 3.2.2)") - runTest(vars)(
         "map?{x,y}" -> "map?1024,768",
         "{x,hello,y}" -> "1024,Hello%20World%21,768"
       )
-      "Reserved expansion with multiple variables (Sec 3.2.3)" - test(vars)(
+      test("Reserved expansion with multiple variables (Sec 3.2.3)") - runTest(vars)(
         "{+x,hello,y}" -> "1024,Hello%20World!,768",
         "{+path,x}/here" -> "/foo/bar,1024/here"
       )
-      "Fragment expansion with multiple variables (Sec 3.2.4)" - test(vars)(
+      test("Fragment expansion with multiple variables (Sec 3.2.4)") - runTest(vars)(
         "{#x,hello,y}" -> "#1024,Hello%20World!,768",
         "{#path,x}/here" -> "#/foo/bar,1024/here"
       )
-      "Label expansion, dot-prefixed (Sec 3.2.5)" - test(vars)(
+      test("Label expansion, dot-prefixed (Sec 3.2.5)") - runTest(vars)(
         "X{.var}" -> "X.value",
         "X{.x,y}" -> "X.1024.768"
       )
-      "Path segments, slash-prefixed (Sec 3.2.6)" - test(vars)(
+      test("Path segments, slash-prefixed (Sec 3.2.6)") - runTest(vars)(
         "{/var}" -> "/value",
         "{/var,x}/here" -> "/value/1024/here"
       )
-      "Path-style parameters, semicolon-prefixed (Sec 3.2.7)" - test(vars)(
+      test("Path-style parameters, semicolon-prefixed (Sec 3.2.7)") - runTest(vars)(
         "{;x,y}" -> ";x=1024;y=768",
         "{;x,y,empty}" -> ";x=1024;y=768;empty"
       )
-      "Form-style query, ampersand-separated (Sec 3.2.8)" - test(vars)(
+      test("Form-style query, ampersand-separated (Sec 3.2.8)") - runTest(vars)(
         "{?x,y}" -> "?x=1024&y=768",
         "{?x,y,empty}" -> "?x=1024&y=768&empty="
       )
-      "Form-style query continuation (Sec 3.2.9)" - test(vars)(
+      test("Form-style query continuation (Sec 3.2.9)") - runTest(vars)(
         "?fixed=yes{&x}" -> "?fixed=yes&x=1024",
         "{&x,y,empty}" -> "&x=1024&y=768&empty="
       )
@@ -280,7 +283,7 @@ object UriTemplateTests extends TestSuite {
       * |     |                                                           |
       * '-----------------------------------------------------------------'
       */
-    'level4 - {
+    test("level4") - {
       val vars = Map[String, Value](
         "var" -> "value".toValue,
         "hello" -> "Hello World!".toValue,
@@ -288,7 +291,7 @@ object UriTemplateTests extends TestSuite {
         "list" -> List("red", "green", "blue").toValue,
         "keys" -> Map("semi" -> ";", "dot" -> ".", "comma" ->",").toValue
       )
-      "String expansion with value modifiers (Sec 3.2.2)" - test(vars)(
+      test("String expansion with value modifiers (Sec 3.2.2)") - runTest(vars)(
         "{var:3}" -> "val",
         "{var:30}" -> "value",
         "{list}" -> "red,green,blue",
@@ -297,28 +300,28 @@ object UriTemplateTests extends TestSuite {
         "{keys*}" -> "semi=%3B,dot=.,comma=%2C"
       )
 
-      "Reserved expansion with value modifiers (Sec 3.2.3)" - test(vars)(
+      test("Reserved expansion with value modifiers (Sec 3.2.3)") - runTest(vars)(
         "{+path:6}/here" -> "/foo/b/here",
         "{+list}" -> "red,green,blue",
         "{+list*}" -> "red,green,blue",
         "{+keys}"  -> "semi,;,dot,.,comma,,",
         "{+keys*}" -> "semi=;,dot=.,comma=,"
       )
-      "Fragment expansion with value modifiers (Sec 3.2.4)" - test(vars)(
+      test("Fragment expansion with value modifiers (Sec 3.2.4)") - runTest(vars)(
         "{#path:6}/here" -> "#/foo/b/here",
         "{#list}" -> "#red,green,blue",
         "{#list*}" -> "#red,green,blue",
         "{#keys}" -> "#semi,;,dot,.,comma,,",
         "{#keys*}" -> "#semi=;,dot=.,comma=,"
       )
-      "Label expansion, dot-prefixed (Sec 3.2.5)" - test(vars)(
+      test("Label expansion, dot-prefixed (Sec 3.2.5)") - runTest(vars)(
         "X{.var:3}" -> "X.val",
         "X{.list}" -> "X.red,green,blue",
         "X{.list*}" -> "X.red.green.blue",
         "X{.keys}" -> "X.semi,%3B,dot,.,comma,%2C",
         "X{.keys*}" -> "X.semi=%3B.dot=..comma=%2C"
       )
-      "Path segments, slash-prefixed (Sec 3.2.6)" - test(vars)(
+      test("Path segments, slash-prefixed (Sec 3.2.6)") - runTest(vars)(
         "{/var:1,var}" -> "/v/value",
         "{/list}" -> "/red,green,blue",
         "{/list*}" -> "/red/green/blue",
@@ -326,21 +329,21 @@ object UriTemplateTests extends TestSuite {
         "{/keys}" -> "/semi,%3B,dot,.,comma,%2C",
         "{/keys*}" -> "/semi=%3B/dot=./comma=%2C"
       )
-      "Path-style parameters, semicolon-prefixed (Sec 3.2.7)" - test(vars)(
+      test("Path-style parameters, semicolon-prefixed (Sec 3.2.7)") - runTest(vars)(
         "{;hello:5}" -> ";hello=Hello",
         "{;list}" -> ";list=red,green,blue",
         "{;list*}" -> ";list=red;list=green;list=blue",
         "{;keys}" -> ";keys=semi,%3B,dot,.,comma,%2C",
         "{;keys*}" -> ";semi=%3B;dot=.;comma=%2C"
       )
-      "Form-style query, ampersand-separated (Sec 3.2.8) " - test(vars)(
+      test("Form-style query, ampersand-separated (Sec 3.2.8) ") - runTest(vars)(
         "{?var:3}" -> "?var=val",
         "{?list}" -> "?list=red,green,blue",
         "{?list*}" -> "?list=red&list=green&list=blue",
         "{?keys}" -> "?keys=semi,%3B,dot,.,comma,%2C",
         "{?keys*}" -> "?semi=%3B&dot=.&comma=%2C"
       )
-      "Form-style query continuation (Sec 3.2.9)" - test(vars)(
+      test("Form-style query continuation (Sec 3.2.9)") - runTest(vars)(
         "{&var:3}" -> "&var=val",
         "{&list}" -> "&list=red,green,blue",
         "{&list*}" -> "&list=red&list=green&list=blue",

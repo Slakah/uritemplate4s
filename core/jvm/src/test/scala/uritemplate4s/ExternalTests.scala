@@ -9,7 +9,6 @@ import cats.syntax.traverse._
 import io.circe._
 import io.circe.parser._
 import utest._
-import utest.framework.TestPath
 
 object ExternalTests extends TestSuite {
 
@@ -58,8 +57,8 @@ object ExternalTests extends TestSuite {
     }
   } yield tests
 
-  private def test()(implicit path: TestPath): Unit = {
-    val tests = parseTests(path.value.mkString)
+  private def runTest(path: String): Unit = {
+    val tests = parseTests(path)
     val _ = for {
       Test(_, _, variables, testcases) <- tests
       (template, expectedResult) <- testcases
@@ -101,9 +100,9 @@ object ExternalTests extends TestSuite {
   }
 
   override def tests = Tests {
-    "/extended-tests.json" - test()
-    "/negative-tests.json" - test()
-    "/spec-examples.json" - test()
-    "/spec-examples-by-section.json" - test()
+    test("/extended-tests.json") - runTest("/extended-tests.json")
+    test("/negative-tests.json") - runTest("/negative-tests.json")
+    test("/spec-examples.json") - runTest("/spec-examples.json")
+    test("/spec-examples-by-section.json") - runTest("/spec-examples-by-section.json")
   }
 }
