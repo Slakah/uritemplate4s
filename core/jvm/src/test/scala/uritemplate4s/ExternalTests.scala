@@ -2,11 +2,8 @@ package uritemplate4s
 
 import scala.io.Source
 
-import cats.instances.either._
-import cats.instances.list._
-import cats.syntax.either._
-import cats.syntax.traverse._
-import io.circe._
+import cats.implicits._
+import io.circe.{Error => _, _}
 import io.circe.parser._
 import utest._
 
@@ -64,13 +61,14 @@ object ExternalTests extends TestSuite {
       (template, expectedResult) <- testcases
     } yield {
       @SuppressWarnings(Array("scalafix:DisableSyntax.isInstanceOf"))
-      val result: Either[String, String] = for {
-        template <- UriTemplate.parse(template).leftMap(_.message)
+      val result: Either[Error, String] = for {
+        template <- UriTemplate.parse(template)
         expanded <- template.expandVars(variables.value.toVector: _*) match {
           // Tests assume that MissingValueError will not result in error
-          case ExpandResult.PartialSuccess(_, errors) if errors.exists(_.isInstanceOf[InvalidCombinationError]) =>
-            Left(errors.map(_.message).mkString(","))
-          case ExpandResult.PartialSuccess(value, _) => Right(value)
+          case ExpandResult.PartialSuccess(value, _: MissingValueFailure) => Right(value)
+          case ExpandResult.PartialSuccess(value, ExpandFailures(errors)) if errors.exists(_.isInstanceOf[MissingValueFailure]) =>
+            Right(value)
+          case ExpandResult.PartialSuccess(_, error) => Left(error)
           case ExpandResult.Success(value) => Right(value)
         }
       } yield expanded
