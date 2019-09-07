@@ -26,7 +26,7 @@
 <span class="c1">// parseResult: Either[uritemplate4s.ParseError,uritemplate4s.UriTemplate] = Right(ComponentsUriTemplate(List(Encoded(http://example.com/search), Expression(Query,List(Varspec(q,EmptyModifier), Varspec(lang,EmptyModifier))))))
 </span></code></pre></div>
 
-<p>Because parsing a template can fail, the result is an <code class="highlighter-rouge">Either</code> of type <code class="highlighter-rouge">Either[ParseError, UriTemplate]</code>.</p>
+<p>Because parsing a template can fail, the result is an <code class="highlighter-rouge">Either</code> of type <code class="highlighter-rouge">Either[ParseFailure, UriTemplate]</code>.</p>
 
 <p>When parsing fails the result is a <code class="highlighter-rouge">Left</code> containing the error with details of the cause.</p>
 
