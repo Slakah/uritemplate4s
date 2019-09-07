@@ -1,6 +1,7 @@
 package uritemplate4s
 
 import fastparse._, NoWhitespace._
+import uritemplate4s.ast._
 
 /** URI Template parser [[https://tools.ietf.org/html/rfc6570#section-2]]. */
 private[uritemplate4s] object UriTemplateParser {
@@ -20,7 +21,8 @@ private[uritemplate4s] object UriTemplateParser {
   // 2. Syntax
   def uriTemplate[_: P]: P[List[Component]] = P((expression | literals).rep ~ End).map(_.toList)
   // 2.1 Literals
-  def literals[_: P]: P[Literal] = P(allowedLiterals.rep(1).!.map[Literal](Encoded) | (!"}" ~ unallowedLiterals).rep(1).!.map[Literal](Unencoded))
+  def literals[_: P]: P[LiteralComponent] = P(allowedLiterals.rep(1).!.map[Literal](Encoded) | (!"}" ~ unallowedLiterals).rep(1).!.map[Literal](Unencoded))
+    .map(LiteralComponent)
   def allowedLiterals[_: P]: P0 = P(reserved | unreserved | pctEncoded)
   def unallowedLiterals[_: P]: P0 = P(
     CharIn(

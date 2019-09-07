@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets
 import scala.annotation.switch
 
 private[uritemplate4s] object PercentEncoder {
+  import ast._
   import UriTemplateParser._
 
   @inline def percentEncode(s: String): String = {
