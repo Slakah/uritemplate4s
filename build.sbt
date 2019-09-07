@@ -107,12 +107,15 @@ lazy val docs = project
 lazy val core = crossProject(JSPlatform, JVMPlatform)
   .in(file("core"))
   .jsSettings(
+    scalaVersion := "2.13.0",
     // currently sbt-doctest doesn't work in JS builds
     // https://github.com/tkawachi/sbt-doctest/issues/52
     doctestGenTests := Seq.empty
   )
+  .jvmSettings(
+    scalaVersion := "2.13.0"
+  )
   .settings(
-    scalaVersion := "2.13.0",
     crossScalaVersions := List(scalaVersion.value, "2.12.9"),
     commonSettings,
     publishSettings,
