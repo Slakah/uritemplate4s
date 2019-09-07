@@ -1,7 +1,6 @@
 package uritemplate4s.bench
 
-import scala.collection.JavaConverters._
-
+import scala.jdk.CollectionConverters._
 import org.openjdk.jmh.annotations._
 
 @State(Scope.Thread)
@@ -16,7 +15,7 @@ class Uritemplate4sBench {
   def parseFail(): Either[ParseError, UriTemplate] =
     UriTemplate.parse("http://{host.com/search{?q}{&lang}")
 
-  private val template = uritemplate"http://{host}.com/search{?q}{&lang}"
+  private val template: UriTemplate = uritemplate"http://{host}.com/search{?q}{&lang}"
 
   @Benchmark
   def expandTemplate(): ExpandResult =

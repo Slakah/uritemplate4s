@@ -6,6 +6,7 @@ object ContextualTests extends TestSuite {
 
   val tests = Tests {
     "parse a URI Template at compile time" - {
+      uritemplate"foo"
       val template = uritemplate"http://{woo}.com"
       assert(Right(template) == UriTemplate.parse("http://{woo}.com"))
     }

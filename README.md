@@ -7,7 +7,7 @@ Scala implementation of URI Template ([RFC 6570](https://tools.ietf.org/html/rfc
 
 ## Getting Started
 
-uritemplate4s is currently available for Scala 2.12 and [Scala.js](http://www.scala-js.org/).
+uritemplate4s is currently available for Scala 2.13, 2.12 and [Scala.js](http://www.scala-js.org/).
 
 Add the following to your `build.sbt`:
 

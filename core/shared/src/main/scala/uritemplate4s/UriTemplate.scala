@@ -14,7 +14,7 @@ private[uritemplate4s] trait UriTemplateBase {
 
 trait UriTemplate extends UriTemplateBase with UriTemplateArities
 
-private final case class ComponentsUriTemplate(private val components: List[Component]) extends UriTemplate {
+private[uritemplate4s] final case class ComponentsUriTemplate(private val components: List[Component]) extends UriTemplate {
 
   override def expandVars(vars: (String, Value)*): ExpandResult = {
     lazy val varsMap = vars.toMap
@@ -196,41 +196,41 @@ object UriTemplate {
 }
 
 /** Represents a parsed URI Template component. */
-private sealed trait Component
+private[uritemplate4s] sealed trait Component
 
 /** URI Template literal [[https://tools.ietf.org/html/rfc6570#section-2.1]]. */
-private sealed trait Literal extends Component {
+private[uritemplate4s] sealed trait Literal extends Component {
   def value: String
 }
 /** A [[Literal]] which is encoded. */
-private final case class Encoded(override val value: String) extends Literal
+private[uritemplate4s] final case class Encoded(override val value: String) extends Literal
 /** A [[Literal]] which is unencoded, and will need to be encoded. */
-private final case class Unencoded(override val value: String) extends Literal
+private[uritemplate4s] final case class Unencoded(override val value: String) extends Literal
 
 /** Template expression [[https://tools.ietf.org/html/rfc6570#section-2.2]]. */
-private final case class Expression(operator: Operator, variableList: List[Varspec]) extends Component
+private[uritemplate4s] final case class Expression(operator: Operator, variableList: List[Varspec]) extends Component
 
-private sealed class Operator(val first: String, val sep: String, val named: Boolean, val ifemp: String, val allow: Allow)
+private[uritemplate4s] sealed class Operator(val first: String, val sep: String, val named: Boolean, val ifemp: String, val allow: Allow)
 // https://tools.ietf.org/html/rfc6570#appendix-A
-private case object Simple extends Operator("", ",", false, "", Allow.U)
-private case object Reserved extends Operator("", ",", false, "", Allow.`U+R`)
-private case object Fragment extends Operator("#", ",", false, "", Allow.`U+R`)
-private case object NameLabel extends Operator(".", ".", false, "", Allow.U)
-private case object PathSegment extends Operator("/", "/", false, "", Allow.U)
-private case object PathParameter extends Operator(";", ";", true, "", Allow.U)
-private case object Query extends Operator("?", "&", true, "=", Allow.U)
-private case object QueryContinuation extends Operator("&", "&", true, "=", Allow.U)
+private[uritemplate4s] case object Simple extends Operator("", ",", false, "", Allow.U)
+private[uritemplate4s] case object Reserved extends Operator("", ",", false, "", Allow.`U+R`)
+private[uritemplate4s] case object Fragment extends Operator("#", ",", false, "", Allow.`U+R`)
+private[uritemplate4s] case object NameLabel extends Operator(".", ".", false, "", Allow.U)
+private[uritemplate4s] case object PathSegment extends Operator("/", "/", false, "", Allow.U)
+private[uritemplate4s] case object PathParameter extends Operator(";", ";", true, "", Allow.U)
+private[uritemplate4s] case object Query extends Operator("?", "&", true, "=", Allow.U)
+private[uritemplate4s] case object QueryContinuation extends Operator("&", "&", true, "=", Allow.U)
 
-private sealed trait Allow
-private object Allow {
+private[uritemplate4s] sealed trait Allow
+private[uritemplate4s] object Allow {
   case object U extends Allow
   case object `U+R` extends Allow
 }
 
-private final case class Varspec(varname: String, modifier: ModifierLevel4)
+private[uritemplate4s] final case class Varspec(varname: String, modifier: ModifierLevel4)
 
 /** Value modifier [[https://tools.ietf.org/html/rfc6570#section-2.4]]. */
-private sealed trait ModifierLevel4
-private case object EmptyModifier extends ModifierLevel4
-private final case class Prefix(maxLength: Int) extends ModifierLevel4
-private case object Explode extends ModifierLevel4
+private[uritemplate4s] sealed trait ModifierLevel4
+private[uritemplate4s] case object EmptyModifier extends ModifierLevel4
+private[uritemplate4s] final case class Prefix(maxLength: Int) extends ModifierLevel4
+private[uritemplate4s] case object Explode extends ModifierLevel4
