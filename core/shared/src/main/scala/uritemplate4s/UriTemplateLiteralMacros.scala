@@ -23,8 +23,8 @@ final class UriTemplateLiteralMacros(val c: whitebox.Context) {
         }
 
         UriTemplate.parse(uriTemplateString) match {
-          case Left(MalformedUriTemplateError(_, message)) =>
-            c.abort(c.enclosingPosition, s"not a valid URI Template, $message")
+          case Left(err: ParseFailure) =>
+            c.abort(c.enclosingPosition, s"not a valid URI Template, ${err.message}")
           case Right(template) =>
             uriTemplateLiteral(template)
         }

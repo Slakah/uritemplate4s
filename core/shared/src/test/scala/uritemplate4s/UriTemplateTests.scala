@@ -12,9 +12,9 @@ object UriTemplateTests extends TestSuite {
                   ): Unit = {
     val varList = vars.toList
     testCases.toList.foreach { case (rawTemplate, exp) =>
-      val actual: Either[Object, String] = for {
-        template <- UriTemplate.parse(rawTemplate).left.map(_.message)
-        result <- template.expandVars(varList: _*).toEither.left.map(_.map(_.message).mkString(", "))
+      val actual: Either[Error, String] = for {
+        template <- UriTemplate.parse(rawTemplate)
+        result <- template.expandVars(varList: _*).toEither
       } yield result
       assert(actual == Right(exp))
     }

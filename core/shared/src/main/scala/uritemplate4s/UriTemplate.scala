@@ -20,7 +20,7 @@ final case class ComponentsUriTemplate(private val components: List[Component]) 
   override def expandVars(vars: (String, Value)*): ExpandResult = {
     lazy val varsMap = vars.toMap
 
-    val errorsAndLiteralsList: List[(List[ExpandError], List[Literal])] = for {
+    val errorsAndLiteralsList: List[(List[ExpandFailure], List[Literal])] = for {
       component <- components
       errorsAndLiterals = component match {
         case LiteralComponent(literal) => List.empty -> List(literal)
@@ -43,7 +43,7 @@ final case class ComponentsUriTemplate(private val components: List[Component]) 
       }
     } yield errorsAndLiterals
 
-    val (errorList, literalList) = errorsAndLiteralsList.foldLeft(List.empty[ExpandError] -> List.empty[Literal]) {
+    val (errorList, literalList) = errorsAndLiteralsList.foldLeft(List.empty[ExpandFailure] -> List.empty[Literal]) {
       case ((errorAcc, literalsAcc), (errors, literals)) =>
         (errorAcc ::: errors) -> (literalsAcc ::: literals)
     }
@@ -56,22 +56,25 @@ final case class ComponentsUriTemplate(private val components: List[Component]) 
     if (errorList.isEmpty) {
       ExpandResult.Success(result)
     } else {
-      ExpandResult.PartialSuccess(result, errorList)
+      ExpandResult.PartialSuccess(result, errorList match {
+        case error :: Nil => error
+        case _  => ExpandFailures(errorList)
+      })
     }
   }
 
   /** Collect any spec to value mismatches. */
   private def buildSpecExpansionErrorList(spec2optValue: List[(Varspec, Option[Value])]) = {
-    spec2optValue.foldLeft(List.empty[ExpandError]) {
-      case (errs, (Varspec(name, _), None)) => MissingValueError(name) :: errs
+    spec2optValue.foldLeft(List.empty[ExpandFailure]) {
+      case (errs, (Varspec(name, _), None)) => MissingValueFailure(name) :: errs
       case (errs, (Varspec(name, Prefix(_)), Some(ListValue(l)))) =>
         val listShow = s"[${l.mkString(", ")}]"
-        InvalidCombinationError(s"$name has the unsupported prefix modifier for a list value of $listShow") :: errs
+        InvalidCombinationFailure(s"$name has the unsupported prefix modifier for a list value of $listShow") :: errs
       case (errs, (Varspec(name, Prefix(_)), Some(AssociativeArray(arr)))) =>
         val assocShow = "{" + arr
           .map { case (k, v) => s""""$k": "$v"""" }
           .mkString(", ") + "}"
-        InvalidCombinationError(
+        InvalidCombinationFailure(
           s"$name has the unsupported prefix modifier for a associative array value of $assocShow") :: errs
       case (errs, _) =>
         errs
@@ -187,14 +190,12 @@ final case class ComponentsUriTemplate(private val components: List[Component]) 
 
 object UriTemplate {
   /** Parse a URI Template according to [[https://tools.ietf.org/html/rfc6570]]. */
-  def parse(template: String): Either[ParseError, UriTemplate] = {
+  def parse(template: String): Either[ParseFailure, UriTemplate] = {
 
     fastparse.parse(template, UriTemplateParser.uriTemplate(_)) match {
       case Parsed.Success(components, _) => Right(ComponentsUriTemplate(components))
-      case err: Parsed.Failure => Left(MalformedUriTemplateError(err.index, err.msg))
+      case err: Parsed.Failure => Left(ParseFailure(err.index, err.msg))
     }
   }
-
-
 }
 

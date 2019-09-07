@@ -8,11 +8,11 @@ class Uritemplate4sBench {
   import uritemplate4s._
 
   @Benchmark
-  def parseSuccess(): Either[ParseError, UriTemplate] =
+  def parseSuccess(): Either[ParseFailure, UriTemplate] =
     UriTemplate.parse("http://{host}.com/search{?q}{&lang}")
 
   @Benchmark
-  def parseFail(): Either[ParseError, UriTemplate] =
+  def parseFail(): Either[ParseFailure, UriTemplate] =
     UriTemplate.parse("http://{host.com/search{?q}{&lang}")
 
   private val template: UriTemplate = uritemplate"http://{host}.com/search{?q}{&lang}"
