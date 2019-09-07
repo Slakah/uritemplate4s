@@ -1,6 +1,8 @@
 import microsites._
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
+ThisBuild / scalaVersion := "2.13.0"
+
 lazy val commonSettings = Seq(
   organization := "com.gubbns",
   homepage := Some(url(s"https://slakah.github.io/${name.value}/")),
@@ -73,7 +75,6 @@ lazy val bench = project
   .dependsOn(core.jvm)
   .settings(moduleName := "uritemplate4s-bench")
   .settings(
-    scalaVersion := "2.13.0",
     commonSettings,
     noPublishSettings,
     libraryDependencies ++= Seq(
@@ -85,10 +86,10 @@ lazy val docs = project
   .enablePlugins(MicrositesPlugin, SiteScaladocPlugin, GhpagesPlugin, SiteScaladocPlugin, ScalaJSPlugin)
   .settings(moduleName := "uritemplate4s-docs")
   .settings(
-    // TODO: use .dependsOn when scalajs deps support 2.13
-    scalaVersion := "2.12.9",
     libraryDependencies += "com.gubbns" %%% "uritemplate4s" % "0.4.0",
     commonSettings,
+    // TODO: use .dependsOn when scalajs deps support 2.13
+    scalaVersion := "2.12.9",
     noPublishSettings,
     docsSettings,
     libraryDependencies ++= Seq(
@@ -107,13 +108,9 @@ lazy val docs = project
 lazy val core = crossProject(JSPlatform, JVMPlatform)
   .in(file("core"))
   .jsSettings(
-    scalaVersion := "2.13.0",
     // currently sbt-doctest doesn't work in JS builds
     // https://github.com/tkawachi/sbt-doctest/issues/52
     doctestGenTests := Seq.empty
-  )
-  .jvmSettings(
-    scalaVersion := "2.13.0"
   )
   .settings(
     crossScalaVersions := List(scalaVersion.value, "2.12.9"),
