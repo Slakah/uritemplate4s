@@ -86,7 +86,7 @@ lazy val docs = project
   .enablePlugins(MicrositesPlugin, SiteScaladocPlugin, GhpagesPlugin, SiteScaladocPlugin, ScalaJSPlugin)
   .settings(moduleName := "uritemplate4s-docs")
   .settings(
-    libraryDependencies += "com.gubbns" %%% "uritemplate4s" % "0.4.0",
+    libraryDependencies += "com.gubbns" %%% "uritemplate4s" % "0.5.0",
     commonSettings,
     // TODO: use .dependsOn when scalajs deps support 2.13
     scalaVersion := "2.12.9",
