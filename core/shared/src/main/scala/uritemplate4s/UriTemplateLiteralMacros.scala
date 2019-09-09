@@ -1,8 +1,8 @@
 package uritemplate4s
 
-import scala.reflect.macros.whitebox
+import scala.reflect.macros.blackbox
 
-final class UriTemplateLiteralMacros(val c: whitebox.Context) {
+final class UriTemplateLiteralMacros(val c: blackbox.Context) {
   import c.universe._
   import ast._
 
@@ -62,6 +62,6 @@ final class UriTemplateLiteralMacros(val c: whitebox.Context) {
           q"_root_.uritemplate4s.ast.Expression($opTree, _root_.scala.List(..$variableListTrees))"
       }
       val componentListTree = q"_root_.scala.List(..$componentTrees)"
-      c.Expr[UriTemplate](q"""_root_.uritemplate4s.ComponentsUriTemplate($componentListTree): _root_.uritemplate4s.UriTemplate""")
+      c.Expr[UriTemplate](q"""_root_.uritemplate4s.ComponentsUriTemplate($componentListTree)""")
   }
 }
