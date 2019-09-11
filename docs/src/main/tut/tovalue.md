@@ -21,7 +21,6 @@ An example would be creating a `ToValue` instance for `java.time.Instant`.
 ```tut:silent
 import uritemplate4s._
 import java.time.Instant
-// Define the type class
 implicit val instantToStringValue: ToStringValue[Instant] = (instant: Instant) => instant.toString
 ```
 Test the type class is wired in correctly
