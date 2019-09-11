@@ -38,11 +38,11 @@ lazy val publishSettings = Seq(
 )
 
 lazy val betterMonadicForVersion = "0.3.1"
-lazy val catsVersion = "2.0.0-RC3"
-lazy val circeVersion = "0.12.0-RC4"
+lazy val catsVersion = "2.0.0"
+lazy val circeVersion = "0.12.1"
 lazy val fastparseVersion = "2.1.3"
 lazy val handyUriTemplatesVersion = "2.1.8"
-lazy val monixVersion = "3.0.0-RC5"
+lazy val monixVersion = "3.0.0"
 lazy val scalafixNoinferVersion = "0.1.0-M1"
 lazy val scalajsDomVersion = "0.9.7"
 lazy val utestVersion = "0.7.1"
@@ -85,11 +85,9 @@ lazy val bench = project
 lazy val docs = project
   .enablePlugins(MicrositesPlugin, SiteScaladocPlugin, GhpagesPlugin, SiteScaladocPlugin, ScalaJSPlugin)
   .settings(moduleName := "uritemplate4s-docs")
+  .dependsOn(core.js)
   .settings(
-    libraryDependencies += "com.gubbns" %%% "uritemplate4s" % "0.5.0",
     commonSettings,
-    // TODO: use .dependsOn when scalajs deps support 2.13
-    scalaVersion := "2.12.9",
     noPublishSettings,
     docsSettings,
     libraryDependencies ++= Seq(
