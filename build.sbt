@@ -85,11 +85,9 @@ lazy val bench = project
 lazy val docs = project
   .enablePlugins(MicrositesPlugin, SiteScaladocPlugin, GhpagesPlugin, SiteScaladocPlugin, ScalaJSPlugin)
   .settings(moduleName := "uritemplate4s-docs")
+  .dependsOn(core.js)
   .settings(
-    libraryDependencies += "com.gubbns" %%% "uritemplate4s" % "0.4.0",
     commonSettings,
-    // TODO: use .dependsOn when scalajs deps support 2.13
-    scalaVersion := "2.12.9",
     noPublishSettings,
     docsSettings,
     libraryDependencies ++= Seq(

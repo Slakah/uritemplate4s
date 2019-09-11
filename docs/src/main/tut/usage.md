@@ -41,9 +41,15 @@ To extract the parsed URI Template from the `Either`, pattern matching can be us
 
 ```tut:silent
 val template: UriTemplate = UriTemplate.parse(rawTemplate) match {
-  case Left(error) => throw new Exception(s"Unable to parse $rawTemplate, due to:\n${error.message}")
+  case Left(error) => throw error
   case Right(parsedTemplate) => parsedTemplate
 }
+```
+
+Or more simply:
+
+```tut:silent
+val template: UriTemplate = UriTemplate.parse(rawTemplate).toTry.get
 ```
 
 ## Template Expansion
@@ -72,12 +78,14 @@ as well as the tests included in this project.
 List expansion is supported as defined in [RFC 6570 Level 4](https://tools.ietf.org/html/rfc6570#page-8).
 
 ```tut:book
-val listTemplate = UriTemplate.parse("/search{?list}").right.get
+val listTemplate = UriTemplate.parse("/search{?list}").toTry.get
 val seq = Seq("red", "green", "blue")
 listTemplate.expand("list" -> seq).value
 ```
+
+List and Vectors are also supported.
+
 ```tut:silent
-// List and Vectors are also supported
 listTemplate.expand("list" -> seq.toList).value
 listTemplate.expand("list" -> seq.toVector).value
 ```
@@ -87,7 +95,7 @@ listTemplate.expand("list" -> seq.toVector).value
 Associative array expansion is supported as defined in [RFC 6570 Level 4](https://tools.ietf.org/html/rfc6570#page-8).
 
 ```tut:book
-val assocTemplate = UriTemplate.parse("/search{?address*}").right.get
+val assocTemplate = UriTemplate.parse("/search{?address*}").toTry.get
 val addressMap = Map("city" -> "Manchester", "country" -> "England", "postcode" -> "M2 5DB")
 assocTemplate.expand("address" -> addressMap).value
 ```
