@@ -104,7 +104,7 @@ workflows:
             tags:
               only: /.*/
             branches:
-              only: ci/fix-publish
+              only: master
       - publish_site:
           requires:
             - build
