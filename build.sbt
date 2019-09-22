@@ -20,11 +20,10 @@ lazy val publishSettings = Seq(
   autoAPIMappings := true,
   publishMavenStyle := true,
   publishArtifact in Test := false,
+  publishTo := sonatypePublishToBundle.value,
   pomIncludeRepository := { _ => false },
-  useGpg := false,
-  pgpPassphrase ~= (_.orElse(sys.env.get("PGP_PASSPHRASE").map(_.toCharArray))),
-  pgpPublicRing := file(s"./pubring.asc"),
-  pgpSecretRing := file(s"./secring.asc"),
+  usePgpKeyHex("AA0BEE10076EE99E"),
+  useGpgPinentry := true,
   apiURL := Some(url("https://slakah.github.io/uritemplate4s/api/latest/uritemplate4s/")),
   pomExtra := {
     <developers>
@@ -53,11 +52,7 @@ ThisBuild / scalafixDependencies +=
 ThisBuild / libraryDependencies +=
   compilerPlugin("com.olegpy" %% "better-monadic-for" % betterMonadicForVersion)
 
-ThisBuild / releaseEarlyWith := SonatypePublisher
-ThisBuild / releaseEarlyEnableLocalReleases := true
 ThisBuild / organization := "com.gubbns"
-
-publishArtifact := false
 
 addCommandAlias("format", "scalafix; test:scalafix")
 
@@ -70,6 +65,11 @@ addCommandAlias("validate", Seq(
   "docs/tut").mkString(";")
 )
 
+lazy val root = project
+  .in(file("."))
+  .aggregate(bench, core.js, core.jvm, docs)
+  .settings(noPublishSettings)
+
 lazy val bench = project
   .enablePlugins(JmhPlugin)
   .dependsOn(core.jvm)
@@ -79,28 +79,6 @@ lazy val bench = project
     noPublishSettings,
     libraryDependencies ++= Seq(
       "com.damnhandy" % "handy-uri-templates" % handyUriTemplatesVersion
-    )
-  )
-
-lazy val docs = project
-  .enablePlugins(MicrositesPlugin, SiteScaladocPlugin, GhpagesPlugin, SiteScaladocPlugin, ScalaJSPlugin)
-  .settings(moduleName := "uritemplate4s-docs")
-  .dependsOn(core.js)
-  .settings(
-    commonSettings,
-    noPublishSettings,
-    docsSettings,
-    libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-core" % catsVersion,
-      "org.typelevel" %%% "cats-kernel" % catsVersion,
-      "org.typelevel" %%% "cats-macros" % catsVersion,
-      "io.circe" %%% "circe-core" % circeVersion,
-      "io.circe" %%% "circe-generic" % circeVersion,
-      "io.circe" %%% "circe-parser" % circeVersion,
-      "io.circe" %%% "not-java-time" % "0.2.0",
-      "io.monix" %%% "monix-execution" % monixVersion,
-      "io.monix" %%% "monix-reactive" % monixVersion,
-      "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion
     )
   )
 
@@ -132,6 +110,28 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
       "io.circe" %%% "circe-generic" % circeVersion,
       "io.circe" %%% "circe-parser" % circeVersion
     ).map(_ % "test")
+  )
+
+lazy val docs = project
+  .enablePlugins(MicrositesPlugin, SiteScaladocPlugin, GhpagesPlugin, SiteScaladocPlugin, ScalaJSPlugin)
+  .settings(moduleName := "uritemplate4s-docs")
+  .dependsOn(core.js)
+  .settings(
+    commonSettings,
+    noPublishSettings,
+    docsSettings,
+    libraryDependencies ++= Seq(
+      "org.typelevel" %%% "cats-core" % catsVersion,
+      "org.typelevel" %%% "cats-kernel" % catsVersion,
+      "org.typelevel" %%% "cats-macros" % catsVersion,
+      "io.circe" %%% "circe-core" % circeVersion,
+      "io.circe" %%% "circe-generic" % circeVersion,
+      "io.circe" %%% "circe-parser" % circeVersion,
+      "io.circe" %%% "not-java-time" % "0.2.0",
+      "io.monix" %%% "monix-execution" % monixVersion,
+      "io.monix" %%% "monix-reactive" % monixVersion,
+      "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion
+    )
   )
 
 lazy val scalacOpts = Def.task(Seq(
@@ -215,7 +215,7 @@ lazy val docsSettings = Seq(
 ) ++ SiteScaladocPlugin.scaladocSettings(SiteScaladoc, mappings in (Compile, packageDoc) in core.jvm, "api/latest")
 
 lazy val noPublishSettings = Seq(
-  skip in publish := true,
+  publish / skip := true,
   PgpKeys.publishSigned := {},
   PgpKeys.publishLocalSigned := {},
   publishArtifact := false
