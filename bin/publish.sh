@@ -7,4 +7,4 @@ openssl aes-256-cbc -K "$ENCRYPTED_KEY" -iv $iv -in secring.asc.enc -out secring
 
 gpg --batch --passphrase $PGP_PASSPHRASE --allow-secret-key-import --import secring.asc
 
-sbt "; clean; sonatypeDropAll; +coreJVM/publishSigned; sonatypeBundleRelease"
+sbt "; clean; sonatypeDropAll; +publishSigned; sonatypeBundleRelease"
