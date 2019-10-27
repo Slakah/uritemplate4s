@@ -54,9 +54,11 @@ ThisBuild / libraryDependencies +=
 
 ThisBuild / organization := "com.gubbns"
 
-addCommandAlias("format", "scalafix; test:scalafix")
+addCommandAlias("format", "scalafmtAll; scalafmtSbt; scalafix; test:scalafix")
 
 addCommandAlias("validate", Seq(
+  "scalafmtCheckAll",
+  "scalafmtSbtCheck",
   "scalafixEnable",
   "scalafix --check",
   "test:scalafix --check",
