@@ -19,10 +19,7 @@ class Uritemplate4sBench {
 
   @Benchmark
   def expandTemplate(): ExpandResult =
-    template.expand(
-      "host" -> "search-engine",
-      "q" -> "After the Quake",
-      "lang" -> "en")
+    template.expand("host" -> "search-engine", "q" -> "After the Quake", "lang" -> "en")
 }
 
 @State(Scope.Thread)
@@ -34,13 +31,15 @@ class HandyUriTemplatesBench {
     UriTemplate.fromTemplate("http://{host}.com/search{?q}{&lang}")
 
   @Benchmark
-  def parseFail(): Unit = try {
-    val _ = UriTemplate.fromTemplate("http://{host.com/search{?q}{&lang}")
-  } catch {
-    case _: Throwable => ()
-  }
+  def parseFail(): Unit =
+    try {
+      val _ = UriTemplate.fromTemplate("http://{host.com/search{?q}{&lang}")
+    } catch {
+      case _: Throwable => ()
+    }
 
   private val template = UriTemplate.fromTemplate("http://{host}.com/search{?q}{&lang}")
+
   private val vars = Map[String, Object](
     "host" -> "search-engine",
     "q" -> "After the Quake",

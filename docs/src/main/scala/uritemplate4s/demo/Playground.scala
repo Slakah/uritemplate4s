@@ -50,8 +50,7 @@ object Playground {
       "list" -> List("apple", "pear", "orange").toValue,
       "assoc" -> Map("foo" -> "bar", "wierd" -> "strange").toValue
     )
-    document.getElementById("uritemplate-playground").innerHTML =
-      s"""
+    document.getElementById("uritemplate-playground").innerHTML = s"""
         <div class="form-group">
           <label for="uritemplate-input">URI Template</label>
           <input class="form-control" id="uritemplate-input" value="$initialInput">
@@ -81,17 +80,16 @@ object Playground {
       c := Cancelable(() => target.removeEventListener(event, listener))
     }
 
-
   private def registerUpdate(): Unit = {
     val input = document.getElementById("uritemplate-input").asInstanceOf[html.Input]
     val valuesInput = document.getElementById("uritemplate-values").asInstanceOf[html.Input]
     val output = document.getElementById("uritemplate-output").asInstanceOf[html.Html]
 
-    def parseValues(s: String) = for {
-      js <- parser.parse(s)
-      values <- js.as[Map[String, Value]]
-    } yield values.toList
-
+    def parseValues(s: String) =
+      for {
+        js <- parser.parse(s)
+        values <- js.as[Map[String, Value]]
+      } yield values.toList
 
     val templateSource = inputChange(input, "input")
       .map(UriTemplate.parse)
@@ -99,14 +97,16 @@ object Playground {
     val valuesSource = inputChange(valuesInput, "input")
       .map(parseValues)
 
-    val _ = templateSource.combineLatest(valuesSource)
-      .map { case (templateE, valuesE) =>
-        val result = for {
-          template <- templateE
-          values <- valuesE
-          uri <- template.expandVars(values: _*).toEither
-        } yield uri
-        result.leftMap(_.getMessage).merge
+    val _ = templateSource
+      .combineLatest(valuesSource)
+      .map {
+        case (templateE, valuesE) =>
+          val result = for {
+            template <- templateE
+            values <- valuesE
+            uri <- template.expandVars(values: _*).toEither
+          } yield uri
+          result.leftMap(_.getMessage).merge
       }
       .foreach { result =>
         output.innerHTML = result
@@ -114,4 +114,3 @@ object Playground {
       }
   }
 }
-

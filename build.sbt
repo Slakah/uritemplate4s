@@ -7,10 +7,12 @@ lazy val commonSettings = Seq(
   organization := "com.gubbns",
   homepage := Some(url(s"https://slakah.github.io/${name.value}/")),
   licenses += "MIT" -> url("http://opensource.org/licenses/MIT"),
-  scmInfo := Some(ScmInfo(
-    url(s"https://github.com/Slakah/${name.value}"),
-    s"scm:git@github.com:Slakah/${name.value}.git"
-  )),
+  scmInfo := Some(
+    ScmInfo(
+      url(s"https://github.com/Slakah/${name.value}"),
+      s"scm:git@github.com:Slakah/${name.value}.git"
+    )
+  ),
   // https://scalacenter.github.io/scalafix/docs/users/installation.html
   addCompilerPlugin(scalafixSemanticdb),
   scalacOptions ++= scalacOpts.value :+ "-Yrangepos"
@@ -21,7 +23,9 @@ lazy val publishSettings = Seq(
   publishMavenStyle := true,
   publishArtifact in Test := false,
   publishTo := sonatypePublishToBundle.value,
-  pomIncludeRepository := { _ => false },
+  pomIncludeRepository := { _ =>
+    false
+  },
   usePgpKeyHex("AA0BEE10076EE99E"),
   useGpgPinentry := true,
   apiURL := Some(url("https://slakah.github.io/uritemplate4s/api/latest/uritemplate4s/")),
@@ -56,15 +60,18 @@ ThisBuild / organization := "com.gubbns"
 
 addCommandAlias("format", "scalafmtAll; scalafmtSbt; scalafix; test:scalafix")
 
-addCommandAlias("validate", Seq(
-  "scalafmtCheckAll",
-  "scalafmtSbtCheck",
-  "scalafixEnable",
-  "scalafix --check",
-  "test:scalafix --check",
-  "test:compile",
-  "+test",
-  "docs/tut").mkString(";")
+addCommandAlias(
+  "validate",
+  Seq(
+    "scalafmtCheckAll",
+    "scalafmtSbtCheck",
+    "scalafixEnable",
+    "scalafix --check",
+    "test:scalafix --check",
+    "test:compile",
+    "+test",
+    "docs/tut"
+  ).mkString(";")
 )
 
 lazy val root = project
@@ -136,7 +143,8 @@ lazy val docs = project
     )
   )
 
-lazy val scalacOpts = Def.task(Seq(
+lazy val scalacOpts = Def.task(
+  Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
     "-explaintypes", // Explain type errors in more detail.
     "-feature", // Emit warning and location for usages of features that should be imported explicitly.
@@ -167,7 +175,8 @@ lazy val scalacOpts = Def.task(Seq(
     "-Ywarn-numeric-widen", // Warn when numerics are widened.
     "-Ywarn-unused:-patvars,_", // Warn if something is unused.
     "-Ywarn-value-discard", // Warn when non-Unit expression results are unused.
-    "-Ybackend-parallelism", "8", // Enable paralellisation — change to desired number!
+    "-Ybackend-parallelism",
+    "8", // Enable paralellisation — change to desired number!
     "-Ycache-plugin-class-loader:last-modified", // Enables caching of classloaders for compiler plugins
     "-Ycache-macro-class-loader:last-modified" // and macro definitions. This can lead to performance improvements.
   ) ++ (if (priorTo2_13(scalaVersion.value)) Seq("-Ypartial-unification") else Seq.empty)
@@ -191,7 +200,7 @@ lazy val docsSettings = Seq(
     file("LICENSE") -> ExtraMdFileConfig(
       "license.md",
       "page",
-      Map("title" -> "License",   "section" -> "License",   "position" -> "101")
+      Map("title" -> "License", "section" -> "License", "position" -> "101")
     )
   ),
   scalacOptions in Tut += "-Ywarn-unused:-imports",
@@ -226,5 +235,5 @@ lazy val noPublishSettings = Seq(
 def priorTo2_13(scalaVersion: String): Boolean =
   CrossVersion.partialVersion(scalaVersion) match {
     case Some((2, minor)) if minor < 13 => true
-    case _                              => false
+    case _ => false
   }

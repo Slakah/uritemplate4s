@@ -1,4 +1,3 @@
-
 package object uritemplate4s {
 
   /**

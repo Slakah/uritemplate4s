@@ -11,23 +11,30 @@ private[uritemplate4s] object UriTemplateParser {
   def hexdig[_: P]: P0 = P(CharIn("0-9", "a-f", "A-F"))
   def pctEncoded[_: P]: P0 = P("%" ~ hexdig ~ hexdig)
   def unreserved[_: P]: P0 = P(alpha | digit | StringIn("-", ".", "_", "~"))
+
+  // format: off
   def reserved[_: P]: P0 =  P(CharIn(
     ":", "/", "?", "#", "[", "]", "@", // gen-delims
     "!", "$", "&", "'", "(", ")", "*", "+", ",", ";", "=" // sub-delims
   ))
+  // format: on
   def ucschar[_: P]: P0 = P(CharIn("\u00a0-\ud7ff", "\uf900-\ufdcf", "\ufdf0-\uffef", "\u0000-\ufffd"))
-  def iprivate[_: P]: P0 = P(CharIn(
-    "\ue000-\uf8ff", "\u0000-\ufffd"))
+  def iprivate[_: P]: P0 = P(CharIn("\ue000-\uf8ff", "\u0000-\ufffd"))
   // 2. Syntax
   def uriTemplate[_: P]: P[List[Component]] = P((expression | literals).rep ~ End).map(_.toList)
+
   // 2.1 Literals
-  def literals[_: P]: P[LiteralComponent] = P(allowedLiterals.rep(1).!.map[Literal](Encoded) | (!"}" ~ unallowedLiterals).rep(1).!.map[Literal](Unencoded))
-    .map(LiteralComponent)
+  def literals[_: P]: P[LiteralComponent] =
+    P(allowedLiterals.rep(1).!.map[Literal](Encoded) | (!"}" ~ unallowedLiterals).rep(1).!.map[Literal](Unencoded))
+      .map(LiteralComponent)
   def allowedLiterals[_: P]: P0 = P(reserved | unreserved | pctEncoded)
+
+  // format: off
   def unallowedLiterals[_: P]: P0 = P(
     CharIn(
       "\u0021", "\u0023-\u0024", "\u0026", "\u0028-\u003B", "\u003D", "\u003F-\u005B",
       "\u005D", "\u005F", "\u0061-\u007A", "\u007E") | ucschar | iprivate | pctEncoded)
+  // format: on
   // 2.2. Expressions
   def expression[_: P]: P[Expression] = P("{" ~/ operator.? ~ variableList ~ "}").map {
     case (None, vl) => Expression(Simple, vl)
@@ -35,15 +42,19 @@ private[uritemplate4s] object UriTemplateParser {
   }
   def operator[_: P]: P[Operator] = opLevel2 | opLevel3 // | opReserve
   def opLevel2[_: P]: P[Operator] = P("+".!.map(_ => Reserved) | "#".!.map(_ => Fragment))
-  def opLevel3[_: P]: P[Operator] =P(
-    ".".!.map(_ => NameLabel) |
-    "/".!.map(_ => PathSegment) |
-    ";".!.map(_ => PathParameter) |
-    "?".!.map(_ => Query) |
-    "&".!.map(_ => QueryContinuation))
+
+  def opLevel3[_: P]: P[Operator] =
+    P(
+      ".".!.map(_ => NameLabel) |
+        "/".!.map(_ => PathSegment) |
+        ";".!.map(_ => PathParameter) |
+        "?".!.map(_ => Query) |
+        "&".!.map(_ => QueryContinuation)
+    )
   def opReserve[_: P]: P[Operator] = P(CharIn("=,!@|")).map(_ => Reserved)
   // 2.3. Variables
   def variableList[_: P]: P[List[Varspec]] = P(varspec.rep(1, sep = ",")).map(_.toList)
+
   def varspec[_: P]: P[Varspec] = P(varname ~ modifierLevel4.?).map {
     case (n, Some(m)) => Varspec(n, m)
     case (n, None) => Varspec(n, EmptyModifier)

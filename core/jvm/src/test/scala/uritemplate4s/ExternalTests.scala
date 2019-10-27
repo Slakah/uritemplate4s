@@ -18,15 +18,16 @@ object ExternalTests extends TestSuite {
     name: String,
     level: Option[Int],
     variables: Variables,
-    testcases: Seq[(String, ExpectedResult)])
+    testcases: Seq[(String, ExpectedResult)]
+  )
 
   final case class Variables(value: Map[String, Value]) extends AnyVal
 
   implicit lazy val decodeValue: Decoder[Value] =
     Decoder[String].map[Value](StringValue) or
-    Decoder[JsonNumber].map[Value](n => StringValue(n.toString)) or
-    Decoder[Vector[String]].map[Value](ListValue) or
-    Decoder[Map[String, String]].map[Value](m => AssociativeArray(m.toVector))
+      Decoder[JsonNumber].map[Value](n => StringValue(n.toString)) or
+      Decoder[Vector[String]].map[Value](ListValue) or
+      Decoder[Map[String, String]].map[Value](m => AssociativeArray(m.toVector))
 
   implicit lazy val decodeVariables: Decoder[Variables] = Decoder.instance { c =>
     for {
@@ -38,21 +39,24 @@ object ExternalTests extends TestSuite {
   }
 
   implicit lazy val decodeExpectedResult: Decoder[ExpectedResult] = (c: HCursor) =>
-    c.as[String].map(Expected)
-    .orElse(c.as[Vector[String]].map(MultiExpected))
-    .orElse(c.as[Boolean].map(_ => FailExpected))
+    c.as[String]
+      .map(Expected)
+      .orElse(c.as[Vector[String]].map(MultiExpected))
+      .orElse(c.as[Boolean].map(_ => FailExpected))
 
   def decodeTest(name: String): Decoder[Test] =
     Decoder.forProduct3("level", "variables", "testcases") {
       Test(name, _: Option[Int], _: Variables, _: Seq[(String, ExpectedResult)])
     }
 
-  lazy val decodeTests: Decoder[Seq[Test]] = (c: HCursor) => for {
-    name2obj <- c.as[JsonObject].map(_.toList)
-    tests <- name2obj.traverse { case (name, js) =>
-      js.as[Test](decodeTest(name))
-    }
-  } yield tests
+  lazy val decodeTests: Decoder[Seq[Test]] = (c: HCursor) =>
+    for {
+      name2obj <- c.as[JsonObject].map(_.toList)
+      tests <- name2obj.traverse {
+        case (name, js) =>
+          js.as[Test](decodeTest(name))
+      }
+    } yield tests
 
   private def runTest(path: String): Unit = {
     val tests = parseTests(path)
@@ -66,7 +70,8 @@ object ExternalTests extends TestSuite {
         expanded <- template.expandVars(variables.value.toVector: _*) match {
           // Tests assume that MissingValueError will not result in error
           case ExpandResult.PartialSuccess(value, _: MissingValueFailure) => Right(value)
-          case ExpandResult.PartialSuccess(value, ExpandFailures(errors)) if errors.exists(_.isInstanceOf[MissingValueFailure]) =>
+          case ExpandResult.PartialSuccess(value, ExpandFailures(errors))
+              if errors.exists(_.isInstanceOf[MissingValueFailure]) =>
             Right(value)
           case ExpandResult.PartialSuccess(_, error) => Left(error)
           case ExpandResult.Success(value) => Right(value)
