@@ -9,9 +9,12 @@ private[uritemplate4s] object PercentEncoder {
   import UriTemplateParser._
 
   @inline def percentEncode(s: String): String = {
-    s.getBytes(StandardCharsets.UTF_8).foldLeft(new StringBuilder) { case (sb, byte) =>
-      sb.append(memoEncodeChar(byte.toChar))
-    }.mkString
+    s.getBytes(StandardCharsets.UTF_8)
+      .foldLeft(new StringBuilder) {
+        case (sb, byte) =>
+          sb.append(memoEncodeChar(byte.toChar))
+      }
+      .mkString
   }
 
   private def memoEncodeChar(ch: Char) = (ch: @switch) match {
@@ -44,6 +47,8 @@ private[uritemplate4s] object PercentEncoder {
 
   def nonUnreserved[_: P]: P[List[Literal]] =
     P(unreserved.rep(1).!.map(Encoded) | (!unreserved ~ AnyChar).rep(1).!.map(Unencoded)).rep.map(_.toList)
+
   def nonUnreservedAndReserved[_: P]: P[List[Literal]] =
-    P((unreserved | reserved).rep(1).!.map(Encoded) | (!(unreserved | reserved) ~ AnyChar).rep(1).!.map(Unencoded)).rep.map(_.toList)
+    P((unreserved | reserved).rep(1).!.map(Encoded) | (!(unreserved | reserved) ~ AnyChar).rep(1).!.map(Unencoded)).rep
+      .map(_.toList)
 }

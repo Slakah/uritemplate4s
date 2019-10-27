@@ -6,21 +6,22 @@ import uritemplate4s.syntax._
 
 object UriTemplateTests extends TestSuite {
 
-  private def runTest(
-                  vars: Map[String, Value])(
-                  testCases: (String, String)*
-                  ): Unit = {
+  private def runTest(vars: Map[String, Value])(
+    testCases: (String, String)*
+  ): Unit = {
     val varList = vars.toList
-    testCases.toList.foreach { case (rawTemplate, exp) =>
-      val actual: Either[Error, String] = for {
-        template <- UriTemplate.parse(rawTemplate)
-        result <- template.expandVars(varList: _*).toEither
-      } yield result
-      assert(actual == Right(exp))
+    testCases.toList.foreach {
+      case (rawTemplate, exp) =>
+        val actual: Either[Error, String] = for {
+          template <- UriTemplate.parse(rawTemplate)
+          result <- template.expandVars(varList: _*).toEither
+        } yield result
+        assert(actual == Right(exp))
     }
   }
 
   val tests = Tests {
+
     /**
       * .-----------------------------------------------------------------.
       * | Level 1 examples, with variables having values of               |
@@ -81,7 +82,7 @@ object UriTemplateTests extends TestSuite {
       test("Reserved string expansion (Sec 3.2.3)") - runTest(vars)(
         "{+var}" -> "value",
         "{+hello}" -> "Hello%20World!",
-        "{+path}/here" ->"/foo/bar/here",
+        "{+path}/here" -> "/foo/bar/here",
         "here?ref={+path}" -> "here?ref=/foo/bar"
       )
       test("Fragment expansion, crosshatch-prefixed (Sec 3.2.4)") - runTest(vars)(
@@ -289,7 +290,7 @@ object UriTemplateTests extends TestSuite {
         "hello" -> "Hello World!".toValue,
         "path" -> "/foo/bar".toValue,
         "list" -> List("red", "green", "blue").toValue,
-        "keys" -> Map("semi" -> ";", "dot" -> ".", "comma" ->",").toValue
+        "keys" -> Map("semi" -> ";", "dot" -> ".", "comma" -> ",").toValue
       )
       test("String expansion with value modifiers (Sec 3.2.2)") - runTest(vars)(
         "{var:3}" -> "val",
@@ -304,7 +305,7 @@ object UriTemplateTests extends TestSuite {
         "{+path:6}/here" -> "/foo/b/here",
         "{+list}" -> "red,green,blue",
         "{+list*}" -> "red,green,blue",
-        "{+keys}"  -> "semi,;,dot,.,comma,,",
+        "{+keys}" -> "semi,;,dot,.,comma,,",
         "{+keys*}" -> "semi=;,dot=.,comma=,"
       )
       test("Fragment expansion with value modifiers (Sec 3.2.4)") - runTest(vars)(

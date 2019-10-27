@@ -5,6 +5,7 @@ import uritemplate4s.ListSyntax._
 import uritemplate4s.ast._
 
 private[uritemplate4s] trait UriTemplateBase {
+
   /**
     * Expand the parsed URI Template using the supplied vars.
     * @param vars name value pairs to be substituted in the template.
@@ -58,7 +59,7 @@ final case class ComponentsUriTemplate(private val components: List[Component]) 
     } else {
       ExpandResult.PartialSuccess(result, errorList match {
         case error :: Nil => error
-        case _  => ExpandFailures(errorList)
+        case _ => ExpandFailures(errorList)
       })
     }
   }
@@ -75,19 +76,21 @@ final case class ComponentsUriTemplate(private val components: List[Component]) 
           .map { case (k, v) => s""""$k": "$v"""" }
           .mkString(", ") + "}"
         InvalidCombinationFailure(
-          s"$name has the unsupported prefix modifier for a associative array value of $assocShow") :: errs
+          s"$name has the unsupported prefix modifier for a associative array value of $assocShow"
+        ) :: errs
       case (errs, _) =>
         errs
     }
   }
 
   private def explodeSpecs(spec2value: List[(Varspec, Value)], operator: Operator) = {
-    val exploded: List[List[Literal]] = spec2value.map { case (spec, value) =>
-      value match {
-        case StringValue(s) => explodeStringValue(s, operator, spec)
-        case ListValue(l) => explodeListValue(l, operator, spec)
-        case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
-      }
+    val exploded: List[List[Literal]] = spec2value.map {
+      case (spec, value) =>
+        value match {
+          case StringValue(s) => explodeStringValue(s, operator, spec)
+          case ListValue(l) => explodeListValue(l, operator, spec)
+          case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
+        }
     }
     exploded match {
       case Nil => List.empty
@@ -132,7 +135,8 @@ final case class ComponentsUriTemplate(private val components: List[Component]) 
               lValue
             }
           }
-          .intersperse(List(Encoded(operator.sep))).flatten
+          .intersperse(List(Encoded(operator.sep)))
+          .flatten
     }
   }
 
@@ -154,15 +158,17 @@ final case class ComponentsUriTemplate(private val components: List[Component]) 
       case Explode =>
         val nameValues = tuples.toList.map { case (n, v) => n -> encode(v, operator.allow) }
         nameValues
-          .map { case (n, v) =>
-            val varnameLiterals = encode(n, operator.allow)
-            if (operator.named) {
-              namedValue(operator, varnameLiterals, v.isEmpty, v)
-            } else {
-              varnameLiterals ::: Encoded("=") :: v
-            }
+          .map {
+            case (n, v) =>
+              val varnameLiterals = encode(n, operator.allow)
+              if (operator.named) {
+                namedValue(operator, varnameLiterals, v.isEmpty, v)
+              } else {
+                varnameLiterals ::: Encoded("=") :: v
+              }
           }
-          .intersperse(List(Encoded(operator.sep))).flatten
+          .intersperse(List(Encoded(operator.sep)))
+          .flatten
     }
   }
 
@@ -171,7 +177,12 @@ final case class ComponentsUriTemplate(private val components: List[Component]) 
     Encoded(spec.varname) :: Encoded(namedSep) :: values
   }
 
-  @inline private def namedValue(operator: Operator, varnameLiterals: List[Literal], isEmpty: Boolean, values: List[Literal]) = {
+  @inline private def namedValue(
+    operator: Operator,
+    varnameLiterals: List[Literal],
+    isEmpty: Boolean,
+    values: List[Literal]
+  ) = {
     val namedSep = if (isEmpty) operator.ifemp else "="
     varnameLiterals ::: Encoded(namedSep) :: values
   }
@@ -189,6 +200,7 @@ final case class ComponentsUriTemplate(private val components: List[Component]) 
 }
 
 object UriTemplate {
+
   /** Parse a URI Template according to [[https://tools.ietf.org/html/rfc6570]]. */
   def parse(template: String): Either[ParseFailure, UriTemplate] = {
 
@@ -198,4 +210,3 @@ object UriTemplate {
     }
   }
 }
-
