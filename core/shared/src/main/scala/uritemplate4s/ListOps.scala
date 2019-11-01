@@ -3,7 +3,6 @@ package uritemplate4s
 import scala.annotation.tailrec
 
 private[uritemplate4s] trait ListSyntax {
-
   implicit final def uriTemplateListSyntax[A](l: List[A]): ListOps[A] = new ListOps(l)
 }
 
