@@ -1,7 +1,6 @@
 package uritemplate4s
 
 object ast {
-
   /** Represents a parsed URI Template component. */
   sealed trait Component
 

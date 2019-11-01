@@ -15,7 +15,6 @@ import uritemplate4s._
 import uritemplate4s.syntax._
 
 object Playground {
-
   import monix.execution.Scheduler.Implicits.global
 
   private implicit lazy val decodeValue: Decoder[Value] =
@@ -31,7 +30,6 @@ object Playground {
   }
 
   def main(args: Array[String]): Unit = {
-
     val enabled = js.Dynamic.global.URITEMPLATE_PLAYGROUND
       .asInstanceOf[js.UndefOr[Boolean]]
       .getOrElse(false)

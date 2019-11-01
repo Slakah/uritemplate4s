@@ -5,7 +5,6 @@ import uritemplate4s.ListSyntax._
 import uritemplate4s.ast._
 
 private[uritemplate4s] trait UriTemplateBase {
-
   /**
     * Expand the parsed URI Template using the supplied vars.
     * @param vars name value pairs to be substituted in the template.
@@ -203,7 +202,6 @@ object UriTemplate {
 
   /** Parse a URI Template according to [[https://tools.ietf.org/html/rfc6570]]. */
   def parse(template: String): Either[ParseFailure, UriTemplate] = {
-
     fastparse.parse(template, UriTemplateParser.uriTemplate(_)) match {
       case Parsed.Success(components, _) => Right(ComponentsUriTemplate(components))
       case err: Parsed.Failure => Left(ParseFailure(err.index, err.msg))

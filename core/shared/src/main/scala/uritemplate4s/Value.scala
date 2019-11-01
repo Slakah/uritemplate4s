@@ -23,7 +23,6 @@ trait ToValue[A] {
 }
 
 object ToValue {
-
   def apply[A](implicit instance: ToValue[A]): ToValue[A] = instance
 
   /**
@@ -121,6 +120,5 @@ trait ToStringValue[A] extends ToValue[A] {
 }
 
 object ToStringValue {
-
   def apply[A](implicit instance: ToStringValue[A]): ToStringValue[A] = instance
 }

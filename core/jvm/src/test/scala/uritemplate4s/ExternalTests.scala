@@ -8,7 +8,6 @@ import io.circe.parser._
 import utest._
 
 object ExternalTests extends TestSuite {
-
   sealed trait ExpectedResult
   case class Expected(result: String) extends ExpectedResult
   case class MultiExpected(results: Seq[String]) extends ExpectedResult

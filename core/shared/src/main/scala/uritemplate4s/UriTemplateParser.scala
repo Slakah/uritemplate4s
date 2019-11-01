@@ -65,5 +65,4 @@ private[uritemplate4s] object UriTemplateParser {
   def modifierLevel4[_: P]: P[ModifierLevel4] = prefix | explode
   def prefix[_: P]: P[ModifierLevel4] = P(":" ~ digit.rep(1, max = 4).!).map(raw => Prefix(raw.toInt))
   def explode[_: P]: P[ModifierLevel4] = P("*").map(_ => Explode)
-
 }
