@@ -205,6 +205,7 @@ lazy val docsSettings = Seq(
   ),
   scalacOptions in Tut += "-Ywarn-unused:-imports",
   micrositePushSiteWith := GHPagesPlugin,
+  micrositeCompilingDocsTool := WithTut,
   micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
   micrositeJsDirectory := (managedResourceDirectories in Compile).value.head / "microsite" / "js",
   git.remoteRepo := "git@github.com:slakah/uritemplate4s.git",
