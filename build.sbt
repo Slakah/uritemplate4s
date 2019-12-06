@@ -47,7 +47,7 @@ lazy val fastparseVersion = "2.1.3"
 lazy val handyUriTemplatesVersion = "2.1.8"
 lazy val monixVersion = "3.1.0"
 lazy val scalafixNoinferVersion = "0.1.0-M1"
-lazy val scalajsDomVersion = "0.9.7"
+lazy val scalajsDomVersion = "0.9.8"
 lazy val utestVersion = "0.7.1"
 
 ThisBuild / scalafixDependencies +=
