@@ -21,6 +21,7 @@ object UriTemplateTests extends TestSuite {
   }
 
   val tests = Tests {
+
     /**
       * .-----------------------------------------------------------------.
       * | Level 1 examples, with variables having values of               |

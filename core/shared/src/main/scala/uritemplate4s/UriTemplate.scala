@@ -5,6 +5,7 @@ import uritemplate4s.ListSyntax._
 import uritemplate4s.ast._
 
 private[uritemplate4s] trait UriTemplateBase {
+
   /**
     * Expand the parsed URI Template using the supplied vars.
     * @param vars name value pairs to be substituted in the template.
