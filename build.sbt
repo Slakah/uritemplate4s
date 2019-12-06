@@ -21,7 +21,7 @@ lazy val commonSettings = Seq(
 lazy val publishSettings = Seq(
   autoAPIMappings := true,
   publishMavenStyle := true,
-  publishArtifact in Test := false,
+  Test / publishArtifact := false,
   publishTo := sonatypePublishToBundle.value,
   pomIncludeRepository := { _ =>
     false
@@ -104,7 +104,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     publishSettings,
     name := "uritemplate4s",
     testFrameworks += new TestFramework("utest.runner.Framework"),
-    sourceGenerators in Compile += (sourceManaged in Compile).map(Boilerplate.gen).taskValue,
+    Compile / sourceGenerators += (Compile / sourceManaged).map(Boilerplate.gen).taskValue,
     doctestTestFramework := DoctestTestFramework.MicroTest,
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
@@ -195,7 +195,7 @@ lazy val docsSettings = Seq(
     file("README.md") -> ExtraMdFileConfig(
       "index.md",
       "home",
-      Map("title" -> "Home", "section" -> "home", "position" -> "0")
+      Map("title" -> "Home", "section" -> "Home", "position" -> "0")
     ),
     file("LICENSE") -> ExtraMdFileConfig(
       "license.md",
@@ -203,16 +203,20 @@ lazy val docsSettings = Seq(
       Map("title" -> "License", "section" -> "License", "position" -> "101")
     )
   ),
-  scalacOptions in Tut += "-Ywarn-unused:-imports",
+  micrositeConfigYaml := micrositeConfigYaml.value
+    .copy(yamlInline = """exclude: [extra_md]"""),
+  micrositeTheme := "pattern",
+  Tut / scalacOptions += "-Ywarn-unused:-imports",
   micrositePushSiteWith := GHPagesPlugin,
+  micrositeCompilingDocsTool := WithTut,
   micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
-  micrositeJsDirectory := (managedResourceDirectories in Compile).value.head / "microsite" / "js",
+  micrositeJsDirectory := (Compile / managedResourceDirectories).value.head / "microsite" / "js",
   git.remoteRepo := "git@github.com:slakah/uritemplate4s.git",
-  (includeFilter in makeSite) := (includeFilter in makeSite).value || "*.js.map",
+  (makeSite / includeFilter) := (makeSite / includeFilter).value || "*.js.map",
   micrositeFullOptJS := {
-    val jsFile = (fullOptJS in Compile).value.data
-    val jsMapFileOpt = (fullOptJS in Compile).value.get(scalaJSSourceMap)
-    val managedJsDir = (resourceDirectory in Compile).value / "microsite" / "js"
+    val jsFile = (Compile / fullOptJS).value.data
+    val jsMapFileOpt = (Compile / fullOptJS).value.get(scalaJSSourceMap)
+    val managedJsDir = (Compile / resourceDirectory).value / "microsite" / "js"
     val targetDir = micrositeJsDirectory.value
     IO.copyFile(jsFile, targetDir / jsFile.name)
     jsMapFileOpt.foreach { jsMapFile =>
@@ -220,7 +224,7 @@ lazy val docsSettings = Seq(
     }
     IO.copyDirectory(managedJsDir, targetDir)
   },
-  (mainClass in Compile) := Some("uritemplate4s.demo.Playground"),
+  (Compile / mainClass) := Some("uritemplate4s.demo.Playground"),
   scalaJSUseMainModuleInitializer := true,
   makeMicrosite := makeMicrosite.dependsOn(micrositeFullOptJS).value
 ) ++ SiteScaladocPlugin.scaladocSettings(SiteScaladoc, mappings in (Compile, packageDoc) in core.jvm, "api/latest")
