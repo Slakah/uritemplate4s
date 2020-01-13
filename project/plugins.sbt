@@ -1,4 +1,4 @@
-addSbtPlugin("com.47deg" % "sbt-microsites" % "1.0.2")
+addSbtPlugin("com.47deg" % "sbt-microsites" % "1.1.0")
 addSbtPlugin("com.dwijnand" % "sbt-dynver" % "4.0.0")
 addSbtPlugin("com.github.tkawachi" % "sbt-doctest" % "0.9.5")
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "2.0.1")
