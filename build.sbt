@@ -23,9 +23,7 @@ lazy val publishSettings = Seq(
   publishMavenStyle := true,
   Test / publishArtifact := false,
   publishTo := sonatypePublishToBundle.value,
-  pomIncludeRepository := { _ =>
-    false
-  },
+  pomIncludeRepository := { _ => false },
   usePgpKeyHex("AA0BEE10076EE99E"),
   useGpgPinentry := true,
   apiURL := Some(url("https://slakah.github.io/uritemplate4s/api/latest/uritemplate4s/")),
@@ -219,9 +217,7 @@ lazy val docsSettings = Seq(
     val managedJsDir = (Compile / resourceDirectory).value / "microsite" / "js"
     val targetDir = micrositeJsDirectory.value
     IO.copyFile(jsFile, targetDir / jsFile.name)
-    jsMapFileOpt.foreach { jsMapFile =>
-      IO.copyFile(jsMapFile, targetDir / jsMapFile.name)
-    }
+    jsMapFileOpt.foreach { jsMapFile => IO.copyFile(jsMapFile, targetDir / jsMapFile.name) }
     IO.copyDirectory(managedJsDir, targetDir)
   },
   (Compile / mainClass) := Some("uritemplate4s.demo.Playground"),
