@@ -23,9 +23,7 @@ lazy val publishSettings = Seq(
   publishMavenStyle := true,
   Test / publishArtifact := false,
   publishTo := sonatypePublishToBundle.value,
-  pomIncludeRepository := { _ =>
-    false
-  },
+  pomIncludeRepository := { _ => false },
   usePgpKeyHex("AA0BEE10076EE99E"),
   useGpgPinentry := true,
   apiURL := Some(url("https://slakah.github.io/uritemplate4s/api/latest/uritemplate4s/")),
@@ -41,13 +39,13 @@ lazy val publishSettings = Seq(
 )
 
 lazy val betterMonadicForVersion = "0.3.1"
-lazy val catsVersion = "2.1.0"
+lazy val catsVersion = "2.1.1"
 lazy val circeVersion = "0.13.0"
 lazy val fastparseVersion = "2.2.4"
 lazy val handyUriTemplatesVersion = "2.1.8"
 lazy val monixVersion = "3.1.0"
 lazy val scalafixNoinferVersion = "0.1.0-M1"
-lazy val scalajsDomVersion = "0.9.8"
+lazy val scalajsDomVersion = "1.0.0"
 lazy val utestVersion = "0.7.4"
 
 ThisBuild / scalafixDependencies +=
@@ -219,9 +217,7 @@ lazy val docsSettings = Seq(
     val managedJsDir = (Compile / resourceDirectory).value / "microsite" / "js"
     val targetDir = micrositeJsDirectory.value
     IO.copyFile(jsFile, targetDir / jsFile.name)
-    jsMapFileOpt.foreach { jsMapFile =>
-      IO.copyFile(jsMapFile, targetDir / jsMapFile.name)
-    }
+    jsMapFileOpt.foreach { jsMapFile => IO.copyFile(jsMapFile, targetDir / jsMapFile.name) }
     IO.copyDirectory(managedJsDir, targetDir)
   },
   (Compile / mainClass) := Some("uritemplate4s.demo.Playground"),
