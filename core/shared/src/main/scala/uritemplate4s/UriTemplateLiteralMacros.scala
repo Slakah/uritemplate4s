@@ -32,36 +32,37 @@ final class UriTemplateLiteralMacros(val c: blackbox.Context) {
     }
   }
 
-  private def uriTemplateLiteral(template: UriTemplate): c.Expr[UriTemplate] = template match {
-    case ComponentsUriTemplate(components) =>
-      val componentTrees = components.map {
-        case LiteralComponent(Encoded(value)) =>
-          q"_root_.uritemplate4s.ast.LiteralComponent(_root_.uritemplate4s.ast.Encoded($value))"
-        case LiteralComponent(Unencoded(value)) =>
-          q"_root_.uritemplate4s.ast.LiteralComponent(_root_.uritemplate4s.ast.Unencoded($value))"
-        case Expression(op, variableList) =>
-          val opTree = op match {
-            case Simple => q"_root_.uritemplate4s.ast.Simple"
-            case Reserved => q"_root_.uritemplate4s.ast.Reserved"
-            case Fragment => q"_root_.uritemplate4s.ast.Fragment"
-            case NameLabel => q"_root_.uritemplate4s.ast.NameLabel"
-            case PathSegment => q"_root_.uritemplate4s.ast.PathSegment"
-            case PathParameter => q"_root_.uritemplate4s.ast.PathParameter"
-            case Query => q"_root_.uritemplate4s.ast.Query"
-            case QueryContinuation => q"_root_.uritemplate4s.ast.QueryContinuation"
-          }
-          val variableListTrees = variableList.map {
-            case Varspec(varname, modifier) =>
-              val modifierTree = modifier match {
-                case EmptyModifier => q"_root_.uritemplate4s.ast.EmptyModifier"
-                case Prefix(maxLength) => q"_root_.uritemplate4s.ast.Prefix($maxLength)"
-                case Explode => q"_root_.uritemplate4s.ast.Explode"
-              }
-              q"_root_.uritemplate4s.ast.Varspec($varname, $modifierTree)"
-          }
-          q"_root_.uritemplate4s.ast.Expression($opTree, _root_.scala.List(..$variableListTrees))"
-      }
-      val componentListTree = q"_root_.scala.List(..$componentTrees)"
-      c.Expr[UriTemplate](q"""_root_.uritemplate4s.ComponentsUriTemplate($componentListTree)""")
-  }
+  private def uriTemplateLiteral(template: UriTemplate): c.Expr[UriTemplate] =
+    template match {
+      case ComponentsUriTemplate(components) =>
+        val componentTrees = components.map {
+          case LiteralComponent(Encoded(value)) =>
+            q"_root_.uritemplate4s.ast.LiteralComponent(_root_.uritemplate4s.ast.Encoded($value))"
+          case LiteralComponent(Unencoded(value)) =>
+            q"_root_.uritemplate4s.ast.LiteralComponent(_root_.uritemplate4s.ast.Unencoded($value))"
+          case Expression(op, variableList) =>
+            val opTree = op match {
+              case Simple => q"_root_.uritemplate4s.ast.Simple"
+              case Reserved => q"_root_.uritemplate4s.ast.Reserved"
+              case Fragment => q"_root_.uritemplate4s.ast.Fragment"
+              case NameLabel => q"_root_.uritemplate4s.ast.NameLabel"
+              case PathSegment => q"_root_.uritemplate4s.ast.PathSegment"
+              case PathParameter => q"_root_.uritemplate4s.ast.PathParameter"
+              case Query => q"_root_.uritemplate4s.ast.Query"
+              case QueryContinuation => q"_root_.uritemplate4s.ast.QueryContinuation"
+            }
+            val variableListTrees = variableList.map {
+              case Varspec(varname, modifier) =>
+                val modifierTree = modifier match {
+                  case EmptyModifier => q"_root_.uritemplate4s.ast.EmptyModifier"
+                  case Prefix(maxLength) => q"_root_.uritemplate4s.ast.Prefix($maxLength)"
+                  case Explode => q"_root_.uritemplate4s.ast.Explode"
+                }
+                q"_root_.uritemplate4s.ast.Varspec($varname, $modifierTree)"
+            }
+            q"_root_.uritemplate4s.ast.Expression($opTree, _root_.scala.List(..$variableListTrees))"
+        }
+        val componentListTree = q"_root_.scala.List(..$componentTrees)"
+        c.Expr[UriTemplate](q"""_root_.uritemplate4s.ComponentsUriTemplate($componentListTree)""")
+    }
 }

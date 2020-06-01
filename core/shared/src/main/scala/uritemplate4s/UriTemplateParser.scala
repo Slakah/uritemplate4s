@@ -36,10 +36,11 @@ private[uritemplate4s] object UriTemplateParser {
       "\u005D", "\u005F", "\u0061-\u007A", "\u007E") | ucschar | iprivate | pctEncoded)
   // format: on
   // 2.2. Expressions
-  def expression[_: P]: P[Expression] = P("{" ~/ operator.? ~ variableList ~ "}").map {
-    case (None, vl) => Expression(Simple, vl)
-    case (Some(op), vl) => Expression(op, vl)
-  }
+  def expression[_: P]: P[Expression] =
+    P("{" ~/ operator.? ~ variableList ~ "}").map {
+      case (None, vl) => Expression(Simple, vl)
+      case (Some(op), vl) => Expression(op, vl)
+    }
   def operator[_: P]: P[Operator] = opLevel2 | opLevel3 // | opReserve
   def opLevel2[_: P]: P[Operator] = P("+".!.map(_ => Reserved) | "#".!.map(_ => Fragment))
 
@@ -55,10 +56,11 @@ private[uritemplate4s] object UriTemplateParser {
   // 2.3. Variables
   def variableList[_: P]: P[List[Varspec]] = P(varspec.rep(1, sep = ",")).map(_.toList)
 
-  def varspec[_: P]: P[Varspec] = P(varname ~ modifierLevel4.?).map {
-    case (n, Some(m)) => Varspec(n, m)
-    case (n, None) => Varspec(n, EmptyModifier)
-  }
+  def varspec[_: P]: P[Varspec] =
+    P(varname ~ modifierLevel4.?).map {
+      case (n, Some(m)) => Varspec(n, m)
+      case (n, None) => Varspec(n, EmptyModifier)
+    }
   def varname[_: P]: P[String] = P(varchar ~ (".".? ~ varchar).rep).!
   def varchar[_: P]: P0 = P(alpha | digit | "_" | pctEncoded)
   // 2.4. Value Modifiers
