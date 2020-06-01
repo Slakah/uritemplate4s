@@ -57,10 +57,13 @@ final case class ComponentsUriTemplate(private val components: List[Component]) 
     if (errorList.isEmpty) {
       ExpandResult.Success(result)
     } else {
-      ExpandResult.PartialSuccess(result, errorList match {
-        case error :: Nil => error
-        case _ => ExpandFailures(errorList)
-      })
+      ExpandResult.PartialSuccess(
+        result,
+        errorList match {
+          case error :: Nil => error
+          case _ => ExpandFailures(errorList)
+        }
+      )
     }
   }
 

@@ -31,9 +31,10 @@ object ExternalTests extends TestSuite {
   implicit lazy val decodeVariables: Decoder[Variables] = Decoder.instance { c =>
     for {
       m <- c.as[Map[String, Json]]
-      vars <- m.toList
-        .filter(!_._2.isNull)
-        .traverse { case (key, value) => value.as[Value].map(key -> _) }
+      vars <-
+        m.toList
+          .filter(!_._2.isNull)
+          .traverse { case (key, value) => value.as[Value].map(key -> _) }
     } yield Variables(vars.toMap)
   }
 
@@ -101,10 +102,11 @@ object ExternalTests extends TestSuite {
     result.fold(throw _, identity) /* scalafix:ok */
   }
 
-  override def tests = Tests {
-    test("/extended-tests.json") - runTest("/extended-tests.json")
-    test("/negative-tests.json") - runTest("/negative-tests.json")
-    test("/spec-examples.json") - runTest("/spec-examples.json")
-    test("/spec-examples-by-section.json") - runTest("/spec-examples-by-section.json")
-  }
+  override def tests =
+    Tests {
+      test("/extended-tests.json") - runTest("/extended-tests.json")
+      test("/negative-tests.json") - runTest("/negative-tests.json")
+      test("/spec-examples.json") - runTest("/spec-examples.json")
+      test("/spec-examples-by-section.json") - runTest("/spec-examples-by-section.json")
+    }
 }
