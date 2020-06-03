@@ -1,7 +1,7 @@
 import microsites._
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
-ThisBuild / scalaVersion := "2.13.0"
+ThisBuild / scalaVersion := "2.13.2"
 
 lazy val commonSettings = Seq(
   organization := "com.gubbns",
@@ -97,7 +97,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     doctestGenTests := Seq.empty
   )
   .settings(
-    crossScalaVersions := List(scalaVersion.value, "2.12.9"),
+    crossScalaVersions := List(scalaVersion.value, "2.12.12"),
     commonSettings,
     publishSettings,
     name := "uritemplate4s",
