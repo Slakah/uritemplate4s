@@ -1,6 +1,6 @@
 package uritemplate4s
 
-/** Base error type.  */
+/** Base error type. */
 sealed abstract class Error extends Exception {
   final override def fillInStackTrace(): Throwable = this
 }
