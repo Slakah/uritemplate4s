@@ -44,6 +44,7 @@ lazy val circeVersion = "0.13.0"
 lazy val fastparseVersion = "2.3.0"
 lazy val handyUriTemplatesVersion = "2.1.8"
 lazy val monixVersion = "3.2.2"
+lazy val munitVersion = "0.7.11"
 lazy val scalafixNoinferVersion = "0.1.0-M1"
 lazy val scalajsDomVersion = "1.1.0"
 lazy val utestVersion = "0.7.4"
@@ -101,7 +102,8 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     commonSettings,
     publishSettings,
     name := "uritemplate4s",
-    testFrameworks += new TestFramework("utest.runner.Framework"),
+    testFrameworks += new TestFramework("munit.Framework"),
+    Test / parallelExecution := false,
     Compile / sourceGenerators += (Compile / sourceManaged).map(Boilerplate.gen).taskValue,
     doctestTestFramework := DoctestTestFramework.MicroTest,
     libraryDependencies ++= Seq(
@@ -109,6 +111,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided,
       "com.lihaoyi" %%% "fastparse" % fastparseVersion
     ) ++ Seq(
+      "org.scalameta" %%% "munit" % munitVersion,
       "org.typelevel" %%% "cats-core" % catsVersion,
       "org.typelevel" %%% "cats-kernel" % catsVersion,
       "org.typelevel" %%% "cats-macros" % catsVersion,
