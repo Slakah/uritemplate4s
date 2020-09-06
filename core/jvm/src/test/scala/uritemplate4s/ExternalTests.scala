@@ -2,7 +2,7 @@ package uritemplate4s
 
 import scala.io.Source
 
-import cats.implicits._
+import cats.syntax.all._
 import io.circe.{Error => _, _}
 import io.circe.parser._
 import utest._
