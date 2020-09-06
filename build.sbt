@@ -111,7 +111,6 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     ) ++ Seq(
       "org.typelevel" %%% "cats-core" % catsVersion,
       "org.typelevel" %%% "cats-kernel" % catsVersion,
-      "org.typelevel" %%% "cats-macros" % catsVersion,
       "com.lihaoyi" %%% "utest" % utestVersion,
       "io.circe" %%% "circe-core" % circeVersion,
       "io.circe" %%% "circe-generic" % circeVersion,
@@ -130,7 +129,6 @@ lazy val docs = project
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-core" % catsVersion,
       "org.typelevel" %%% "cats-kernel" % catsVersion,
-      "org.typelevel" %%% "cats-macros" % catsVersion,
       "io.circe" %%% "circe-core" % circeVersion,
       "io.circe" %%% "circe-generic" % circeVersion,
       "io.circe" %%% "circe-parser" % circeVersion,
