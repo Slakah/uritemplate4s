@@ -6,38 +6,38 @@
 
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">uritemplate4s._</span>
 
-<span class="k">val</span> <span class="nv">template</span> <span class="k">=</span> <span class="n">uritemplate</span><span class="s">"http://example.com/search{?q,lang}"</span>
+<span class="k">val</span> <span class="n">template</span> <span class="k">=</span> <span class="n">uritemplate</span><span class="s">"http://example.com/search{?q,lang}"</span>
 </code></pre></div></div>
 
 <p>When an invalid template is supplied, the error will be shown at compile time.</p>
 
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">uritemplate</span><span class="s">"http://example.com/search{q"</span>
-<span class="c1">// error: not a valid URI Template, Position 1:28, found ""</span>
-<span class="c1">// uritemplate"http://example.com/search{q"</span>
-<span class="c1">// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
-</code></pre></div></div>
+<span class="c1">// error: not a valid URI Template, Position 1:28, found ""
+// uritemplate"http://example.com/search{q"
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+</span></code></pre></div></div>
 
 <p>URI Templates are usually dynamically provided, and so will need to be parsed at runtime like so:</p>
 
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="nv">rawTemplate</span> <span class="k">=</span> <span class="s">"http://example.com/search{?q,lang}"</span>
-<span class="c1">// rawTemplate: String = http://example.com/search{?q,lang}</span>
-<span class="k">val</span> <span class="nv">parseResult</span> <span class="k">=</span> <span class="nv">UriTemplate</span><span class="o">.</span><span class="py">parse</span><span class="o">(</span><span class="n">rawTemplate</span><span class="o">)</span>
-<span class="c1">// parseResult: Either[ParseFailure, UriTemplate] = Right(ComponentsUriTemplate(List(LiteralComponent(Encoded(http://example.com/search)), Expression(Query,List(Varspec(q,EmptyModifier), Varspec(lang,EmptyModifier))))))</span>
-</code></pre></div></div>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">rawTemplate</span> <span class="k">=</span> <span class="s">"http://example.com/search{?q,lang}"</span>
+<span class="c1">// rawTemplate: String = http://example.com/search{?q,lang}
+</span><span class="k">val</span> <span class="n">parseResult</span> <span class="k">=</span> <span class="nc">UriTemplate</span><span class="o">.</span><span class="n">parse</span><span class="o">(</span><span class="n">rawTemplate</span><span class="o">)</span>
+<span class="c1">// parseResult: Either[ParseFailure, UriTemplate] = Right(ComponentsUriTemplate(List(LiteralComponent(Encoded(http://example.com/search)), Expression(Query,List(Varspec(q,EmptyModifier), Varspec(lang,EmptyModifier))))))
+</span></code></pre></div></div>
 
-<p>Because parsing a template can fail, the result is an <code class="language-plaintext highlighter-rouge">Either</code> of type <code class="language-plaintext highlighter-rouge">Either[ParseFailure, UriTemplate]</code>.</p>
+<p>Because parsing a template can fail, the result is an <code class="highlighter-rouge">Either</code> of type <code class="highlighter-rouge">Either[ParseFailure, UriTemplate]</code>.</p>
 
-<p>When parsing fails the result is a <code class="language-plaintext highlighter-rouge">Left</code> containing the error with details of the cause.</p>
+<p>When parsing fails the result is a <code class="highlighter-rouge">Left</code> containing the error with details of the cause.</p>
 
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">UriTemplate</span><span class="o">.</span><span class="py">parse</span><span class="o">(</span><span class="s">"http://example.com/search{q"</span><span class="o">)</span>
-<span class="c1">// res1: Either[ParseFailure, UriTemplate] = Left(</span>
-<span class="c1">//   value = ParseFailure(index = 27, message = "Position 1:28, found \"\"")</span>
-<span class="c1">// )</span>
-</code></pre></div></div>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">UriTemplate</span><span class="o">.</span><span class="n">parse</span><span class="o">(</span><span class="s">"http://example.com/search{q"</span><span class="o">)</span>
+<span class="c1">// res1: Either[ParseFailure, UriTemplate] = Left(
+//   value = ParseFailure(index = 27, message = "Position 1:28, found \"\"")
+// )
+</span></code></pre></div></div>
 
-<p>To extract the parsed URI Template from the <code class="language-plaintext highlighter-rouge">Either</code>, pattern matching can be used:</p>
+<p>To extract the parsed URI Template from the <code class="highlighter-rouge">Either</code>, pattern matching can be used:</p>
 
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="nv">template</span><span class="k">:</span> <span class="kt">UriTemplate</span> <span class="o">=</span> <span class="nv">UriTemplate</span><span class="o">.</span><span class="py">parse</span><span class="o">(</span><span class="n">rawTemplate</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">template</span><span class="k">:</span> <span class="kt">UriTemplate</span> <span class="o">=</span> <span class="nc">UriTemplate</span><span class="o">.</span><span class="n">parse</span><span class="o">(</span><span class="n">rawTemplate</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
   <span class="k">case</span> <span class="nc">Left</span><span class="o">(</span><span class="n">error</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="k">throw</span> <span class="n">error</span>
   <span class="k">case</span> <span class="nc">Right</span><span class="o">(</span><span class="n">parsedTemplate</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">parsedTemplate</span>
 <span class="o">}</span>
@@ -45,28 +45,28 @@
 
 <p>Or more simply:</p>
 
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="nv">template</span><span class="k">:</span> <span class="kt">UriTemplate</span> <span class="o">=</span> <span class="nv">UriTemplate</span><span class="o">.</span><span class="py">parse</span><span class="o">(</span><span class="n">rawTemplate</span><span class="o">).</span><span class="py">toTry</span><span class="o">.</span><span class="py">get</span>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">template</span><span class="k">:</span> <span class="kt">UriTemplate</span> <span class="o">=</span> <span class="nc">UriTemplate</span><span class="o">.</span><span class="n">parse</span><span class="o">(</span><span class="n">rawTemplate</span><span class="o">).</span><span class="n">toTry</span><span class="o">.</span><span class="n">get</span>
 </code></pre></div></div>
 
 <h2 id="template-expansion">Template Expansion</h2>
 
 <p>A template can be expanded by supplying tuples representing the name/value pairs to be used in expansion.</p>
 
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">template</span><span class="o">.</span><span class="py">expand</span><span class="o">(</span><span class="s">"q"</span> <span class="o">-&gt;</span> <span class="s">"After the Quake"</span><span class="o">,</span> <span class="s">"lang"</span> <span class="o">-&gt;</span> <span class="s">"en"</span><span class="o">)</span>
-<span class="c1">// res2: ExpandResult = Success(</span>
-<span class="c1">//   value = "http://example.com/search?q=After%20the%20Quake&amp;lang=en"</span>
-<span class="c1">// )</span>
-</code></pre></div></div>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">template</span><span class="o">.</span><span class="n">expand</span><span class="o">(</span><span class="s">"q"</span> <span class="o">-&gt;</span> <span class="s">"After the Quake"</span><span class="o">,</span> <span class="s">"lang"</span> <span class="o">-&gt;</span> <span class="s">"en"</span><span class="o">)</span>
+<span class="c1">// res2: ExpandResult = Success(
+//   value = "http://example.com/search?q=After%20the%20Quake&amp;lang=en"
+// )
+</span></code></pre></div></div>
 
-<p>In the previous example it should be noted that the resultant URI is wrapped in a <code class="language-plaintext highlighter-rouge">ExpandResult.Success</code>.
+<p>In the previous example it should be noted that the resultant URI is wrapped in a <code class="highlighter-rouge">ExpandResult.Success</code>.
 There are some possible soft failures which can occur during template expansion, meaning an expansion
-result could be either a <code class="language-plaintext highlighter-rouge">ExpandResult.Success</code> or a <code class="language-plaintext highlighter-rouge">ExpandResult.PartialSuccess</code>.</p>
+result could be either a <code class="highlighter-rouge">ExpandResult.Success</code> or a <code class="highlighter-rouge">ExpandResult.PartialSuccess</code>.</p>
 
-<p>To extract the result from either case, the <code class="language-plaintext highlighter-rouge">.value</code> field can be used.</p>
+<p>To extract the result from either case, the <code class="highlighter-rouge">.value</code> field can be used.</p>
 
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="nv">uri</span> <span class="k">=</span> <span class="nv">template</span><span class="o">.</span><span class="py">expand</span><span class="o">(</span><span class="s">"q"</span> <span class="o">-&gt;</span> <span class="s">"After the Quake"</span><span class="o">,</span> <span class="s">"lang"</span> <span class="o">-&gt;</span> <span class="s">"en"</span><span class="o">).</span><span class="py">value</span>
-<span class="c1">// uri: String = "http://example.com/search?q=After%20the%20Quake&amp;lang=en"</span>
-</code></pre></div></div>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">uri</span> <span class="k">=</span> <span class="n">template</span><span class="o">.</span><span class="n">expand</span><span class="o">(</span><span class="s">"q"</span> <span class="o">-&gt;</span> <span class="s">"After the Quake"</span><span class="o">,</span> <span class="s">"lang"</span> <span class="o">-&gt;</span> <span class="s">"en"</span><span class="o">).</span><span class="n">value</span>
+<span class="c1">// uri: String = "http://example.com/search?q=After%20the%20Quake&amp;lang=en"
+</span></code></pre></div></div>
 
 <p>For examples and details of the features supported in URI Template expansion, refer to <a href="https://tools.ietf.org/html/rfc6570#section-3">RFC 6570 Section 3</a>
 as well as the tests included in this project.</p>
@@ -75,31 +75,31 @@ as well as the tests included in this project.</p>
 
 <p>List expansion is supported as defined in <a href="https://tools.ietf.org/html/rfc6570#page-8">RFC 6570 Level 4</a>.</p>
 
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="nv">listTemplate</span> <span class="k">=</span> <span class="nv">UriTemplate</span><span class="o">.</span><span class="py">parse</span><span class="o">(</span><span class="s">"/search{?list}"</span><span class="o">).</span><span class="py">toTry</span><span class="o">.</span><span class="py">get</span>
-<span class="k">val</span> <span class="nv">seq</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"red"</span><span class="o">,</span> <span class="s">"green"</span><span class="o">,</span> <span class="s">"blue"</span><span class="o">)</span>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">listTemplate</span> <span class="k">=</span> <span class="nc">UriTemplate</span><span class="o">.</span><span class="n">parse</span><span class="o">(</span><span class="s">"/search{?list}"</span><span class="o">).</span><span class="n">toTry</span><span class="o">.</span><span class="n">get</span>
+<span class="k">val</span> <span class="n">seq</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"red"</span><span class="o">,</span> <span class="s">"green"</span><span class="o">,</span> <span class="s">"blue"</span><span class="o">)</span>
 </code></pre></div></div>
 
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">listTemplate</span><span class="o">.</span><span class="py">expand</span><span class="o">(</span><span class="s">"list"</span> <span class="o">-&gt;</span> <span class="n">seq</span><span class="o">).</span><span class="py">value</span>
-<span class="c1">// res3: String = "/search?list=red,green,blue"</span>
-</code></pre></div></div>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">listTemplate</span><span class="o">.</span><span class="n">expand</span><span class="o">(</span><span class="s">"list"</span> <span class="o">-&gt;</span> <span class="n">seq</span><span class="o">).</span><span class="n">value</span>
+<span class="c1">// res3: String = "/search?list=red,green,blue"
+</span></code></pre></div></div>
 
 <p>List and Vectors are also supported.</p>
 
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">listTemplate</span><span class="o">.</span><span class="py">expand</span><span class="o">(</span><span class="s">"list"</span> <span class="o">-&gt;</span> <span class="nv">seq</span><span class="o">.</span><span class="py">toList</span><span class="o">).</span><span class="py">value</span>
-<span class="nv">listTemplate</span><span class="o">.</span><span class="py">expand</span><span class="o">(</span><span class="s">"list"</span> <span class="o">-&gt;</span> <span class="nv">seq</span><span class="o">.</span><span class="py">toVector</span><span class="o">).</span><span class="py">value</span>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">listTemplate</span><span class="o">.</span><span class="n">expand</span><span class="o">(</span><span class="s">"list"</span> <span class="o">-&gt;</span> <span class="n">seq</span><span class="o">.</span><span class="n">toList</span><span class="o">).</span><span class="n">value</span>
+<span class="n">listTemplate</span><span class="o">.</span><span class="n">expand</span><span class="o">(</span><span class="s">"list"</span> <span class="o">-&gt;</span> <span class="n">seq</span><span class="o">.</span><span class="n">toVector</span><span class="o">).</span><span class="n">value</span>
 </code></pre></div></div>
 
 <h3 id="associative-array-expansion">Associative Array Expansion</h3>
 
 <p>Associative array expansion is supported as defined in <a href="https://tools.ietf.org/html/rfc6570#page-8">RFC 6570 Level 4</a>.</p>
 
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="nv">assocTemplate</span> <span class="k">=</span> <span class="nv">UriTemplate</span><span class="o">.</span><span class="py">parse</span><span class="o">(</span><span class="s">"/search{?address*}"</span><span class="o">).</span><span class="py">toTry</span><span class="o">.</span><span class="py">get</span>
-<span class="k">val</span> <span class="nv">addressMap</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">"city"</span> <span class="o">-&gt;</span> <span class="s">"Manchester"</span><span class="o">,</span> <span class="s">"country"</span> <span class="o">-&gt;</span> <span class="s">"England"</span><span class="o">,</span> <span class="s">"postcode"</span> <span class="o">-&gt;</span> <span class="s">"M2 5DB"</span><span class="o">)</span>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">assocTemplate</span> <span class="k">=</span> <span class="nc">UriTemplate</span><span class="o">.</span><span class="n">parse</span><span class="o">(</span><span class="s">"/search{?address*}"</span><span class="o">).</span><span class="n">toTry</span><span class="o">.</span><span class="n">get</span>
+<span class="k">val</span> <span class="n">addressMap</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">"city"</span> <span class="o">-&gt;</span> <span class="s">"Manchester"</span><span class="o">,</span> <span class="s">"country"</span> <span class="o">-&gt;</span> <span class="s">"England"</span><span class="o">,</span> <span class="s">"postcode"</span> <span class="o">-&gt;</span> <span class="s">"M2 5DB"</span><span class="o">)</span>
 </code></pre></div></div>
 
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">assocTemplate</span><span class="o">.</span><span class="py">expand</span><span class="o">(</span><span class="s">"address"</span> <span class="o">-&gt;</span> <span class="n">addressMap</span><span class="o">).</span><span class="py">value</span>
-<span class="c1">// res6: String = "/search?city=Manchester&amp;country=England&amp;postcode=M2%205DB"</span>
-</code></pre></div></div>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">assocTemplate</span><span class="o">.</span><span class="n">expand</span><span class="o">(</span><span class="s">"address"</span> <span class="o">-&gt;</span> <span class="n">addressMap</span><span class="o">).</span><span class="n">value</span>
+<span class="c1">// res6: String = "/search?city=Manchester&amp;country=England&amp;postcode=M2%205DB"
+</span></code></pre></div></div>
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/uritemplate4s/highlight/highlight.pack.js"></script><script>
 // For all code blocks, copy the language from the containing div
 // to the inner code tag (where hljs expects it to be)

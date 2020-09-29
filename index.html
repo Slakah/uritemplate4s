@@ -9,7 +9,7 @@
 
 <p>uritemplate4s is currently available for Scala 2.13, 2.12 and <a href="http://www.scala-js.org/">Scala.js</a>.</p>
 
-<p>Add the following to your <code class="language-plaintext highlighter-rouge">build.sbt</code>:</p>
+<p>Add the following to your <code class="highlighter-rouge">build.sbt</code>:</p>
 
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">"com.gubbns"</span> <span class="o">%%</span> <span class="s">"uritemplate4s"</span> <span class="o">%</span> <span class="s">"0.5.7"</span>
 </code></pre></div></div>
@@ -18,14 +18,14 @@
 
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">uritemplate4s._</span>
 
-<span class="k">val</span> <span class="nv">template</span> <span class="k">=</span> <span class="n">uritemplate</span><span class="s">"https://{host}/search{?q}{&amp;params*}"</span>
-<span class="nv">template</span><span class="o">.</span><span class="py">expand</span><span class="o">(</span>
+<span class="k">val</span> <span class="n">template</span> <span class="k">=</span> <span class="n">uritemplate</span><span class="s">"https://{host}/search{?q}{&amp;params*}"</span>
+<span class="n">template</span><span class="o">.</span><span class="n">expand</span><span class="o">(</span>
     <span class="s">"host"</span> <span class="o">-&gt;</span> <span class="s">"search-engine.com"</span><span class="o">,</span>
     <span class="s">"q"</span> <span class="o">-&gt;</span> <span class="s">"Esio Trot"</span><span class="o">,</span>
     <span class="s">"params"</span> <span class="o">-&gt;</span> <span class="nc">Map</span><span class="o">(</span><span class="s">"lang"</span> <span class="o">-&gt;</span> <span class="s">"en"</span><span class="o">,</span> <span class="s">"type"</span> <span class="o">-&gt;</span> <span class="s">"book"</span><span class="o">)</span>
-  <span class="o">).</span><span class="py">value</span>
-<span class="c1">// res0: String = https://search-engine.com/search?q=Esio%20Trot&amp;lang=en&amp;type=book</span>
-</code></pre></div></div>
+  <span class="o">).</span><span class="n">value</span>
+<span class="c1">// res0: String = https://search-engine.com/search?q=Esio%20Trot&amp;lang=en&amp;type=book
+</span></code></pre></div></div>
 
 <p>Further documentation is available <a href="https://slakah.github.io/uritemplate4s/">here</a>.</p>
 
