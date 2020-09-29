@@ -27,6 +27,9 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
       - run:
+          name: install jekyll
+          command: sudo apt-get update && sudo apt-get install jekyll
+      - run:
           name: validate
           command: sbt validate
       - save_cache:
