@@ -1,7 +1,7 @@
 import microsites._
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
-ThisBuild / scalaVersion := "2.13.0"
+ThisBuild / scalaVersion := "2.13.3"
 
 lazy val commonSettings = Seq(
   organization := "com.gubbns",
@@ -56,7 +56,7 @@ ThisBuild / libraryDependencies +=
 
 ThisBuild / organization := "com.gubbns"
 
-addCommandAlias("format", "scalafmtAll; scalafmtSbt; scalafix; test:scalafix")
+addCommandAlias("fix", "scalafmtAll; scalafmtSbt; scalafix; test:scalafix")
 
 addCommandAlias(
   "validate",
@@ -68,13 +68,13 @@ addCommandAlias(
     "test:scalafix --check",
     "test:compile",
     "+test",
-    "docs/tut"
+    "docs/makeMicrosite"
   ).mkString(";")
 )
 
 lazy val root = project
   .in(file("."))
-  .aggregate(bench, core.js, core.jvm, docs)
+  .aggregate(bench, core.js, core.jvm, demo, docs)
   .settings(noPublishSettings)
 
 lazy val bench = project
@@ -97,7 +97,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     doctestGenTests := Seq.empty
   )
   .settings(
-    crossScalaVersions := List(scalaVersion.value, "2.12.9"),
+    crossScalaVersions := List(scalaVersion.value, "2.12.12"),
     commonSettings,
     publishSettings,
     name := "uritemplate4s",
@@ -118,14 +118,13 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     ).map(_ % "test")
   )
 
-lazy val docs = project
-  .enablePlugins(MicrositesPlugin, SiteScaladocPlugin, GhpagesPlugin, SiteScaladocPlugin, ScalaJSPlugin)
-  .settings(moduleName := "uritemplate4s-docs")
+lazy val demo = project
+  .enablePlugins(ScalaJSPlugin)
+  .settings(moduleName := "uritemplate4s-demo")
   .dependsOn(core.js)
   .settings(
     commonSettings,
     noPublishSettings,
-    docsSettings,
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-core" % catsVersion,
       "org.typelevel" %%% "cats-kernel" % catsVersion,
@@ -136,6 +135,16 @@ lazy val docs = project
       "io.monix" %%% "monix-reactive" % monixVersion,
       "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion
     )
+  )
+
+lazy val docs = project
+  .enablePlugins(MicrositesPlugin, SiteScaladocPlugin, GhpagesPlugin, SiteScaladocPlugin)
+  .settings(moduleName := "uritemplate4s-docs")
+  .dependsOn(core.jvm)
+  .settings(
+    commonSettings,
+    noPublishSettings,
+    docsSettings
   )
 
 lazy val scalacOpts = Def.task(
@@ -157,7 +166,6 @@ lazy val scalacOpts = Def.task(
     "-Xlint:inaccessible", // Warn about inaccessible types in method signatures.
     "-Xlint:infer-any", // Warn when a type argument is inferred to be `Any`.
     "-Xlint:missing-interpolator", // A string literal appears to be missing an interpolator id.
-    "-Xlint:nullary-override", // Warn when non-nullary `def f()' overrides nullary `def f'.
     "-Xlint:nullary-unit", // Warn when nullary methods return Unit.
     "-Xlint:option-implicit", // Option.apply used implicit view.
     "-Xlint:package-object-classes", // Class or object defined in package object.
@@ -176,8 +184,6 @@ lazy val scalacOpts = Def.task(
     "-Ycache-macro-class-loader:last-modified" // and macro definitions. This can lead to performance improvements.
   ) ++ (if (priorTo2_13(scalaVersion.value)) Seq("-Ypartial-unification") else Seq.empty)
 )
-
-lazy val micrositeFullOptJS = taskKey[Unit]("Full build js, and adds it to a managed js dir")
 
 lazy val docsSettings = Seq(
   micrositeName := "uritemplate4s",
@@ -198,28 +204,16 @@ lazy val docsSettings = Seq(
       Map("title" -> "License", "section" -> "License", "position" -> "101")
     )
   ),
-  micrositeConfigYaml := micrositeConfigYaml.value
-    .copy(yamlInline = """exclude: [extra_md]"""),
+  micrositeExtraMdFilesOutput := (resourceManaged in Compile).value / "jekyll",
   micrositeTheme := "pattern",
-  Tut / scalacOptions += "-Ywarn-unused:-imports",
+  mdocIn := (Compile / sourceDirectory).value / "mdoc",
+  mdocJS := Some(demo),
   micrositePushSiteWith := GHPagesPlugin,
-  micrositeCompilingDocsTool := WithTut,
+  micrositeCompilingDocsTool := WithMdoc,
   micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
   micrositeJsDirectory := (Compile / managedResourceDirectories).value.head / "microsite" / "js",
   git.remoteRepo := "git@github.com:slakah/uritemplate4s.git",
-  (makeSite / includeFilter) := (makeSite / includeFilter).value || "*.js.map",
-  micrositeFullOptJS := {
-    val jsFile = (Compile / fullOptJS).value.data
-    val jsMapFileOpt = (Compile / fullOptJS).value.get(scalaJSSourceMap)
-    val managedJsDir = (Compile / resourceDirectory).value / "microsite" / "js"
-    val targetDir = micrositeJsDirectory.value
-    IO.copyFile(jsFile, targetDir / jsFile.name)
-    jsMapFileOpt.foreach { jsMapFile => IO.copyFile(jsMapFile, targetDir / jsMapFile.name) }
-    IO.copyDirectory(managedJsDir, targetDir)
-  },
-  (Compile / mainClass) := Some("uritemplate4s.demo.Playground"),
-  scalaJSUseMainModuleInitializer := true,
-  makeMicrosite := makeMicrosite.dependsOn(micrositeFullOptJS).value
+  (makeSite / includeFilter) := (makeSite / includeFilter).value || "*.js.map"
 ) ++ SiteScaladocPlugin.scaladocSettings(SiteScaladoc, mappings in (Compile, packageDoc) in core.jvm, "api/latest")
 
 lazy val noPublishSettings = Seq(
