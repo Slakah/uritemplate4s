@@ -52,9 +52,8 @@ object ExternalTests extends TestSuite {
   lazy val decodeTests: Decoder[Seq[Test]] = (c: HCursor) =>
     for {
       name2obj <- c.as[JsonObject].map(_.toList)
-      tests <- name2obj.traverse {
-        case (name, js) =>
-          js.as[Test](decodeTest(name))
+      tests <- name2obj.traverse { case (name, js) =>
+        js.as[Test](decodeTest(name))
       }
     } yield tests
 

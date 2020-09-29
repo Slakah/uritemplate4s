@@ -87,13 +87,12 @@ final case class ComponentsUriTemplate(private val components: List[Component]) 
   }
 
   private def explodeSpecs(spec2value: List[(Varspec, Value)], operator: Operator) = {
-    val exploded: List[List[Literal]] = spec2value.map {
-      case (spec, value) =>
-        value match {
-          case StringValue(s) => explodeStringValue(s, operator, spec)
-          case ListValue(l) => explodeListValue(l, operator, spec)
-          case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
-        }
+    val exploded: List[List[Literal]] = spec2value.map { case (spec, value) =>
+      value match {
+        case StringValue(s) => explodeStringValue(s, operator, spec)
+        case ListValue(l) => explodeListValue(l, operator, spec)
+        case AssociativeArray(tuples) => explodeAssociativeArray(tuples, operator, spec)
+      }
     }
     exploded match {
       case Nil => List.empty
@@ -161,14 +160,13 @@ final case class ComponentsUriTemplate(private val components: List[Component]) 
       case Explode =>
         val nameValues = tuples.toList.map { case (n, v) => n -> encode(v, operator.allow) }
         nameValues
-          .map {
-            case (n, v) =>
-              val varnameLiterals = encode(n, operator.allow)
-              if (operator.named) {
-                namedValue(operator, varnameLiterals, v.isEmpty, v)
-              } else {
-                varnameLiterals ::: Encoded("=") :: v
-              }
+          .map { case (n, v) =>
+            val varnameLiterals = encode(n, operator.allow)
+            if (operator.named) {
+              namedValue(operator, varnameLiterals, v.isEmpty, v)
+            } else {
+              varnameLiterals ::: Encoded("=") :: v
+            }
           }
           .intersperse(List(Encoded(operator.sep)))
           .flatten

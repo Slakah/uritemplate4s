@@ -51,14 +51,13 @@ final class UriTemplateLiteralMacros(val c: blackbox.Context) {
               case Query => q"_root_.uritemplate4s.ast.Query"
               case QueryContinuation => q"_root_.uritemplate4s.ast.QueryContinuation"
             }
-            val variableListTrees = variableList.map {
-              case Varspec(varname, modifier) =>
-                val modifierTree = modifier match {
-                  case EmptyModifier => q"_root_.uritemplate4s.ast.EmptyModifier"
-                  case Prefix(maxLength) => q"_root_.uritemplate4s.ast.Prefix($maxLength)"
-                  case Explode => q"_root_.uritemplate4s.ast.Explode"
-                }
-                q"_root_.uritemplate4s.ast.Varspec($varname, $modifierTree)"
+            val variableListTrees = variableList.map { case Varspec(varname, modifier) =>
+              val modifierTree = modifier match {
+                case EmptyModifier => q"_root_.uritemplate4s.ast.EmptyModifier"
+                case Prefix(maxLength) => q"_root_.uritemplate4s.ast.Prefix($maxLength)"
+                case Explode => q"_root_.uritemplate4s.ast.Explode"
+              }
+              q"_root_.uritemplate4s.ast.Varspec($varname, $modifierTree)"
             }
             q"_root_.uritemplate4s.ast.Expression($opTree, _root_.scala.List(..$variableListTrees))"
         }

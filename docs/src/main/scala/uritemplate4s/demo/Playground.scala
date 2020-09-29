@@ -97,14 +97,13 @@ object Playground {
 
     val _ = templateSource
       .combineLatest(valuesSource)
-      .map {
-        case (templateE, valuesE) =>
-          val result = for {
-            template <- templateE
-            values <- valuesE
-            uri <- template.expandVars(values: _*).toEither
-          } yield uri
-          result.leftMap(_.getMessage).merge
+      .map { case (templateE, valuesE) =>
+        val result = for {
+          template <- templateE
+          values <- valuesE
+          uri <- template.expandVars(values: _*).toEither
+        } yield uri
+        result.leftMap(_.getMessage).merge
       }
       .foreach { result =>
         output.innerHTML = result
