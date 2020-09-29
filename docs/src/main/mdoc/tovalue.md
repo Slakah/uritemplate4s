@@ -18,13 +18,16 @@ A custom `ToValue` can be defined for Scala types without the explicit support p
 
 An example would be creating a `ToValue` instance for `java.time.Instant`.
 
-```tut:silent
+```scala mdoc:silent
 import uritemplate4s._
 import java.time.Instant
+
 implicit val instantToStringValue: ToStringValue[Instant] = (instant: Instant) => instant.toString
 ```
+
 Test the type class is wired in correctly
-```tut:book
+
+```scala mdoc
 ToValue[Instant].apply(Instant.now())
 uritemplate"http://clock-service.com/clock{?time}".expand("time" -> Instant.now()).value
 ```
