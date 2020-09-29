@@ -82,8 +82,8 @@ object ToValue {
     */
   implicit def mapToValue[V](implicit toValueV: ToStringValue[V]): ToValue[Map[String, V]] =
     (m: Map[String, V]) =>
-      AssociativeArray(m.map {
-        case (k, v) => k -> toValueV.asString(v)
+      AssociativeArray(m.map { case (k, v) =>
+        k -> toValueV.asString(v)
       }.toList)
 
   /**
