@@ -1,7 +1,7 @@
 import microsites._
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
-ThisBuild / scalaVersion := "2.13.2"
+ThisBuild / scalaVersion := "2.13.3"
 
 lazy val commonSettings = Seq(
   organization := "com.gubbns",
@@ -97,7 +97,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     doctestGenTests := Seq.empty
   )
   .settings(
-    crossScalaVersions := List(scalaVersion.value, "2.12.11"),
+    crossScalaVersions := List(scalaVersion.value, "2.12.12"),
     commonSettings,
     publishSettings,
     name := "uritemplate4s",
@@ -157,7 +157,6 @@ lazy val scalacOpts = Def.task(
     "-Xlint:inaccessible", // Warn about inaccessible types in method signatures.
     "-Xlint:infer-any", // Warn when a type argument is inferred to be `Any`.
     "-Xlint:missing-interpolator", // A string literal appears to be missing an interpolator id.
-    "-Xlint:nullary-override", // Warn when non-nullary `def f()' overrides nullary `def f'.
     "-Xlint:nullary-unit", // Warn when nullary methods return Unit.
     "-Xlint:option-implicit", // Option.apply used implicit view.
     "-Xlint:package-object-classes", // Class or object defined in package object.
