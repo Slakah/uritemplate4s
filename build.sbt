@@ -39,14 +39,14 @@ lazy val publishSettings = Seq(
 )
 
 lazy val betterMonadicForVersion = "0.3.1"
-lazy val catsVersion = "2.1.1"
+lazy val catsVersion = "2.2.0"
 lazy val circeVersion = "0.13.0"
 lazy val fastparseVersion = "2.3.0"
 lazy val handyUriTemplatesVersion = "2.1.8"
-lazy val monixVersion = "3.2.1"
+lazy val monixVersion = "3.2.2"
 lazy val scalafixNoinferVersion = "0.1.0-M1"
-lazy val scalajsDomVersion = "1.0.0"
-lazy val utestVersion = "0.7.4"
+lazy val scalajsDomVersion = "1.1.0"
+lazy val utestVersion = "0.7.5"
 
 ThisBuild / scalafixDependencies +=
   "com.eed3si9n.fix" %% "scalafix-noinfer" % scalafixNoinferVersion
@@ -111,7 +111,6 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     ) ++ Seq(
       "org.typelevel" %%% "cats-core" % catsVersion,
       "org.typelevel" %%% "cats-kernel" % catsVersion,
-      "org.typelevel" %%% "cats-macros" % catsVersion,
       "com.lihaoyi" %%% "utest" % utestVersion,
       "io.circe" %%% "circe-core" % circeVersion,
       "io.circe" %%% "circe-generic" % circeVersion,
@@ -130,7 +129,6 @@ lazy val docs = project
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-core" % catsVersion,
       "org.typelevel" %%% "cats-kernel" % catsVersion,
-      "org.typelevel" %%% "cats-macros" % catsVersion,
       "io.circe" %%% "circe-core" % circeVersion,
       "io.circe" %%% "circe-generic" % circeVersion,
       "io.circe" %%% "circe-parser" % circeVersion,

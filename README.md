@@ -1,5 +1,5 @@
 # uritemplate4s
-[![CircleCI](https://circleci.com/gh/Slakah/uritemplate4s/tree/master.svg?style=svg)](https://circleci.com/gh/Slakah/uritemplate4s/tree/master)
+[![CircleCI](https://circleci.com/gh/Slakah/uritemplate4s/tree/main.svg?style=svg)](https://circleci.com/gh/Slakah/uritemplate4s/tree/main)
 [![Join the chat at https://gitter.im/slakah/uritemplate4s](https://badges.gitter.im/slakah/uritemplate4s.svg)](https://gitter.im/slakah/uritemplate4s?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Latest version](https://index.scala-lang.org/slakah/uritemplate4s/uritemplate4s/latest.svg?color=orange)](https://index.scala-lang.org/slakah/uritemplate4s/uritemplate4s)
 

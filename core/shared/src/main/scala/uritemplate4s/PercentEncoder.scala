@@ -10,9 +10,8 @@ private[uritemplate4s] object PercentEncoder {
 
   @inline def percentEncode(s: String): String = {
     s.getBytes(StandardCharsets.UTF_8)
-      .foldLeft(new StringBuilder) {
-        case (sb, byte) =>
-          sb.append(memoEncodeChar(byte.toChar))
+      .foldLeft(new StringBuilder) { case (sb, byte) =>
+        sb.append(memoEncodeChar(byte.toChar))
       }
       .mkString
   }

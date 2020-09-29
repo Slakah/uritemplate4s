@@ -2,7 +2,7 @@ package uritemplate4s
 
 import scala.io.Source
 
-import cats.implicits._
+import cats.syntax.all._
 import io.circe.{Error => _, _}
 import io.circe.parser._
 import utest._
@@ -52,9 +52,8 @@ object ExternalTests extends TestSuite {
   lazy val decodeTests: Decoder[Seq[Test]] = (c: HCursor) =>
     for {
       name2obj <- c.as[JsonObject].map(_.toList)
-      tests <- name2obj.traverse {
-        case (name, js) =>
-          js.as[Test](decodeTest(name))
+      tests <- name2obj.traverse { case (name, js) =>
+        js.as[Test](decodeTest(name))
       }
     } yield tests
 
