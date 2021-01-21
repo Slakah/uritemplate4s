@@ -46,7 +46,7 @@ lazy val handyUriTemplatesVersion = "2.1.8"
 lazy val monixVersion = "3.3.0"
 lazy val scalafixNoinferVersion = "0.1.0-M1"
 lazy val scalajsDomVersion = "1.1.0"
-lazy val utestVersion = "0.7.5"
+lazy val utestVersion = "0.7.6"
 
 ThisBuild / scalafixDependencies +=
   "com.eed3si9n.fix" %% "scalafix-noinfer" % scalafixNoinferVersion
