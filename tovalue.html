@@ -23,9 +23,9 @@ Scala types to a variable value for use in URI Template expansion. There are 3 d
 <p>Test the type class is wired in correctly</p>
 
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">ToValue</span><span class="o">[</span><span class="kt">Instant</span><span class="o">].</span><span class="py">apply</span><span class="o">(</span><span class="nv">Instant</span><span class="o">.</span><span class="py">now</span><span class="o">())</span>
-<span class="c1">// res0: Value = StringValue(value = "2021-02-17T09:50:19.609570Z")</span>
+<span class="c1">// res0: Value = StringValue(value = "2021-02-17T21:10:53.552642Z")</span>
 <span class="n">uritemplate</span><span class="s">"http://clock-service.com/clock{?time}"</span><span class="o">.</span><span class="py">expand</span><span class="o">(</span><span class="s">"time"</span> <span class="o">-&gt;</span> <span class="nv">Instant</span><span class="o">.</span><span class="py">now</span><span class="o">()).</span><span class="py">value</span>
-<span class="c1">// res1: String = "http://clock-service.com/clock?time=2021-02-17T09%3A50%3A19.611415Z"</span>
+<span class="c1">// res1: String = "http://clock-service.com/clock?time=2021-02-17T21%3A10%3A53.554031Z"</span>
 </code></pre></div></div>
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/uritemplate4s/highlight/highlight.pack.js"></script><script>
 // For all code blocks, copy the language from the containing div
