@@ -1,7 +1,7 @@
 import microsites._
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
-ThisBuild / scalaVersion := "2.13.3"
+ThisBuild / scalaVersion := "2.13.7"
 
 lazy val commonSettings = Seq(
   organization := "com.gubbns",
