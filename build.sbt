@@ -97,7 +97,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
     doctestGenTests := Seq.empty
   )
   .settings(
-    crossScalaVersions := List(scalaVersion.value, "2.12.12"),
+    crossScalaVersions := List(scalaVersion.value, "2.12.16"),
     commonSettings,
     publishSettings,
     name := "uritemplate4s",
